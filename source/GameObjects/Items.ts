@@ -8,8 +8,9 @@ module z89 {
         game: Phaser.Game;
 
         private currentState: GameCity;
-        private itemObj: any;
+        public itemObj: any;
         private id: number;
+        public inventoryIndex: number;
 
 
         constructor(game: Phaser.Game, itemObj: any) {
@@ -39,27 +40,22 @@ module z89 {
             this.fixedToCamera = itemObj.fixedToCamera;
             this.events.onInputDown.add(() => {
 
+                let _currentItem: Items = this.currentState.getCurrentItem();
 
-                if (this.currentState.playerActions.IsOpen() && this.currentState.getCurrentItem().id != this.id) this.currentState.playerActions.hide();
+                if (this.currentState.playerActions.IsOpen() && _currentItem != undefined && _currentItem.id != this.id) this.currentState.playerActions.hide();
+
                 let _playerDest: number = this.x;
                 if (this.currentState.player.x < this.x) {
+
                     _playerDest -= this.itemObj.offsetX;
 
                 } else {
+
                     _playerDest += this.itemObj.offsetX;
 
                 }
-                if (this.currentState.getCurrentItem().id != this.id) {
 
-                    this.currentState.player.goTo(_playerDest, this.y, this);
-                } else {
-
-                    this.currentState.player.executeItemLogic(this);
-
-                }
-
-
-
+                this.currentState.player.goTo(_playerDest, this.y, this);
 
             }, this);
 
@@ -86,11 +82,6 @@ module z89 {
             return this.itemObj;
         }
 
-        getCurrentAction(): number {
-
-            return this.currentState.playerActions.currentAction();
-
-        }
 
         getPlayer(): Player {
 
@@ -101,11 +92,32 @@ module z89 {
         returnMessage(): void {
 
 
+            let currAction: number = this.currentState.playerActions.getCurrentAction()
 
-            this.currentState.player.showBaloon(this.itemObj.actions[this.currentState.playerActions.currentAction()].answer[this.game.rnd.integerInRange(0,this.itemObj.actions[this.currentState.playerActions.currentAction()].answer.length)]);
+            let _mess: string = this.itemObj.actions[currAction].answer[this.game.rnd.integerInRange(0, this.itemObj.actions[currAction].answer.length - 1)];
+            //console.log(currAction,_mess, this.itemObj.actions[currAction].answer.length)
+            this.currentState.player.showBaloon(_mess);
 
         }
 
+
+        logic() {
+
+            //console.log(this.getCurrentActionString())
+
+
+            if (this.currentState.getCurrentActionString() != undefined && this.itemObj.logic != undefined && this.itemObj.logic[this.currentState.getCurrentActionString()] != undefined) {
+
+                this.itemObj.logic[this.currentState.getCurrentActionString()](this.currentState);
+
+            } else {
+                if (this.currentState.getCurrentActionString() != undefined) this.currentState.player.illogicAction();
+
+
+            }
+
+
+        }
 
 
 

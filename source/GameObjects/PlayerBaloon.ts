@@ -33,17 +33,11 @@ module z89 {
             this.baloonPin.anchor.set(0.5,1);
             this.add(this.baloonPin);
 
-
-
-
-
             this.baloonText = this.game.add.bitmapText(0, 0, "commodore", "", 18);
             this.baloonText.maxWidth=300;
             this.baloonText.anchor.set(0.5,1);
 
-            
-
-            
+           
             this.add(this.baloonText);
             this.alpha=0;
 
@@ -51,11 +45,7 @@ module z89 {
         }
 
 
-        
-
-
        
-
         public showBaloon(_text:string){
 
             if(_text==undefined) return;
@@ -94,18 +84,6 @@ module z89 {
           
 
         }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

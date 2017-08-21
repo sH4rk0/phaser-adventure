@@ -86,6 +86,13 @@ module z89{
 			bmd.ctx.fill();
 			this.game.cache.addBitmapData('baloonPin', bmd);
 
+			bmd = this.game.add.bitmapData(70,70);
+			bmd.ctx.fillStyle = '#ffffff';
+			bmd.ctx.beginPath();
+			bmd.ctx.rect(0, 0, 70, 70);
+			bmd.ctx.fill();
+			this.game.cache.addBitmapData('inventoryIconBg', bmd);
+
 
 			
 		

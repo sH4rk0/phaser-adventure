@@ -43,6 +43,16 @@ module z89 {
                 this.menuBg.addChild(blinkBtn);
             });
 
+
+            let actionBtn:Phaser.Sprite;
+            actionBtn = this.game.add.sprite(-60, -290, this.game.cache.getBitmapData("btn"))
+            actionBtn.inputEnabled = true;
+            actionBtn.events.onInputDown.add(function () {
+                this.currentState.playerActions.show();
+                this.hide();
+            }, this);
+            this.menuBg.addChild(actionBtn);
+
       
 
             this.cameraOffset.y = 710;

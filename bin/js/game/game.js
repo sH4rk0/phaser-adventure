@@ -142,6 +142,12 @@ var z89;
             bmd.ctx.lineTo(12.5, 25);
             bmd.ctx.fill();
             this.game.cache.addBitmapData('baloonPin', bmd);
+            bmd = this.game.add.bitmapData(70, 70);
+            bmd.ctx.fillStyle = '#ffffff';
+            bmd.ctx.beginPath();
+            bmd.ctx.rect(0, 0, 70, 70);
+            bmd.ctx.fill();
+            this.game.cache.addBitmapData('inventoryIconBg', bmd);
         };
         Boot.prototype.create = function () {
             if (this.game.device.touch && (this.game.device.iOS || this.game.device.android || this.game.device.windowsPhone)) {
@@ -319,186 +325,6 @@ var WebFontConfig = {
         families: ['Press Start 2P']
     }
 };
-var languages = {
-    en: [
-        "the drink machine",
-        "It's too heavy!!!",
-        "No way to pull it!",
-        "Maybe it accept money!",
-        "It's closed.",
-        "It's already closed.",
-        "Seems to be a standard drink machine.",
-        "I have no money.",
-        "Really!?!?!",
-        "Do you really want to talk with it?",
-        "Coke",
-        "Please! Ask the developer to write a better pathfinding function!",
-        "the mediacall box",
-        "No way!",
-        "Nothing strange.",
-        "It's really hot! I need something to drink.",
-        "the garbage bin",
-        "the hydrant",
-    ]
-};
-var currentLang = "en";
-var gameData = {
-    menuBlink: [
-        { icon: "", to: 100, x: -130, y: -290 },
-        { icon: "", to: 700, x: -130, y: -220 },
-        { icon: "", to: 1254, x: -60, y: -220 },
-        { icon: "", to: 1590, x: 10, y: -220 },
-        { icon: "", to: 1900, x: 80, y: -220 },
-        { icon: "", to: 2580, x: -130, y: -150 },
-        { icon: "", to: 3170, x: -60, y: -150 },
-        { icon: "", to: 4000, x: 10, y: -150 },
-        { icon: "", to: 4500, x: 80, y: -150 }
-    ],
-    assets: {
-        spritesheets: [
-            { name: "deluca", path: "assets/images/game/player.png", width: 126, height: 126, frames: 64 },
-            { name: "phoneWork", path: "assets/images/game/items/phoneWork.png", width: 56, height: 132, frames: 2 },
-            { name: "phoneNotWork", path: "assets/images/game/items/phoneNotWork.png", width: 52, height: 132, frames: 5 },
-        ],
-        images: [
-            { name: "city", path: "assets/images/game/cityBW.png" },
-            { name: "bg2", path: "assets/images/game/city2.png" },
-            { name: "bg", path: "assets/images/game/bgBW.png" },
-            { name: "streetLvl1", path: "assets/images/game/streetLvl1BW.png" },
-            { name: "streetLvl0", path: "assets/images/game/streetLvl0BW.png" },
-            { name: "sky", path: "assets/images/game/skyBW.png" },
-            { name: "menuBg", path: "assets/images/game/menu.png" },
-            { name: "drink-machine", path: "assets/images/game/items/drink-machine.png" },
-            { name: "trash", path: "assets/images/game/items/trash.png" },
-            { name: "hydrant", path: "assets/images/game/items/hydrant.png" },
-            { name: "coke", path: "assets/images/game/items/coke.png" },
-        ],
-        sounds: [],
-        bitmapfont: [
-            { name: "commodore", imgpath: "assets/fonts/carrier_command.png", xmlpath: "assets/fonts/carrier_command.xml" }
-        ]
-    },
-    ingame: {
-        // PUSH, PULL, GIVE, OPEN, CLOSE, EXAMINE, USE, PICKUP, TALKTO
-        items: [
-            {
-                id: 1,
-                type: 1,
-                sprite: "drink-machine",
-                name: z89.getLabel(0),
-                x: 500,
-                y: 744,
-                bgItem: true,
-                interactive: true,
-                firstMessage: [z89.getLabel(15)],
-                actions: {
-                    0: { action: false, answer: [z89.getLabel(1)] },
-                    1: { action: false, answer: [z89.getLabel(2)] },
-                    2: { action: false, answer: [z89.getLabel(3)] },
-                    3: { action: false, answer: [z89.getLabel(4)] },
-                    4: { action: false, answer: [z89.getLabel(5)] },
-                    5: { action: true, answer: [z89.getLabel(6), z89.getLabel(14)] },
-                    6: { action: true, answer: [z89.getLabel(7)] },
-                    7: { action: false, answer: [z89.getLabel(8)] },
-                    8: {
-                        action: false, answer: [z89.getLabel(9)]
-                    }
-                },
-                offsetX: 70,
-                fixedToCamera: true,
-            },
-            {
-                id: 2,
-                type: 2,
-                bgItem: true,
-                sprite: "phoneNotWork",
-                animations: [{ name: "idle", frames: [0, 1, 2, 3, 4], rate: 5, loop: true }],
-                name: z89.getLabel(12),
-                x: 1114,
-                y: 644,
-                interactive: true,
-                offsetX: 50,
-                coins: 0,
-                fixedToCamera: false,
-            },
-            {
-                id: 3,
-                type: 2,
-                bgItem: true,
-                sprite: "phoneWork",
-                animations: [{ name: "idle", frames: [0, 1], rate: 3, loop: true }],
-                name: z89.getLabel(12),
-                x: 1526,
-                y: 644,
-                interactive: true,
-                offsetX: 50,
-                fixedToCamera: false,
-            },
-            {
-                id: 4,
-                type: 3,
-                bgItem: true,
-                sprite: "trash",
-                name: z89.getLabel(16),
-                x: 400,
-                y: 644,
-                interactive: true,
-                offsetX: 50,
-                fixedToCamera: false,
-            },
-            {
-                id: 5,
-                type: 4,
-                bgItem: true,
-                sprite: "hydrant",
-                name: z89.getLabel(17),
-                x: 852,
-                y: 712,
-                interactive: true,
-                offsetX: 50,
-                fixedToCamera: true,
-            },
-            {
-                id: 6,
-                type: 4,
-                bgItem: true,
-                sprite: "hydrant",
-                name: z89.getLabel(17),
-                x: 1809,
-                y: 712,
-                interactive: true,
-                offsetX: 50,
-                fixedToCamera: true,
-            },
-            {
-                id: 7,
-                type: 5,
-                sprite: "coke",
-                bgItem: false,
-                name: z89.getLabel(10),
-                x: 400,
-                y: 745,
-                interactive: true,
-                actions: {
-                    0: { action: false, answer: [z89.getLabel(1)] },
-                    1: { action: false, answer: [z89.getLabel(2)] },
-                    2: { action: false, answer: [z89.getLabel(3)] },
-                    3: { action: false, answer: [z89.getLabel(4)] },
-                    4: { action: false, answer: [z89.getLabel(5)] },
-                    5: { action: true, answer: [z89.getLabel(6)] },
-                    6: { action: true, answer: [z89.getLabel(7)] },
-                    7: { action: false, answer: [z89.getLabel(8)] },
-                    8: {
-                        action: false, answer: [z89.getLabel(9)]
-                    }
-                },
-                offsetX: 70,
-                fixedToCamera: true,
-                pickupable: true,
-            },
-        ]
-    }
-};
 /*
 var _guserid: string;
 var _gname: string;
@@ -639,6 +465,300 @@ window.fbAsyncInit = function () {
 }(document, 'script', 'facebook-jssdk'));
 
 */
+var languages = {
+    en: [
+        "drink machine",
+        "It's too heavy!!!",
+        "No way to pull it!",
+        "Maybe it accept money!",
+        "It's closed.",
+        "It's already closed.",
+        "Seems to be a standard drink machine.",
+        "I have no money.",
+        "Really!?!?!",
+        "Do you really want to talk with it?",
+        "Coke",
+        "Please! Ask the developer to write a better pathfinding function!",
+        "mediacall box",
+        "No way!",
+        "Nothing strange.",
+        "It's really hot! I need something to drink.",
+        "garbage bin",
+        "hydrant",
+        "A stinking garbage bin!",
+        "It is illogic!",
+        "I won't do that!",
+        "Forget it!",
+        "I can't drop it!",
+        "coins",
+        "Quattrocchi, non mi far alterare o ti SCUMM a sangue!!",
+        "4eyes",
+    ]
+};
+var currentLang = "en";
+var gameData = {
+    ingame: {
+        // PUSH, PULL, GIVE, OPEN, CLOSE, EXAMINE, USE, PICKUP, TALKTO
+        //game logic
+        logic: {
+            //use money on drink machine
+            USE_8_1: function (currentState) {
+                currentState.player.play("use");
+                currentState.removeInventoryItems();
+            },
+            USE_9_1: function (currentState) {
+                currentState.player.play("use");
+                currentState.removeInventoryItems();
+            }
+        },
+        //items logic
+        items: [
+            {
+                id: 1,
+                type: 1,
+                sprite: "drink-machine",
+                name: z89.getLabel(0),
+                x: 500,
+                y: 744,
+                onStart: true,
+                interactive: true,
+                firstMessage: [z89.getLabel(15)],
+                actions: {
+                    0: { action: false, answer: [z89.getLabel(1)] },
+                    1: { action: false, answer: [z89.getLabel(2)] },
+                    2: { action: false, answer: [z89.getLabel(3)] },
+                    3: { action: false, answer: [z89.getLabel(4)] },
+                    4: { action: false, answer: [z89.getLabel(5)] },
+                    5: { action: true, answer: [z89.getLabel(6), z89.getLabel(14)] },
+                    6: { action: true, answer: [z89.getLabel(7)] },
+                    7: { action: false, answer: [z89.getLabel(8)] },
+                    8: { action: false, answer: [z89.getLabel(22)] },
+                    9: { action: false, answer: [z89.getLabel(9)] }
+                },
+                logic: {
+                    PUSH: function (currentState) {
+                        currentState.currentItem.returnMessage();
+                    },
+                    PULL: function (currentState) {
+                        currentState.currentItem.returnMessage();
+                    },
+                    GIVE: function (currentState) {
+                        currentState.currentItem.returnMessage();
+                    },
+                    OPEN: function (currentState) {
+                        currentState.currentItem.returnMessage();
+                    },
+                    CLOSE: function (currentState) {
+                        currentState.currentItem.returnMessage();
+                    },
+                    EXAMINE: function (currentState) {
+                        currentState.currentItem.returnMessage();
+                    },
+                    USE: function (currentState) {
+                        currentState.currentItem.returnMessage();
+                    },
+                    PICKUP: function (currentState) {
+                        currentState.currentItem.returnMessage();
+                    },
+                    DROP: function (currentState) {
+                        currentState.currentItem.returnMessage();
+                    },
+                    TALKTO: function (currentState) {
+                        currentState.currentItem.returnMessage();
+                    }
+                },
+                offsetX: 70,
+                fixedToCamera: true,
+                checkIntersect: true
+            },
+            {
+                id: 2,
+                type: 2,
+                onStart: true,
+                sprite: "phoneNotWork",
+                animations: [{ name: "idle", frames: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4], rate: 5, loop: true }],
+                name: z89.getLabel(12),
+                x: 1114,
+                y: 644,
+                interactive: true,
+                offsetX: 50,
+                coins: 0,
+                fixedToCamera: false,
+                checkIntersect: false
+            },
+            {
+                id: 3,
+                type: 2,
+                onStart: true,
+                sprite: "phoneWork",
+                animations: [{ name: "idle", frames: [0, 1], rate: 3, loop: true }],
+                name: z89.getLabel(12),
+                x: 1526,
+                y: 644,
+                interactive: true,
+                offsetX: 50,
+                fixedToCamera: false,
+                checkIntersect: false
+            },
+            {
+                id: 4,
+                type: 3,
+                onStart: true,
+                sprite: "trash",
+                name: z89.getLabel(16),
+                x: 650,
+                y: 649,
+                interactive: true,
+                firstMessage: [z89.getLabel(18)],
+                offsetX: 50,
+                fixedToCamera: false,
+                checkIntersect: false
+            },
+            {
+                id: 5,
+                type: 4,
+                onStart: true,
+                sprite: "hydrant",
+                name: z89.getLabel(17),
+                x: 852,
+                y: 712,
+                interactive: true,
+                offsetX: 50,
+                fixedToCamera: true,
+                checkIntersect: true
+            },
+            {
+                id: 6,
+                type: 4,
+                onStart: true,
+                sprite: "hydrant",
+                name: z89.getLabel(17),
+                x: 1809,
+                y: 712,
+                interactive: true,
+                offsetX: 50,
+                fixedToCamera: true,
+                checkIntersect: true
+            },
+            {
+                id: 7,
+                type: 5,
+                sprite: "coke",
+                onStart: true,
+                name: z89.getLabel(10),
+                x: 400,
+                y: 650,
+                interactive: true,
+                actions: {
+                    0: { action: false, answer: [z89.getLabel(1)] },
+                },
+                logic: {
+                    PICKUP: function (currentState) {
+                        currentState.addInventoryItem();
+                        currentState.player.play("pickdrop");
+                    },
+                    DROP: function (currentState) {
+                    },
+                },
+                offsetX: 30,
+                fixedToCamera: false,
+                checkIntersect: true
+            },
+            {
+                id: 8,
+                type: 6,
+                sprite: "coins",
+                onStart: true,
+                name: z89.getLabel(23),
+                x: 300,
+                y: 654,
+                interactive: true,
+                actions: {
+                    0: { action: false, answer: [z89.getLabel(1)] },
+                },
+                logic: {
+                    PICKUP: function (currentState) { currentState.addInventoryItem(); currentState.player.play("pickdrop"); },
+                    DROP: function (currentState) { },
+                },
+                offsetX: 30,
+                fixedToCamera: false,
+                checkIntersect: false
+            },
+            {
+                id: 9,
+                type: 6,
+                sprite: "coins",
+                onStart: true,
+                name: z89.getLabel(23),
+                x: 300,
+                y: 700,
+                interactive: true,
+                actions: {
+                    0: { action: false, answer: [z89.getLabel(1)] },
+                },
+                logic: {
+                    PICKUP: function (currentState) { currentState.addInventoryItem(); currentState.player.play("pickdrop"); },
+                    DROP: function (currentState) { },
+                },
+                offsetX: 30,
+                fixedToCamera: false,
+                checkIntersect: false
+            },
+            {
+                id: 3,
+                type: 2,
+                onStart: true,
+                sprite: "4eyes",
+                animations: [{ name: "idle", frames: [0, 1, 2, 3], rate: 4, loop: true }],
+                name: z89.getLabel(25),
+                x: 700,
+                y: 650,
+                interactive: true,
+                offsetX: 50,
+                fixedToCamera: false,
+                checkIntersect: false
+            },
+        ]
+    },
+    assets: {
+        spritesheets: [
+            { name: "player", path: "assets/images/game/player.png", width: 126, height: 126, frames: 64 },
+            { name: "phoneWork", path: "assets/images/game/items/phoneWork.png", width: 56, height: 132, frames: 2 },
+            { name: "phoneNotWork", path: "assets/images/game/items/phoneNotWork.png", width: 52, height: 132, frames: 5 },
+            { name: "4eyes", path: "assets/images/game/people/4eyes.png", width: 65, height: 138, frames: 4 },
+        ],
+        images: [
+            { name: "city", path: "assets/images/game/cityBW.png" },
+            { name: "bg2", path: "assets/images/game/city2.png" },
+            { name: "bg", path: "assets/images/game/bgBW.png" },
+            { name: "streetLvl1", path: "assets/images/game/streetLvl1BW.png" },
+            { name: "streetLvl0", path: "assets/images/game/streetLvl0BW.png" },
+            { name: "sky", path: "assets/images/game/skyBW.png" },
+            { name: "menuBg", path: "assets/images/game/menu.png" },
+            { name: "drink-machine", path: "assets/images/game/items/drink-machine.png" },
+            { name: "trash", path: "assets/images/game/items/trash.png" },
+            { name: "hydrant", path: "assets/images/game/items/hydrant.png" },
+            { name: "coke", path: "assets/images/game/items/coke.png" },
+            { name: "coins", path: "assets/images/game/items/coins.png" },
+            { name: "4eyes", path: "assets/images/game/people/4eyes.png" },
+        ],
+        sounds: [],
+        bitmapfont: [
+            { name: "commodore", imgpath: "assets/fonts/carrier_command.png", xmlpath: "assets/fonts/carrier_command.xml" }
+        ]
+    },
+    menuBlink: [
+        { icon: "", to: 100, x: -130, y: -290 },
+        { icon: "", to: 700, x: -130, y: -220 },
+        { icon: "", to: 1254, x: -60, y: -220 },
+        { icon: "", to: 1590, x: 10, y: -220 },
+        { icon: "", to: 1900, x: 80, y: -220 },
+        { icon: "", to: 2580, x: -130, y: -150 },
+        { icon: "", to: 3170, x: -60, y: -150 },
+        { icon: "", to: 4000, x: 10, y: -150 },
+        { icon: "", to: 4500, x: 80, y: -150 }
+    ]
+};
 var z89;
 (function (z89) {
     var Items = (function (_super) {
@@ -661,7 +781,8 @@ var z89;
             _this.interactive = itemObj.interactive;
             _this.fixedToCamera = itemObj.fixedToCamera;
             _this.events.onInputDown.add(function () {
-                if (_this.currentState.playerActions.IsOpen() && _this.currentState.getCurrentItem().id != _this.id)
+                var _currentItem = _this.currentState.getCurrentItem();
+                if (_this.currentState.playerActions.IsOpen() && _currentItem != undefined && _currentItem.id != _this.id)
                     _this.currentState.playerActions.hide();
                 var _playerDest = _this.x;
                 if (_this.currentState.player.x < _this.x) {
@@ -670,12 +791,7 @@ var z89;
                 else {
                     _playerDest += _this.itemObj.offsetX;
                 }
-                if (_this.currentState.getCurrentItem().id != _this.id) {
-                    _this.currentState.player.goTo(_playerDest, _this.y, _this);
-                }
-                else {
-                    _this.currentState.player.executeItemLogic(_this);
-                }
+                _this.currentState.player.goTo(_playerDest, _this.y, _this);
             }, _this);
             _this.game.add.existing(_this);
             return _this;
@@ -690,103 +806,28 @@ var z89;
         Items.prototype.getItemObj = function () {
             return this.itemObj;
         };
-        Items.prototype.getCurrentAction = function () {
-            return this.currentState.playerActions.currentAction();
-        };
         Items.prototype.getPlayer = function () {
             return this.currentState.player;
         };
         Items.prototype.returnMessage = function () {
-            this.currentState.player.showBaloon(this.itemObj.actions[this.currentState.playerActions.currentAction()].answer[this.game.rnd.integerInRange(0, this.itemObj.actions[this.currentState.playerActions.currentAction()].answer.length)]);
+            var currAction = this.currentState.playerActions.getCurrentAction();
+            var _mess = this.itemObj.actions[currAction].answer[this.game.rnd.integerInRange(0, this.itemObj.actions[currAction].answer.length - 1)];
+            //console.log(currAction,_mess, this.itemObj.actions[currAction].answer.length)
+            this.currentState.player.showBaloon(_mess);
+        };
+        Items.prototype.logic = function () {
+            //console.log(this.getCurrentActionString())
+            if (this.currentState.getCurrentActionString() != undefined && this.itemObj.logic != undefined && this.itemObj.logic[this.currentState.getCurrentActionString()] != undefined) {
+                this.itemObj.logic[this.currentState.getCurrentActionString()](this.currentState);
+            }
+            else {
+                if (this.currentState.getCurrentActionString() != undefined)
+                    this.currentState.player.illogicAction();
+            }
         };
         return Items;
     }(Phaser.Sprite));
     z89.Items = Items;
-})(z89 || (z89 = {}));
-var z89;
-(function (z89) {
-    var ItemsDrink = (function (_super) {
-        __extends(ItemsDrink, _super);
-        function ItemsDrink(game, itemObj) {
-            var _this = _super.call(this, game, itemObj) || this;
-            _this._itemObj = itemObj;
-            return _this;
-        }
-        ItemsDrink.prototype.logic = function () {
-            //console.log("item logic:" + this._itemObj.id)
-            switch (this.getCurrentAction()) {
-                // PUSH, PULL, GIVE, OPEN, CLOSE, EXAMINE, USE, PICKUP, TALKTO
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 7:
-                case 8:
-                    this.returnMessage();
-                    break;
-                case 6:
-                    if (this.getPlayer().getMoney() > 5) {
-                        console.log("get coke");
-                    }
-                    else {
-                        this.returnMessage();
-                    }
-                    break;
-            }
-        };
-        return ItemsDrink;
-    }(z89.Items));
-    z89.ItemsDrink = ItemsDrink;
-})(z89 || (z89 = {}));
-var z89;
-(function (z89) {
-    var ItemsGarbage = (function (_super) {
-        __extends(ItemsGarbage, _super);
-        function ItemsGarbage(game, itemObj) {
-            var _this = _super.call(this, game, itemObj) || this;
-            _this._itemObj = itemObj;
-            return _this;
-        }
-        ItemsGarbage.prototype.logic = function () {
-            console.log("item logic:" + this._itemObj.id);
-        };
-        return ItemsGarbage;
-    }(z89.Items));
-    z89.ItemsGarbage = ItemsGarbage;
-})(z89 || (z89 = {}));
-var z89;
-(function (z89) {
-    var ItemsHydrant = (function (_super) {
-        __extends(ItemsHydrant, _super);
-        function ItemsHydrant(game, itemObj) {
-            var _this = _super.call(this, game, itemObj) || this;
-            _this._itemObj = itemObj;
-            return _this;
-        }
-        ItemsHydrant.prototype.logic = function () {
-            console.log("item logic:" + this._itemObj.id);
-        };
-        return ItemsHydrant;
-    }(z89.Items));
-    z89.ItemsHydrant = ItemsHydrant;
-})(z89 || (z89 = {}));
-var z89;
-(function (z89) {
-    var ItemsPhones = (function (_super) {
-        __extends(ItemsPhones, _super);
-        function ItemsPhones(game, itemObj) {
-            var _this = _super.call(this, game, itemObj) || this;
-            _this._itemObj = itemObj;
-            return _this;
-        }
-        ItemsPhones.prototype.logic = function () {
-            console.log("item logic" + this._itemObj.id);
-        };
-        return ItemsPhones;
-    }(z89.Items));
-    z89.ItemsPhones = ItemsPhones;
 })(z89 || (z89 = {}));
 var z89;
 (function (z89) {
@@ -804,15 +845,18 @@ var z89;
     var Player = (function (_super) {
         __extends(Player, _super);
         function Player(game) {
-            var _this = _super.call(this, game, 100, 650, "deluca") || this;
+            var _this = _super.call(this, game, 100, 650, "player") || this;
             _this.yMin = 650;
             _this.yMax = 768;
             _this.direction = PlayerDirection.RIGHT;
             _this.money = 10;
             _this.inventory = [];
-            _this.baloon = new z89.PlayerBaloon(game);
+            _this.illogicText = [z89.getLabel(19), z89.getLabel(20), z89.getLabel(13), z89.getLabel(21)];
             _this.animations.add("idle", [8, 9, 10, 11], 5, true);
             _this.animations.add("walk", [0, 1, 2, 3, 4, 5, 6, 7], 7, true);
+            _this.animations.add("punch", [12, 13, 14, 15], 7, false).onComplete.add(function () { _this.play("idle"); }, _this);
+            _this.animations.add("pickdrop", [16, 17, 18, 19], 7, false).onComplete.add(function () { _this.play("idle"); }, _this);
+            _this.animations.add("use", [19, 20, 21, 20, 19], 7, false).onComplete.add(function () { _this.play("idle"); }, _this);
             _this.play("idle");
             _this.currentState = _this.game.state.getCurrentState();
             _this.anchor.set(0.5, 1);
@@ -835,20 +879,20 @@ var z89;
         }
         Player.prototype.goTo = function (_x, _y, _item) {
             var _this = this;
+            // console.log(_item);
             this.hideBaloon();
             this.play("walk");
             if (this.playerTween != undefined)
                 this.playerTween.stop();
-            this.currentItem = null;
+            if (_item == undefined)
+                this.currentState.currentItem = null;
             if (_x > this.x) {
                 if (this.direction != PlayerDirection.RIGHT)
                     this.changeDirection();
-                this.direction = PlayerDirection.RIGHT;
             }
             else {
                 if (this.direction != PlayerDirection.LEFT)
                     this.changeDirection();
-                this.direction = PlayerDirection.LEFT;
             }
             this.intersect = false;
             var _intersect = this.checkIntersect({ x1: _x, y1: _y + 1 });
@@ -879,21 +923,77 @@ var z89;
                 distance = distanceY;
             }
             this.playerTween = this.game.add.tween(this).to({ x: _x, y: _y + 1 }, 7.5 * distance, Phaser.Easing.Default, true, 0, 0, false);
+            //moving player tween end
             this.playerTween.onComplete.add(function (_player, _tween, _intersect) {
                 _this.play("idle");
+                //check if an item is passed as destination
                 if (_item != null) {
-                    _this.currentItem = _item;
+                    _this.currentState.setCurrentItem(_item);
+                    if (_this.x < _item.x) {
+                        if (_this.direction == PlayerDirection.LEFT)
+                            _this.changeDirection();
+                    }
+                    else {
+                        if (_this.direction == PlayerDirection.RIGHT)
+                            _this.changeDirection();
+                    }
+                    _this.currentState.checkActions();
+                    _this.executeItemLogic(_item);
+                    _this.currentState.setActionText();
+                    _this.currentState.resetActions();
+                    _this.currentState.setActionObject(null);
+                    console.log(_this.currentState.getActionObject());
+                    console.log("-------------------------------------------");
                     if (_item.isInteractive())
                         _this.currentState.playerActions.show();
-                    _this.executeItemLogic(_item);
-                    if (_item._itemObj.firstMessage != undefined) {
-                        _this.showBaloon(_item._itemObj.firstMessage[_this.game.rnd.integerInRange(0, _item._itemObj.firstMessage.length)]);
-                    }
-                    _this.currentState.setCurrentItem(_item);
                 }
-                if (_intersect[0])
-                    _this.showBaloon(z89.getLabel(11));
+                //if (_intersect[0]) this.showBaloon(z89.getLabel(11));
             }, this, null, [this.intersect]);
+        };
+        Player.prototype.executeItemLogic = function (_item) {
+            //let _actionObj: any = this.currentState.checkActions(_item);
+            var _this = this;
+            console.log("executeItemLogic");
+            var _actionObj = this.currentState.getActionObject();
+            console.log(_actionObj);
+            if (_actionObj != null && gameData.ingame.logic[_actionObj.key] != undefined) {
+                console.log("logic 1");
+                gameData.ingame.logic[_actionObj.key](this.currentState);
+            }
+            else {
+                if (_item != undefined) {
+                    console.log("logic 2");
+                    _item.logic();
+                }
+                else if (this.currentState.getCurrentItem() != undefined) {
+                    console.log("logic 3");
+                    this.currentState.getCurrentItem().logic();
+                }
+                else if (_item.itemObj.firstMessage != undefined) {
+                    console.log("logic 4");
+                    this.showBaloon(_item.itemObj.firstMessage[this.game.rnd.integerInRange(0, _item.itemObj.firstMessage.length - 1)]);
+                }
+            }
+            this.game.time.events.add(3000, function () { _this.currentState.playerActions.hideText(); }, this);
+        };
+        Player.prototype.changeDirection = function () {
+            if (this.direction == PlayerDirection.RIGHT) {
+                this.turnLeft();
+            }
+            else {
+                this.turnRight();
+            }
+        };
+        Player.prototype.illogicAction = function () {
+            this.currentState.player.showBaloon(this.illogicText[this.game.rnd.integerInRange(0, this.illogicText.length - 1)]);
+        };
+        Player.prototype.turnLeft = function () {
+            this.scale.x = -1;
+            this.direction = PlayerDirection.LEFT;
+        };
+        Player.prototype.turnRight = function () {
+            this.scale.x = 1;
+            this.direction = PlayerDirection.RIGHT;
         };
         Player.prototype.checkIntersect = function (_toPosition) {
             var _obj = { point: null };
@@ -901,7 +1001,7 @@ var z89;
             var line2;
             var intersectPoint;
             this.currentState.getSprites().forEach(function (sprite) {
-                if (sprite.name != "player") {
+                if (sprite.name != "player" && sprite.itemObj.checkIntersect) {
                     line2 = new Phaser.Line(sprite.x - (sprite.width / 2) - 10, sprite.y, sprite.x + (sprite.width / 2) + 10, sprite.y);
                     intersectPoint = line1.intersects(line2, true);
                     if (intersectPoint != null) {
@@ -911,17 +1011,6 @@ var z89;
             }, this);
             return _obj;
         };
-        Player.prototype.executeItemLogic = function (_item) {
-            if (_item != undefined) {
-                _item.logic();
-            }
-            else if (this.currentItem != undefined) {
-                this.currentItem.logic();
-            }
-        };
-        Player.prototype.changeDirection = function () {
-            this.scale.x *= -1;
-        };
         Player.prototype.blinkTo = function (_x) {
             this.hideBaloon();
             this.currentState.playerMenu.hide();
@@ -930,10 +1019,10 @@ var z89;
             this.x = _x;
         };
         Player.prototype.showBaloon = function (_text) {
-            this.baloon.showBaloon(_text);
+            this.currentState.playerBaloon.showBaloon(_text);
         };
         Player.prototype.hideBaloon = function () {
-            this.baloon.hideBaloon();
+            this.currentState.playerBaloon.hideBaloon();
         };
         Player.prototype.getMoney = function () {
             return this.money;
@@ -983,21 +1072,52 @@ var z89;
         PlayerActionList[PlayerActionList["EXAMINE"] = 5] = "EXAMINE";
         PlayerActionList[PlayerActionList["USE"] = 6] = "USE";
         PlayerActionList[PlayerActionList["PICKUP"] = 7] = "PICKUP";
-        PlayerActionList[PlayerActionList["TALKTO"] = 8] = "TALKTO";
+        PlayerActionList[PlayerActionList["DROP"] = 8] = "DROP";
+        PlayerActionList[PlayerActionList["TALKTO"] = 9] = "TALKTO";
     })(PlayerActionList = z89.PlayerActionList || (z89.PlayerActionList = {}));
     var PlayerActions = (function (_super) {
         __extends(PlayerActions, _super);
         function PlayerActions(game) {
             var _this = _super.call(this, game) || this;
             _this.isOpen = false;
-            _this.actionList = ["PUSH", "PULL", "GIVE", "OPEN", "CLOSE", "EXAMINE", "USE", "PICK UP", "TALK TO"];
-            _this._currentAction = -1;
-            _this.fixedToCamera = true;
+            _this.actionList = ["PUSH", "PULL", "GIVE", "OPEN", "CLOSE", "EXAMINE", "USE", "PICK UP", "DROP", "TALK TO"];
+            _this.actionListFunctions = ["PUSH", "PULL", "GIVE", "OPEN", "CLOSE", "EXAMINE", "USE", "PICKUP", "DROP", "TALKTO"];
+            _this.currentAction = -1;
+            _this.inventory = [];
+            _this.inventorySelected = [];
+            _this.iconAlpha = .8;
             _this.currentState = _this.game.state.getCurrentState();
+            _this.fixedToCamera = true;
             _this.menuBg = _this.game.add.sprite(0, 0, _this.game.cache.getBitmapData("menuAction"));
             _this.menuBg.alpha = .8;
             _this.menuBg.anchor.set(0);
             _this.add(_this.menuBg);
+            _this.buttonGroup = _this.game.add.group();
+            _this.iconGroup = _this.game.add.group();
+            var _icon;
+            var _iconPos = [{ x: 60, y: 600 }, { x: 150, y: 600 }, { x: 60, y: 685 }, { x: 150, y: 685 }];
+            for (var index = 0; index < 4; index++) {
+                _icon = _this.game.add.sprite(_iconPos[index].x, _iconPos[index].y, _this.game.cache.getBitmapData("inventoryIconBg"), 0, _this.iconGroup);
+                _icon.inputEnabled = true;
+                _icon.z = index;
+                _icon.input.priorityID = 2;
+                _icon.alpha = _this.iconAlpha;
+                _icon.events.onInputDown.add(function (icon) {
+                    if (icon.children.length == 0)
+                        return;
+                    if (_this.isInverntoryItemSelected(icon.z) != -1) {
+                        icon.alpha = _this.iconAlpha;
+                    }
+                    else {
+                        icon.alpha = 1;
+                        _this.inventorySelected.push(icon.z);
+                    }
+                    ;
+                    _this.currentState.checkActions();
+                    _this.setActionText();
+                }, _this);
+            }
+            _this.add(_this.iconGroup);
             var _btn;
             var _txt;
             _this.actionList.forEach(function (element, index) {
@@ -1011,14 +1131,25 @@ var z89;
                 _btn.inputEnabled = true;
                 _btn.input.priorityID = 2;
                 _btn.events.onInputDown.add(function (btn) {
-                    _this._currentAction = btn.z;
-                    _this.setText(_this.actionList[btn.z] + " " + _this.currentState.getCurrentItem().name);
-                    _this.currentState.player.executeItemLogic();
+                    //this.currentState.setCurrentLogicCombination(null);
+                    _this.currentAction = btn.z;
+                    _this.setText(_this.actionList[btn.z]);
+                    /*if (this.currentState.getCurrentItem() != null) {
+                        this.setText(this.actionList[btn.z]);
+                        this.setText(this.actionList[btn.z] + " " + this.currentState.getCurrentItem().name);
+                        this.currentState.currentItem.logic();
+
+                    }*/
+                    var _txt = btn.getChildAt(0);
+                    _txt.tint = 0x00ff00;
+                    _this.currentState.checkActions();
+                    _this.setActionText();
                 }, _this, null, [_btn]);
                 _btn.addChild(_txt);
-                _this.addChild(_btn);
+                _this.buttonGroup.addChild(_btn);
             });
-            _this.actionText = _this.game.add.bitmapText(200, 725, "commodore", "", 20);
+            _this.add(_this.buttonGroup);
+            _this.actionText = _this.game.add.bitmapText(320, 725, "commodore", "", 20);
             _this.actionText.alpha = 0;
             _this.addChild(_this.actionText);
             _this.cameraOffset.x = -300;
@@ -1026,6 +1157,29 @@ var z89;
             return _this;
         }
         PlayerActions.prototype.update = function () { };
+        PlayerActions.prototype.isInverntoryItemSelected = function (itemIndex) {
+            var _itemAt = this.inventorySelected.indexOf(itemIndex);
+            if (_itemAt != -1) {
+                this.inventorySelected.splice(_itemAt, 1);
+                return _itemAt;
+            }
+            return -1;
+        };
+        PlayerActions.prototype.deselectItems = function () {
+            this.inventorySelected = [];
+            this.iconGroup.setAll("alpha", this.iconAlpha);
+        };
+        PlayerActions.prototype.getInventory = function () {
+            return this.inventory;
+        };
+        PlayerActions.prototype.getInventorySelected = function () {
+            var _this = this;
+            var _selectedItems = [];
+            this.inventorySelected.forEach(function (element) {
+                _selectedItems.push(_this.inventory[element]);
+            });
+            return _selectedItems;
+        };
         PlayerActions.prototype.toggle = function () {
             if (this.isOpen) {
                 this.hide();
@@ -1036,39 +1190,148 @@ var z89;
         };
         PlayerActions.prototype.show = function () {
             var _this = this;
-            if (this.isOpen)
-                return;
-            this.currentState.disableInteraction();
-            this.actionText.text = "";
-            this.game.add.tween(this.cameraOffset).to({ x: -40 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(function () {
-                _this.isOpen = true;
-                _this.currentState.enableInteraction();
-                _this.setText(_this.currentState.getCurrentItem().name);
+            //console.log("show")
+            if (!this.isOpen) {
+                this.currentState.disableInteraction();
+                this.game.add.tween(this.cameraOffset).to({ x: -40 }, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(function () {
+                    _this.isOpen = true;
+                    _this.currentState.enableInteraction();
+                }, this);
+            }
+        };
+        PlayerActions.prototype.resetActions = function () {
+            console.log("reset Actions");
+            this.buttonGroup.forEach(function (element) {
+                var _txt = element.getChildAt(0);
+                _txt.tint = 0xffffff;
             }, this);
+            this.currentAction = -1;
+            this.inventorySelected = [];
+            this.iconGroup.setAll("alpha", this.iconAlpha);
+        };
+        PlayerActions.prototype.setActionText = function () {
+            console.log("setActionText");
+            var _actionObj = this.currentState.getActionObject();
+            console.log(_actionObj);
+            if (_actionObj == null) {
+                if (this.currentState.getCurrentItem() != undefined)
+                    this.setText(this.currentState.getCurrentItem().name);
+            }
+            else {
+                if (_actionObj.inventory.length == 0 && _actionObj.item == null) {
+                    console.log("case 1");
+                    this.setText(this.getCurrentActionLabel());
+                }
+                else if (_actionObj.action != -1 && _actionObj.inventory.length == 0 && _actionObj.item != null) {
+                    console.log("case 2");
+                    this.setText(this.getCurrentActionLabel() + " " + _actionObj.item.name);
+                }
+                else if (_actionObj.inventory.length > 0 && _actionObj.item == null) {
+                    console.log("case 3");
+                    if (_actionObj.inventory.length == 1) {
+                        this.setText(this.getCurrentActionLabel() + " " + _actionObj.inventory[0].name + " on ");
+                    }
+                }
+                else if (_actionObj.inventory.length > 0 && _actionObj.item != null) {
+                    console.log("case 4");
+                    if (_actionObj.inventory.length == 1) {
+                        this.setText(this.getCurrentActionLabel() + " " + _actionObj.inventory[0].name + " on " + _actionObj.item.name);
+                    }
+                }
+                else if (_actionObj.key == "noAction" && _actionObj.item != null) {
+                    console.log("case 5", _actionObj.item.name);
+                    this.setText(_actionObj.item.name);
+                }
+            }
         };
         PlayerActions.prototype.hide = function () {
             var _this = this;
             if (!this.isOpen)
                 return;
-            this.game.add.tween(this.cameraOffset).to({ x: -300 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(function () {
+            this.game.add.tween(this.cameraOffset).to({ x: -300 }, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(function () {
                 _this.isOpen = false;
-                _this._currentAction = -1;
+                _this.currentAction = -1;
+                _this.deselectItems();
             }, this);
-            this.game.add.tween(this.actionText).to({ alpha: 0, x: 200 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            this.hideText();
+        };
+        PlayerActions.prototype.hideText = function () {
+            var _this = this;
+            if (this.actionTextTween != undefined)
+                this.actionTextTween.stop();
+            this.actionTextTween = this.game.add.tween(this.actionText).to({ alpha: 0, x: 500 }, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            this.actionTextTween.onComplete.add(function () { _this.actionText.x = 200; }, this);
         };
         PlayerActions.prototype.IsOpen = function () { return this.isOpen; };
-        PlayerActions.prototype.currentAction = function () { return this._currentAction; };
+        PlayerActions.prototype.getCurrentAction = function () { return this.currentAction; };
+        PlayerActions.prototype.getCurrentActionString = function () { return this.actionListFunctions[this.currentAction]; };
+        PlayerActions.prototype.getCurrentActionLabel = function () { return this.actionList[this.currentAction]; };
         PlayerActions.prototype.setText = function (_string) {
+            console.log("setText", _string);
             this.actionText.text = _string;
-            if (this.actionText.tint == 0x00ff00) {
-                this.actionText.tint = 0x00ff10;
-            }
-            else {
-                this.actionText.tint = 0x00ff00;
-            }
-            //this.actionText.tint = 0x2ec517 + this.game.rnd.integerInRange(0, 100);
-            this.game.add.tween(this.actionText).to({ alpha: 1, x: 320 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            /* if (this.actionText.tint == 0x00ff00) {
+                 this.actionText.tint = 0x00ffff
+             } else { this.actionText.tint = 0x00ff00 }
+             */
+            this.actionText.tint = 0x00ff00 + this.game.rnd.integerInRange(0, 20);
+            if (this.actionTextTween != undefined)
+                this.actionTextTween.stop();
+            this.actionTextTween = this.game.add.tween(this.actionText).to({ alpha: 1, x: 320 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
         };
+        PlayerActions.prototype.removeItems = function (items) {
+            this.cleanInventoryIcons();
+            // console.log("items to remove:", items);
+            // console.log("start inventory", this.inventory);
+            this.cleanInventoryFromItems(items);
+            // console.log("new inventory", this.inventory);
+            this.remapInventoryItemsIndex();
+            // console.log(this.inventory);
+            this.assignItemToIcon();
+        };
+        PlayerActions.prototype.removeItem = function (item) {
+            this.cleanInventoryIcons();
+            this.cleanInventoryFromItem(item);
+            this.remapInventoryItemsIndex();
+            this.assignItemToIcon();
+        };
+        PlayerActions.prototype.assignItemToIcon = function () {
+            var _this = this;
+            var _icon;
+            this.inventory.forEach(function (element, index) {
+                _icon = _this.iconGroup.getChildAt(index);
+                _icon.addChild(_this.game.add.sprite(0, 0, element.itemObj.sprite));
+            });
+        };
+        //remove child items from the inventory icons
+        PlayerActions.prototype.cleanInventoryIcons = function () {
+            this.iconGroup.forEach(function (icon) {
+                if (icon.children.length > 0)
+                    icon.removeChildAt(0);
+            }, this);
+            this.iconGroup.setAll("alpha", this.iconAlpha);
+        };
+        // remove itemes from inventory array
+        PlayerActions.prototype.cleanInventoryFromItems = function (items) {
+            var _this = this;
+            items.forEach(function (element) {
+                _this.inventory.splice(element.inventoryIndex, 1);
+            });
+        };
+        // remove itemes from inventory array
+        PlayerActions.prototype.cleanInventoryFromItem = function (item) {
+            this.inventory.splice(item.inventoryIndex, 1);
+        };
+        PlayerActions.prototype.remapInventoryItemsIndex = function () {
+            this.inventory.forEach(function (element, index) { element.inventoryIndex = index; });
+        };
+        PlayerActions.prototype.addItem = function (item) {
+            item.inventoryIndex = this.inventory.length;
+            this.inventory.push(this.currentState.currentItem);
+            var _icon = this.iconGroup.getChildAt(this.inventory.length - 1);
+            _icon.addChild(this.game.add.sprite(0, 0, this.currentState.currentItem.itemObj.sprite));
+            this.setText("");
+        };
+        PlayerActions.prototype.dropItem = function () { };
         return PlayerActions;
     }(Phaser.Group));
     z89.PlayerActions = PlayerActions;
@@ -1152,6 +1415,14 @@ var z89;
                 }, _this);
                 _this.menuBg.addChild(blinkBtn);
             });
+            var actionBtn;
+            actionBtn = _this.game.add.sprite(-60, -290, _this.game.cache.getBitmapData("btn"));
+            actionBtn.inputEnabled = true;
+            actionBtn.events.onInputDown.add(function () {
+                this.currentState.playerActions.show();
+                this.hide();
+            }, _this);
+            _this.menuBg.addChild(actionBtn);
             _this.cameraOffset.y = 710;
             _this.game.add.existing(_this);
             return _this;
@@ -1193,7 +1464,6 @@ var z89;
         __extends(GameCity, _super);
         function GameCity() {
             var _this = _super.call(this) || this;
-            _this.currentItem = 0;
             _this.gameInteracion = true;
             _this.gameInteracion = true;
             return _this;
@@ -1206,10 +1476,10 @@ var z89;
             this.groupCity = this.game.add.group();
             this.groupStreet = this.game.add.group();
             this.groupAll = this.game.add.group();
+            this.groupBaloon = this.game.add.group();
             this.groupFront = this.game.add.group();
             this.groupAction = this.game.add.group();
             this.groupMenu = this.game.add.group();
-            this.currentItem = 0;
             var sky = this.game.add.image(0, 0, 'sky');
             sky.fixedToCamera = true;
             this.groupCity.add(sky);
@@ -1226,29 +1496,18 @@ var z89;
             this.front = this.game.add.tileSprite(0, 0, 1024, 768, 'streetLvl0');
             this.front.fixedToCamera = true;
             this.groupFront.add(this.front);
-            this.playerActions = new z89.PlayerActions(this.game);
-            this.groupAction.add(this.playerActions);
             this.player = new z89.Player(this.game);
             this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
             this.groupAll.add(this.player);
+            this.playerBaloon = new z89.PlayerBaloon(this.game);
+            this.groupBaloon.add(this.playerBaloon);
+            this.playerActions = new z89.PlayerActions(this.game);
+            this.groupAction.add(this.playerActions);
             this.playerMenu = new z89.PlayerMenu(this.game);
             this.groupMenu.add(this.playerMenu);
             gameData.ingame.items.forEach(function (element) {
-                if (element.bgItem) {
-                    switch (element.type) {
-                        case 1:
-                            _this.groupAll.add(new z89.ItemsDrink(_this.game, element));
-                            break;
-                        case 2:
-                            _this.groupAll.add(new z89.ItemsPhones(_this.game, element));
-                            break;
-                        case 3:
-                            _this.groupAll.add(new z89.ItemsGarbage(_this.game, element));
-                            break;
-                        case 4:
-                            _this.groupAll.add(new z89.ItemsHydrant(_this.game, element));
-                            break;
-                    }
+                if (element.onStart) {
+                    _this.groupAll.add(new z89.Items(_this.game, element));
                 }
             });
             this.ground = this.game.add.sprite(0, 644, this.game.cache.getBitmapData("ground"));
@@ -1268,7 +1527,7 @@ var z89;
                 }*/
                 if (!_this.gameInteracion)
                     return;
-                _this.currentItem = 0;
+                //this.currentItem = 0;
                 if (_this.playerActions.IsOpen())
                     _this.playerActions.hide();
                 _this.player.goTo(_this.game.input.x + _this.game.camera.x, _this.game.input.y);
@@ -1287,22 +1546,118 @@ var z89;
             //               this.game.debug.bodyInfo(this.player, 32, 32);
             //this.game.debug.body(this.player.myArea)
         };
+        GameCity.prototype.resetActions = function () {
+            this.playerActions.resetActions();
+            this.currentItem = null;
+        };
         GameCity.prototype.setCurrentItem = function (_item) {
             this.currentItem = _item;
         };
         GameCity.prototype.getCurrentItem = function () {
             return this.currentItem;
         };
+        GameCity.prototype.getInventory = function () {
+            return this.playerActions.getInventory();
+        };
+        GameCity.prototype.getInventorySelected = function () {
+            return this.playerActions.getInventorySelected();
+        };
+        GameCity.prototype.checkActions = function (_itemSelected) {
+            console.log("checkActions");
+            var returnObj = {
+                key: null,
+                action: null,
+                inventory: null,
+                item: null
+            };
+            var _currentAction = this.getCurrentActionString();
+            var _currentActionValue = this.getCurrentAction();
+            if (_currentAction == undefined) {
+                _currentAction = "";
+                returnObj.action = _currentActionValue = -1;
+            }
+            else {
+                returnObj.action = _currentActionValue;
+            }
+            var _currentItem;
+            var _inventoryIds = [];
+            var _Inventoryitems = "";
+            returnObj.inventory = this.getInventorySelected();
+            var _Item;
+            if (_itemSelected != undefined) {
+                _Item = _itemSelected;
+            }
+            else {
+                _Item = this.getCurrentItem();
+            }
+            var ItemId = "";
+            returnObj.item = _Item;
+            if (returnObj.item != null)
+                ItemId = returnObj.item.id;
+            returnObj.inventory.forEach(function (element) { _inventoryIds.push(element.itemObj.id); });
+            if (_inventoryIds.length > 0)
+                _Inventoryitems = _inventoryIds.join("_");
+            if (ItemId != "" && _Inventoryitems != "")
+                _Inventoryitems = _Inventoryitems + "_";
+            var key = "";
+            console.log(_Inventoryitems, ItemId, _currentAction);
+            if (_currentAction != "" && _Inventoryitems != "" && ItemId != "") {
+                returnObj.key = _currentAction + "_" + _Inventoryitems + ItemId;
+            }
+            else if (_currentAction != "" && _Inventoryitems != "" && ItemId == "") {
+                returnObj.key = _currentAction + "_" + _Inventoryitems;
+            }
+            else if (_currentAction != "" && _Inventoryitems == "" && ItemId != "") {
+                returnObj.key = _currentAction + "_" + ItemId;
+            }
+            else if (_currentAction != "" && _Inventoryitems == "" && ItemId == "") {
+                returnObj.key = _currentAction;
+            }
+            else if (_currentAction == "") {
+                returnObj.key = "noAction";
+            }
+            this.logicCombination = returnObj;
+            return this.logicCombination;
+        };
+        GameCity.prototype.getActionObject = function () {
+            return this.logicCombination;
+        };
+        GameCity.prototype.setActionObject = function (value) {
+            this.logicCombination = value;
+        };
+        GameCity.prototype.setActionText = function () {
+            this.playerActions.setActionText();
+        };
+        GameCity.prototype.getCurrentAction = function () {
+            return this.playerActions.getCurrentAction();
+        };
+        GameCity.prototype.getCurrentActionString = function () {
+            return this.playerActions.getCurrentActionString();
+        };
+        GameCity.prototype.getCurrentActionLabel = function () {
+            return this.playerActions.getCurrentActionLabel();
+        };
         GameCity.prototype.getSprites = function () {
             return this.groupAll;
         };
         GameCity.prototype.disableInteraction = function () {
             this.gameInteracion = false;
-            this.groupAll.ignoreChildInput = true;
+            //this.groupAll.ignoreChildInput=true;
         };
         GameCity.prototype.enableInteraction = function () {
             this.gameInteracion = true;
-            this.groupAll.ignoreChildInput = false;
+            //this.groupAll.ignoreChildInput=false;
+        };
+        GameCity.prototype.addInventoryItem = function (item) {
+            this.playerActions.addItem(this.currentItem);
+            this.groupAll.remove(this.currentItem);
+            this.setCurrentItem(null);
+        };
+        GameCity.prototype.removeInventoryItems = function () {
+            this.playerActions.removeItems(this.getActionObject().inventory);
+        };
+        GameCity.prototype.dropInventoryItem = function () {
+            this.groupAll.add(this.currentItem);
         };
         return GameCity;
     }(Phaser.State));

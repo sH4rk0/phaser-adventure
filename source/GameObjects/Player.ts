@@ -14,25 +14,23 @@ module z89 {
         private yMin: number = 650;
         private yMax: number = 768;
         private direction: PlayerDirection = PlayerDirection.RIGHT;
-        private currentItem: any;
         public myArea: Phaser.Sprite;
         private playerTween: Phaser.Tween;
         private money: number = 10;
         private inventory: Array<string> = [];
-        private intersect:boolean;
-
+        private intersect: boolean;
         private baloon: PlayerBaloon;
-
-
-
+        private illogicText: Array<string> = [z89.getLabel(19), z89.getLabel(20), z89.getLabel(13), z89.getLabel(21)]
 
         constructor(game: Phaser.Game) {
 
-            super(game, 100, 650, "deluca");
+            super(game, 100, 650, "player");
 
-            this.baloon = new PlayerBaloon(game);
             this.animations.add("idle", [8, 9, 10, 11], 5, true);
             this.animations.add("walk", [0, 1, 2, 3, 4, 5, 6, 7], 7, true);
+            this.animations.add("punch", [12, 13, 14, 15], 7, false).onComplete.add(() => { this.play("idle"); }, this);
+            this.animations.add("pickdrop", [16, 17, 18, 19], 7, false).onComplete.add(() => { this.play("idle"); }, this);
+            this.animations.add("use", [19, 20, 21, 20, 19], 7, false).onComplete.add(() => { this.play("idle"); }, this);
             this.play("idle")
             this.currentState = <GameCity>this.game.state.getCurrentState();
 
@@ -58,27 +56,29 @@ module z89 {
 
             this.game.add.existing(this);
 
-          
+
         }
 
 
         goTo(_x: number, _y: number, _item?: any): void {
 
+            // console.log(_item);
             this.hideBaloon();
             this.play("walk");
             if (this.playerTween != undefined) this.playerTween.stop();
-            this.currentItem = null;
+            if (_item == undefined) this.currentState.currentItem = null;
+
             if (_x > this.x) {
 
                 if (this.direction != PlayerDirection.RIGHT) this.changeDirection();
-                this.direction = PlayerDirection.RIGHT;
+
             } else {
 
                 if (this.direction != PlayerDirection.LEFT) this.changeDirection();
-                this.direction = PlayerDirection.LEFT;
+
             }
 
-            this.intersect=false;
+            this.intersect = false;
             let _intersect: any = this.checkIntersect({ x1: _x, y1: _y + 1 });
 
             if (_intersect.point != null) {
@@ -88,7 +88,7 @@ module z89 {
                 _x = _intersect.point.x;
                 _y = _intersect.point.y + _offset;
                 _item = null;
-                this.intersect=true;
+                this.intersect = true;
 
             }
 
@@ -98,29 +98,115 @@ module z89 {
             let distanceX: number = Phaser.Math.distance(this.x, 0, _x, 0);
             let distanceY: number = Phaser.Math.distance(0, this.y, 0, _y);
 
-
             if (distanceX > distanceY) { distance = distanceX } else { distance = distanceY }
 
             this.playerTween = this.game.add.tween(this).to({ x: _x, y: _y + 1 }, 7.5 * distance, Phaser.Easing.Default, true, 0, 0, false);
-            this.playerTween.onComplete.add((_player:Player,_tween:Phaser.Tween,_intersect:boolean) => {
+
+            //moving player tween end
+            this.playerTween.onComplete.add((_player: Player, _tween: Phaser.Tween, _intersect: boolean) => {
                 this.play("idle");
+
+                //check if an item is passed as destination
                 if (_item != null) {
+
+                    this.currentState.setCurrentItem(_item);
                     
-                    this.currentItem = _item;
-                    if (_item.isInteractive()) this.currentState.playerActions.show();
-                    this.executeItemLogic(_item);
-                    if(_item._itemObj.firstMessage!=undefined){
-                        this.showBaloon(_item._itemObj.firstMessage[this.game.rnd.integerInRange(0,_item._itemObj.firstMessage.length)]);
+                    if (this.x < _item.x) {
+
+                        if (this.direction == PlayerDirection.LEFT) this.changeDirection();
+                    } else {
+
+                        if (this.direction == PlayerDirection.RIGHT) this.changeDirection();
 
                     }
-                    this.currentState.setCurrentItem(_item);
+
+                    this.currentState.checkActions();
+                    this.executeItemLogic(_item);
+                    this.currentState.setActionText();
+                    this.currentState.resetActions();
+                    this.currentState.setActionObject(null);
+                    console.log(this.currentState.getActionObject());
+                    console.log("-------------------------------------------")
+
+
+                    if (_item.isInteractive()) this.currentState.playerActions.show();
 
                 }
-                if (_intersect[0]) this.showBaloon(z89.getLabel(11));
+                //if (_intersect[0]) this.showBaloon(z89.getLabel(11));
 
-            }, this,null,[this.intersect]);
+            }, this, null, [this.intersect]);
 
 
+        }
+
+        
+
+        executeItemLogic(_item?: any): void {
+
+            //let _actionObj: any = this.currentState.checkActions(_item);
+
+            console.log("executeItemLogic");
+            let _actionObj: any = this.currentState.getActionObject();
+
+            console.log(_actionObj)
+
+            if (_actionObj != null && gameData.ingame.logic[_actionObj.key] != undefined) {
+               
+                console.log("logic 1")
+                gameData.ingame.logic[_actionObj.key](this.currentState);
+            }
+
+            else {
+
+                if (_item != undefined) 
+                { console.log("logic 2"); _item.logic(); } 
+                else if (this.currentState.getCurrentItem() != undefined) 
+                { console.log("logic 3"); this.currentState.getCurrentItem().logic(); }
+
+                else if (_item.itemObj.firstMessage != undefined) {
+
+                    console.log("logic 4");
+                    this.showBaloon(_item.itemObj.firstMessage[this.game.rnd.integerInRange(0, _item.itemObj.firstMessage.length - 1)]);
+
+                }
+
+            }
+
+            this.game.time.events.add(3000,()=>{ this.currentState.playerActions.hideText();},this);
+
+
+        }
+
+        changeDirection(): void {
+
+            if (this.direction == PlayerDirection.RIGHT) {
+
+                this.turnLeft();
+
+            } else {
+
+                this.turnRight();
+            }
+
+        }
+
+        illogicAction() {
+
+
+            this.currentState.player.showBaloon(this.illogicText[this.game.rnd.integerInRange(0, this.illogicText.length - 1)]);
+
+        }
+
+        turnLeft(): void {
+
+            this.scale.x = -1;
+            this.direction = PlayerDirection.LEFT;
+        }
+
+        turnRight(): void {
+
+            this.scale.x = 1;
+            this.direction = PlayerDirection.RIGHT;
         }
 
         checkIntersect(_toPosition: any): any {
@@ -133,7 +219,7 @@ module z89 {
 
             this.currentState.getSprites().forEach((sprite) => {
 
-                if (sprite.name != "player") {
+                if (sprite.name != "player" && sprite.itemObj.checkIntersect) {
 
                     line2 = new Phaser.Line(sprite.x - (sprite.width / 2) - 10, sprite.y, sprite.x + (sprite.width / 2) + 10, sprite.y);
                     intersectPoint = line1.intersects(line2, true);
@@ -148,32 +234,14 @@ module z89 {
 
             return _obj;
 
-
-
-
         }
-
-
-        executeItemLogic(_item?: any): void {
-
-            if (_item != undefined) { _item.logic(); } else if (this.currentItem != undefined) { this.currentItem.logic(); }
-
-        }
-
-
-        changeDirection(): void {
-
-            this.scale.x *= -1;
-
-        }
-
 
         public blinkTo(_x: number) {
 
             this.hideBaloon();
             this.currentState.playerMenu.hide();
             this.currentState.playerActions.hide();
-            this.y=650;
+            this.y = 650;
             this.x = _x;
 
 
@@ -181,14 +249,14 @@ module z89 {
 
         public showBaloon(_text: string) {
 
-            this.baloon.showBaloon(_text);
+            this.currentState.playerBaloon.showBaloon(_text);
 
 
         }
 
         public hideBaloon() {
 
-            this.baloon.hideBaloon();
+            this.currentState.playerBaloon.hideBaloon();
 
 
         }
@@ -208,7 +276,7 @@ module z89 {
         update(): void {
 
 
-            
+
 
 
             /*
