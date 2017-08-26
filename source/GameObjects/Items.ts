@@ -1,7 +1,4 @@
-
 module z89 {
-
-
 
     export class Items extends Phaser.Sprite {
 
@@ -15,14 +12,17 @@ module z89 {
 
         constructor(game: Phaser.Game, itemObj: any) {
 
-
+            //console.log(itemObj)
             super(game, itemObj.x, itemObj.y, itemObj.sprite);
+
+            
 
             if (itemObj.animations != undefined) {
                 itemObj.animations.forEach(element => {
 
                     this.animations.add(element.name, element.frames, element.rate, element.loop);
                     this.play(element.name);
+                    
                 });
             }
 
@@ -38,6 +38,7 @@ module z89 {
             this.interactive = itemObj.interactive;
 
             this.fixedToCamera = itemObj.fixedToCamera;
+
             this.events.onInputDown.add(() => {
 
                 let _currentItem: Items = this.currentState.getCurrentItem();
@@ -65,9 +66,8 @@ module z89 {
 
         update() {
 
-
-            if (this.fixedToCamera) this.cameraOffset.x = (this.currentState.camera.x * -1.1) + this.itemObj.x;
-
+           if (this.fixedToCamera) this.cameraOffset.x = (this.currentState.camera.x * -1.1) + this.itemObj.x;
+           
         }
 
         isInteractive(): boolean {
@@ -76,50 +76,7 @@ module z89 {
 
         }
 
-        getItemObj(): any {
-
-
-            return this.itemObj;
-        }
-
-
-        getPlayer(): Player {
-
-            return this.currentState.player;
-
-        }
-
-        returnMessage(): void {
-
-
-            let currAction: number = this.currentState.playerActions.getCurrentAction()
-
-            let _mess: string = this.itemObj.actions[currAction].answer[this.game.rnd.integerInRange(0, this.itemObj.actions[currAction].answer.length - 1)];
-            //console.log(currAction,_mess, this.itemObj.actions[currAction].answer.length)
-            this.currentState.player.showBaloon(_mess);
-
-        }
-
-
-        logic() {
-
-            //console.log(this.getCurrentActionString())
-
-
-            if (this.currentState.getCurrentActionString() != undefined && this.itemObj.logic != undefined && this.itemObj.logic[this.currentState.getCurrentActionString()] != undefined) {
-
-                this.itemObj.logic[this.currentState.getCurrentActionString()](this.currentState);
-
-            } else {
-                if (this.currentState.getCurrentActionString() != undefined) this.currentState.player.illogicAction();
-
-
-            }
-
-
-        }
-
-
+     
 
 
 

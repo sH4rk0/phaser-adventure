@@ -35,7 +35,7 @@ module z89 {
             let blinkBtn:Phaser.Sprite;
             gameData.menuBlink.forEach(element => {
 
-                blinkBtn = this.game.add.sprite(element.x, element.y, this.game.cache.getBitmapData("btn"))
+                blinkBtn = this.game.add.sprite(element.x, element.y, "icons")
                 blinkBtn.inputEnabled = true;
                 blinkBtn.events.onInputDown.add(function () {
                     this.currentState.player.blinkTo(element.to);
@@ -45,7 +45,7 @@ module z89 {
 
 
             let actionBtn:Phaser.Sprite;
-            actionBtn = this.game.add.sprite(-60, -290, this.game.cache.getBitmapData("btn"))
+            actionBtn = this.game.add.sprite(-60, -290, "icons")
             actionBtn.inputEnabled = true;
             actionBtn.events.onInputDown.add(function () {
                 this.currentState.playerActions.show();

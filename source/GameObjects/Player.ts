@@ -1,8 +1,7 @@
-
 module z89 {
 
-    export enum PlayerStates { IDLE, RUNNING, JUMPING }
-    export enum PlayerDirection { LEFT, RIGHT }
+    export enum PlayerStates { IDLE, WALKING, RUNNING, JUMPING }
+    export enum PlayerDirection { LEFT, RIGHT, UP, DOWN, NONE }
 
     export class Player extends Phaser.Sprite {
 
@@ -11,9 +10,10 @@ module z89 {
 
         private cursors: Phaser.CursorKeys;
         private currentState: GameCity;
-        private yMin: number = 650;
+        private yMin: number = 654;
         private yMax: number = 768;
-        private direction: PlayerDirection = PlayerDirection.RIGHT;
+        private direction: PlayerDirection = PlayerDirection.NONE;
+        private playerState: PlayerStates = PlayerStates.IDLE;
         public myArea: Phaser.Sprite;
         private playerTween: Phaser.Tween;
         private money: number = 10;
@@ -42,7 +42,7 @@ module z89 {
 
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.collideWorldBounds = true;
-            //this.cursors = game.input.keyboard.createCursorKeys();
+            this.cursors = game.input.keyboard.createCursorKeys();
 
             this.myArea = this.game.add.sprite(0, -30, this.game.cache.getBitmapData("hitArea"))
             this.myArea.anchor.set(.5, 1);
@@ -60,7 +60,7 @@ module z89 {
         }
 
 
-        goTo(_x: number, _y: number, _item?: any): void {
+        goTo(_x: number, _y: number, _item?: Items): void {
 
             // console.log(_item);
             this.hideBaloon();
@@ -68,6 +68,7 @@ module z89 {
             if (this.playerTween != undefined) this.playerTween.stop();
             if (_item == undefined) this.currentState.currentItem = null;
 
+            if(this.direction==PlayerDirection.NONE){}
             if (_x > this.x) {
 
                 if (this.direction != PlayerDirection.RIGHT) this.changeDirection();
@@ -110,7 +111,7 @@ module z89 {
                 if (_item != null) {
 
                     this.currentState.setCurrentItem(_item);
-                    
+
                     if (this.x < _item.x) {
 
                         if (this.direction == PlayerDirection.LEFT) this.changeDirection();
@@ -120,14 +121,7 @@ module z89 {
 
                     }
 
-                    this.currentState.checkActions();
-                    this.executeItemLogic(_item);
-                    this.currentState.setActionText();
-                    this.currentState.resetActions();
-                    this.currentState.setActionObject(null);
-                    console.log(this.currentState.getActionObject());
-                    console.log("-------------------------------------------")
-
+                    this.currentState.doActionSequence(_item);
 
                     if (_item.isInteractive()) this.currentState.playerActions.show();
 
@@ -139,43 +133,7 @@ module z89 {
 
         }
 
-        
 
-        executeItemLogic(_item?: any): void {
-
-            //let _actionObj: any = this.currentState.checkActions(_item);
-
-            console.log("executeItemLogic");
-            let _actionObj: any = this.currentState.getActionObject();
-
-            console.log(_actionObj)
-
-            if (_actionObj != null && gameData.ingame.logic[_actionObj.key] != undefined) {
-               
-                console.log("logic 1")
-                gameData.ingame.logic[_actionObj.key](this.currentState);
-            }
-
-            else {
-
-                if (_item != undefined) 
-                { console.log("logic 2"); _item.logic(); } 
-                else if (this.currentState.getCurrentItem() != undefined) 
-                { console.log("logic 3"); this.currentState.getCurrentItem().logic(); }
-
-                else if (_item.itemObj.firstMessage != undefined) {
-
-                    console.log("logic 4");
-                    this.showBaloon(_item.itemObj.firstMessage[this.game.rnd.integerInRange(0, _item.itemObj.firstMessage.length - 1)]);
-
-                }
-
-            }
-
-            this.game.time.events.add(3000,()=>{ this.currentState.playerActions.hideText();},this);
-
-
-        }
 
         changeDirection(): void {
 
@@ -241,71 +199,186 @@ module z89 {
             this.hideBaloon();
             this.currentState.playerMenu.hide();
             this.currentState.playerActions.hide();
-            this.y = 650;
-            this.x = _x;
+
+            
+            this.beamOut(_x);
 
 
-        }
 
-        public showBaloon(_text: string) {
-
-            this.currentState.playerBaloon.showBaloon(_text);
+            }
 
 
-        }
-
-        public hideBaloon() {
-
-            this.currentState.playerBaloon.hideBaloon();
+            beamIn(toX:number){
 
 
-        }
 
-        public getMoney(): number {
+                this.y = 655;
+                this.x = toX;
+                this.width=126;
+                this.height=126;
+                this.alpha = 0;
 
-            return this.money;
-        }
+                let beam: Phaser.Sprite = this.game.add.sprite(toX, 0, "beam");
+                beam.height = 660;
+                beam.anchor.set(.5, 0);
+                beam.width=150;
+                beam.alpha = 0;
+                beam.animations.add("beam", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 15, true).play();
+    
+                this.tweenTint(this,0x00ff00,0xffffff,500,0,null);
+    
+                let tweenBeam: Phaser.Tween = this.game.add.tween(beam).to({ alpha: .5,  width:200 }, 500, Phaser.Easing.Quadratic.InOut, true, 300, 0, false);
+    
+                tweenBeam.onComplete.add(() => {
+    
+                    this.game.add.tween(this).to({ alpha: 1 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+    
+                    this.game.add.tween(beam).to({ alpha: 0 }, 100, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(() => {
+                        beam.kill()
+                        beam.destroy();
+    
+                    });
+    
+                });
 
-        public setMoney(_money: number): void {
 
-            this.money = _money;
 
-        }
+            }
+
+
+          beamOut(toX:number){
+
+
+            let beam: Phaser.Sprite = this.game.add.sprite(this.x, 0, "beam");
+            beam.height = 660;
+            beam.width =100;
+            beam.anchor.set(.5, 0);
+            beam.alpha = 0;
+            beam.animations.add("beam", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 15, true).play();
+
+
+
+            let tweenBeam: Phaser.Tween = this.game.add.tween(beam).to({ alpha: .3,  width:150 }, 300, Phaser.Easing.Quadratic.InOut, true, 200, 0, false);
+
+            tweenBeam.onComplete.add(() => {
+
+                this.game.add.tween(beam).to({ alpha: 0 }, 100, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(() => {
+                    beam.kill()
+                    beam.destroy();
+
+                });
+
+            });
+
+                this.tweenTint(this,0xffffff,0x00ff00,300,0,null);
+                
+                let test: Phaser.Tween = this.game.add.tween(this).to({height:30, width:200 }, 300, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+                
+                test.onComplete.add(() => {
+    
+                    
+                                this.game.add.tween(this).to({ width:20, height:700, alpha:0 }, 300, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(()=>{
+                                    this.beamIn(toX);
+
+                                },this);
+                                
+                               
+                
+                            },this);
+
+            }
+        
+            tweenTint(obj, startColor, endColor, time = 250, delay = 0, callback = null) {
+                // check if is valid object
+                if (obj) {
+                    // create a step object
+                    let colorBlend = { step: 0 };
+                    // create a tween to increment that step from 0 to 100.
+                    let colorTween = this.game.add.tween(colorBlend).to({ step: 100 }, time, Phaser.Easing.Linear.None, delay);
+                    // add an anonomous function with lexical scope to change the tint, calling Phaser.Colour.interpolateColor
+                    colorTween.onUpdateCallback(() => {
+                        obj.tint = Phaser.Color.interpolateColor(startColor, endColor, 100, colorBlend.step,null);
+                    });
+                    // set object to the starting colour
+                    obj.tint = startColor;
+                    // if you passed a callback, add it to the tween on complete
+                    if (callback) {
+                        colorTween.onComplete.add(callback, this);
+                    }
+                    // finally, start the tween
+                    colorTween.start(); 
+                }
+            }
+
+        public showBaloon(_text: string) { this.currentState.playerBaloon.showBaloon(_text); }
+
+        public hideBaloon() { this.currentState.playerBaloon.hideBaloon(); }
 
 
         update(): void {
 
+                    this.body.velocity.x = 0;
+                    this.body.velocity.y = 0;
+
+        
+                    if(this.cursors.left.isDown) {
 
 
-
-
-            /*
-            this.body.velocity.x = 0;
-            this.body.velocity.y = 0;
-
-            if (this.cursors.left.isDown) {
-                // card.x -= 4;
-                this.body.velocity.x = -120;
-            }
+                        this.body.velocity.x = -140;
+                        if (this.direction != PlayerDirection.LEFT) {
+                            this.turnLeft();
+                            this.play('walk');
+                            this.direction = PlayerDirection.LEFT;
+                            this.playerState = PlayerStates.WALKING;
+                        }
+                    }
             else if (this.cursors.right.isDown) {
-                // card.x += 4;
-                this.body.velocity.x = 120;
-            }
 
-            if (this.cursors.up.isDown) {
-                // card.y -= 4;
-                if (this.y < this.yMin) return;
-                this.body.velocity.y = -120;
-            }
+                        this.body.velocity.x = 140;
+                        if (this.direction != PlayerDirection.RIGHT) {
+                            this.turnRight();
+                            this.play('walk');
+                            this.direction = PlayerDirection.RIGHT;
+                            this.playerState = PlayerStates.WALKING;
+                        }
+                    }
+
+            else if (this.cursors.up.isDown) {
+
+                        if (this.y < this.yMin) return;
+                        this.body.velocity.y = -140;
+                        if (this.direction != PlayerDirection.UP) {
+                            this.play('walk');
+                            this.direction = PlayerDirection.UP;
+                            this.playerState = PlayerStates.WALKING;
+                        }
+                    }
             else if (this.cursors.down.isDown) {
-                // card.y += 4;
-                if (this.y > this.yMax) return;
-                this.body.velocity.y = 120;
-            }
-            */
+
+                        console.log(this.x, this.cameraOffset.x)
+                        if (this.y > this.yMax) return;
+                        this.body.velocity.y = 140;
+                        if (this.direction != PlayerDirection.DOWN) {
+                            this.play('walk');
+                            this.direction = PlayerDirection.DOWN;
+                            this.playerState = PlayerStates.WALKING;
+                        }
+                    }
+            else{
 
 
-        }
+                        if(this.playerState != PlayerStates.IDLE) {
+                            this.animations.stop();
+                            this.play("idle");
+                            this.playerState = PlayerStates.IDLE;
+                            this.direction = PlayerDirection.NONE;
+                        }
+
+                    }
+
+
+
+                }
 
 
 
@@ -323,4 +396,4 @@ module z89 {
 
     }
 
-}
+    }

@@ -26,6 +26,11 @@ let languages={
         "coins",//23
         "Quattrocchi, non mi far alterare o ti SCUMM a sangue!!",//24
         "4eyes",//25
+        "A coke can, what else!",//26
+        "Some coins...",//27
+        "I already have this!",//28
+        "Select an ACTION first!",//29
+        "I'm not stupid!",//30
         
 
     ]};

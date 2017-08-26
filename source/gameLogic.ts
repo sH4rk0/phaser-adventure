@@ -4,21 +4,17 @@ let gameData = {
 
 
     ingame: {
-        // PUSH, PULL, GIVE, OPEN, CLOSE, EXAMINE, USE, PICKUP, TALKTO
+        // 0-PUSH, 1-PULL, 2-GIVE, 3-OPEN, 4-CLOSE, 5-EXAMINE, 6-USE, 7-PICKUP, 8-TALKTO
         //game logic
         logic:
 
         {
             //use money on drink machine
-            USE_8_1: (currentState: any) => {
-                currentState.player.play("use");                
-                currentState.removeInventoryItems();
-            },
-
-            USE_9_1: (currentState: any) => {
+            USE_8_1: (currentState: z89.GameCity) => {
                 currentState.player.play("use");
-                
                 currentState.removeInventoryItems();
+                currentState.addDelay(2000,()=>{ currentState.addItem(7); });
+                
             }
 
         },
@@ -26,7 +22,7 @@ let gameData = {
         //items logic
         items: [
 
-            {
+            { 
                 id: 1,
                 type: 1,
                 sprite: "drink-machine",
@@ -52,41 +48,41 @@ let gameData = {
                 logic: {
 
                     PUSH: (currentState: any) => {
-                        currentState.currentItem.returnMessage();
+                        currentState.returnMessage();
                     },
                     PULL: (currentState: any) => {
-                        currentState.currentItem.returnMessage();
+                        currentState.returnMessage();
                     },
                     GIVE: (currentState: any) => {
-                        currentState.currentItem.returnMessage();
+                        currentState.returnMessage();
                     },
                     OPEN: (currentState: any) => {
-                        currentState.currentItem.returnMessage();
+                        currentState.returnMessage();
                     },
                     CLOSE: (currentState: any) => {
-                        currentState.currentItem.returnMessage();
+                        currentState.returnMessage();
                     },
                     EXAMINE: (currentState: any) => {
-                        currentState.currentItem.returnMessage();
+                        currentState.returnMessage();
                     },
                     USE: (currentState: any) => {
-                        currentState.currentItem.returnMessage();
+                        currentState.returnMessage();
                     },
                     PICKUP: (currentState: any) => {
-                        currentState.currentItem.returnMessage();
+                        currentState.returnMessage();
                     },
                     DROP: (currentState: any) => {
-                        currentState.currentItem.returnMessage();
+                        currentState.returnMessage();
                     },
                     TALKTO: (currentState: any) => {
-                        currentState.currentItem.returnMessage();
+                        currentState.returnMessage();
                     }
 
                 },
 
                 offsetX: 70,
                 fixedToCamera: true,
-                checkIntersect:true
+                checkIntersect: true
 
             },
 
@@ -97,7 +93,7 @@ let gameData = {
                 type: 2,
                 onStart: true,
                 sprite: "phoneNotWork",
-                animations: [{ name: "idle", frames: [0,0,0,0,0,0,0,0,0,0,0,0,0,0, 1, 2, 3, 4], rate: 5, loop: true }],
+                animations: [{ name: "idle", frames: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4], rate: 5, loop: true }],
                 name: z89.getLabel(12),
                 x: 1114,
                 y: 644,
@@ -106,7 +102,7 @@ let gameData = {
                 offsetX: 50,
                 coins: 0,
                 fixedToCamera: false,
-                checkIntersect:false
+                checkIntersect: false
 
             },
 
@@ -122,7 +118,7 @@ let gameData = {
                 interactive: true,
                 offsetX: 50,
                 fixedToCamera: false,
-                checkIntersect:false
+                checkIntersect: false
 
             },
 
@@ -139,7 +135,7 @@ let gameData = {
                 firstMessage: [z89.getLabel(18)],
                 offsetX: 50,
                 fixedToCamera: false,
-                checkIntersect:false
+                checkIntersect: false
 
             },
 
@@ -155,7 +151,7 @@ let gameData = {
                 interactive: true,
                 offsetX: 50,
                 fixedToCamera: true,
-                checkIntersect:true
+                checkIntersect: true
 
             },
 
@@ -171,44 +167,35 @@ let gameData = {
                 interactive: true,
                 offsetX: 50,
                 fixedToCamera: true,
-                checkIntersect:true
+                checkIntersect: true
 
             },
             {
                 id: 7,
                 type: 5,
                 sprite: "coke",
-                onStart: true,
+                onStart: false,
                 name: z89.getLabel(10),
-                x: 400, //500,
-                y: 650,//745,
+                x: 500,
+                y: 745,
                 interactive: true,
                 actions: {
                     0: { action: false, answer: [z89.getLabel(1)] },
-
+                    5: { action: false, answer: [z89.getLabel(26)] },
                 },
                 logic: {
 
-                    PICKUP: (currentState: any) => {
+                    PICKUP: (currentState: any) => { currentState.addInventoryItem(); },
 
-
-                        currentState.addInventoryItem();
-                        currentState.player.play("pickdrop");
-
-                    },
-
-                    DROP: (currentState: any) => {
-
-
-
-                    },
-
+                    DROP: (currentState: any) => { currentState.dropInventoryItem(); },
+                    
+                    EXAMINE: (currentState: any) => { currentState.returnMessage(); }
 
                 },
 
                 offsetX: 30,
-                fixedToCamera: false,
-                checkIntersect:true
+                fixedToCamera: true,
+                checkIntersect: true
 
             },
 
@@ -219,28 +206,30 @@ let gameData = {
                 onStart: true,
                 name: z89.getLabel(23),
                 x: 300,//500,
-                y: 654, //745,
+                y: 705, //745,
                 interactive: true,
                 actions: {
-                    0: { action: false, answer: [z89.getLabel(1)] },
+                    5: { action: false, answer: [z89.getLabel(27)] },
 
                 },
                 logic: {
 
-                    PICKUP: (currentState: any) => { currentState.addInventoryItem();currentState.player.play("pickdrop"); },
+                    PICKUP: (currentState: any) => { currentState.addInventoryItem(); },
 
-                    DROP: (currentState: any) => { },
+                    DROP: (currentState: any) => { currentState.dropInventoryItem(); },
+
+                    EXAMINE: (currentState: any) => { console.log(currentState); currentState.returnMessage(); },
 
 
                 },
 
                 offsetX: 30,
-                fixedToCamera: false,
-                checkIntersect:false
+                fixedToCamera: true,
+                checkIntersect: false
 
             },
 
-            {
+           /* {
                 id: 9,
                 type: 6,
                 sprite: "coins",
@@ -250,26 +239,28 @@ let gameData = {
                 y: 700, //745,
                 interactive: true,
                 actions: {
-                    0: { action: false, answer: [z89.getLabel(1)] },
+                    5: { action: false, answer: [z89.getLabel(27)] },
 
                 },
                 logic: {
 
-                    PICKUP: (currentState: any) => { currentState.addInventoryItem();currentState.player.play("pickdrop"); },
+                    PICKUP: (currentState: any) => { currentState.addInventoryItem(); },
 
                     DROP: (currentState: any) => { },
+
+                    EXAMINE: (currentState: any) => { currentState.currentItem.returnMessage(); },
 
 
                 },
 
                 offsetX: 30,
                 fixedToCamera: false,
-                checkIntersect:false
+                checkIntersect: false
 
-            },
+            },*/
             {
-                id: 3,
-                type: 2,
+                id: 10,
+                type: 7,
                 onStart: true,
                 sprite: "4eyes",
                 animations: [{ name: "idle", frames: [0, 1, 2, 3], rate: 4, loop: true }],
@@ -279,9 +270,24 @@ let gameData = {
                 interactive: true,
                 offsetX: 50,
                 fixedToCamera: false,
-                checkIntersect:false
+                checkIntersect: false
 
             },
+
+            {
+                id: 11,
+                type: 8,
+                onStart: false,
+                sprite: "truck-empty",
+                name: "",
+                x: 0,
+                y: 680,
+                interactive: false,
+                offsetX: 50,
+                fixedToCamera: false,
+                checkIntersect: true
+
+            }
 
 
 
@@ -301,6 +307,10 @@ let gameData = {
             { name: "phoneWork", path: "assets/images/game/items/phoneWork.png", width: 56, height: 132, frames: 2 },
             { name: "phoneNotWork", path: "assets/images/game/items/phoneNotWork.png", width: 52, height: 132, frames: 5 },
             { name: "4eyes", path: "assets/images/game/people/4eyes.png", width: 65, height: 138, frames: 4 },
+            { name: "inventory", path: "assets/images/game/inventory.png", width: 70, height: 70, frames: 2 },
+
+            { name: "icons", path: "assets/images/game/icons/icons.png", width: 50, height: 50, frames: 1 },
+            { name: "beam", path: "assets/images/game/beam.png", width: 200, height: 200, frames: 12 },
 
         ],
 
@@ -319,6 +329,10 @@ let gameData = {
             { name: "coke", path: "assets/images/game/items/coke.png" },
             { name: "coins", path: "assets/images/game/items/coins.png" },
             { name: "4eyes", path: "assets/images/game/people/4eyes.png" },
+            { name: "truck", path: "assets/images/game/items/truck.png" },
+            { name: "truck-wheel", path: "assets/images/game/items/truck-wheel.png" },
+            { name: "truck-empty", path: "assets/images/game/items/truck-empty.png" },
+            
         ],
 
         sounds: [
@@ -334,17 +348,17 @@ let gameData = {
 
     },
     menuBlink: [
-        { icon: "", to: 100, x: -130, y: -290 },
+        { icon: "icons", to: 100, x: -130, y: -290 },
 
-        { icon: "", to: 700, x: -130, y: -220 },
-        { icon: "", to: 1254, x: -60, y: -220 },
-        { icon: "", to: 1590, x: 10, y: -220 },
-        { icon: "", to: 1900, x: 80, y: -220 },
+        { icon: "devday", to: 875, x: -130, y: -220 },
+        { icon: "home", to: 1354, x: -60, y: -220 },
+        { icon: "cake", to: 1590, x: 10, y: -220 },
+        { icon: "commodore", to: 2100, x: 80, y: -220 },
 
-        { icon: "", to: 2580, x: -130, y: -150 },
-        { icon: "", to: 3170, x: -60, y: -150 },
-        { icon: "", to: 4000, x: 10, y: -150 },
-        { icon: "", to: 4500, x: 80, y: -150 }
+        { icon: "icons", to: 2580, x: -130, y: -150 },
+        { icon: "icons", to: 3170, x: -60, y: -150 },
+        { icon: "icons", to: 4000, x: 10, y: -150 },
+        { icon: "icons", to: 4500, x: 80, y: -150 }
 
 
     ]

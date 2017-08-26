@@ -1,4 +1,3 @@
-
 module z89 {
 
 
@@ -22,7 +21,7 @@ module z89 {
         private inventory: Array<Items> = [];
         private inventorySelected: Array<number> = [];
         private iconAlpha: number = .8;
-        private actionTextTween:Phaser.Tween;
+        private actionTextTween: Phaser.Tween;
 
 
         constructor(game: Phaser.Game) {
@@ -38,33 +37,8 @@ module z89 {
             this.buttonGroup = this.game.add.group();
             this.iconGroup = this.game.add.group();
 
-            let _icon: Phaser.Sprite;
-            let _iconPos: Array<any> = [{ x: 60, y: 600 }, { x: 150, y: 600 }, { x: 60, y: 685 }, { x: 150, y: 685 }];
-            for (var index = 0; index < 4; index++) {
 
-                _icon = this.game.add.sprite(_iconPos[index].x, _iconPos[index].y, this.game.cache.getBitmapData("inventoryIconBg"), 0, this.iconGroup);
-                _icon.inputEnabled = true;
-                _icon.z = index;
-                _icon.input.priorityID = 2;
-                _icon.alpha = this.iconAlpha;
-                _icon.events.onInputDown.add((icon: Phaser.Sprite) => {
-
-                    if (icon.children.length == 0) return;
-                    if (this.isInverntoryItemSelected(icon.z) != -1)
-                    { icon.alpha = this.iconAlpha; }
-                    else
-                    { icon.alpha = 1; this.inventorySelected.push(icon.z); };
-
-                    this.currentState.checkActions();
-                    this.setActionText()
-
-                }, this);
-
-            }
-
-
-            this.add(this.iconGroup);
-
+            //ACTION buttons
             let _btn: Phaser.Sprite;
             let _txt: Phaser.BitmapText;
             this.actionList.forEach((element, index) => {
@@ -80,23 +54,16 @@ module z89 {
                 _btn.input.priorityID = 2;
 
                 _btn.events.onInputDown.add((btn: Phaser.Sprite) => {
-                  
-                    //this.currentState.setCurrentLogicCombination(null);
+
+                    this.resetActions();
+
                     this.currentAction = btn.z;
-                    this.setText(this.actionList[btn.z]);
-
-                    /*if (this.currentState.getCurrentItem() != null) {
-                        this.setText(this.actionList[btn.z]);
-                        this.setText(this.actionList[btn.z] + " " + this.currentState.getCurrentItem().name);
-                        this.currentState.currentItem.logic();
-
-                    }*/
+                    //this.setText(this.actionList[btn.z]);
 
                     let _txt: Phaser.BitmapText = <Phaser.BitmapText>btn.getChildAt(0);
                     _txt.tint = 0x00ff00;
-                    
-                    this.currentState.checkActions();
-                    this.setActionText();
+
+                    this.currentState.doActionSequence();
 
                 }, this, null, [_btn]);
 
@@ -107,6 +74,53 @@ module z89 {
 
             this.add(this.buttonGroup);
 
+            //inventory ICONS
+            let _icon: Phaser.Sprite;
+            let _iconPos: Array<any> = [{ x: 88, y: 600 }, { x: 178, y: 600 }, { x: 88, y: 685 }, { x: 178, y: 685 }];
+            for (var index = 0; index < 4; index++) {
+
+                _icon = this.game.add.sprite(_iconPos[index].x, _iconPos[index].y, "inventory", 0, this.iconGroup);
+                _icon.inputEnabled = true;
+                _icon.z = index;
+                _icon.input.priorityID = 2;
+                _icon.alpha = this.iconAlpha;
+                _icon.events.onInputDown.add((icon: Phaser.Sprite) => {
+
+                    if (icon.children.length == 0) return;
+
+                    if (this.isInverntoryItemSelected(icon.z) != -1) {
+
+                        if (this.currentAction == -1) {
+
+                            this.currentState.player.showBaloon(z89.getLabel(29));
+                        } else {
+
+                           icon.frame=0;
+                            this.currentState.doActionSequence();
+                        }
+
+                    }
+                    else {
+
+                        if (this.currentAction == -1) {
+
+                            this.currentState.player.showBaloon(z89.getLabel(29));
+                        } else {
+
+                            icon.frame = 1; 
+                            this.inventorySelected.push(icon.z);
+                            this.currentState.doActionSequence();
+                        }
+
+                    };
+
+                }, this);
+
+            }
+
+
+            this.add(this.iconGroup);
+
             this.actionText = this.game.add.bitmapText(320, 725, "commodore", "", 20);
             this.actionText.alpha = 0;
             this.addChild(this.actionText);
@@ -115,7 +129,7 @@ module z89 {
             this.game.add.existing(this);
         }
 
-       
+
 
         update() { }
 
@@ -135,7 +149,7 @@ module z89 {
         private deselectItems(): void {
 
             this.inventorySelected = [];
-            this.iconGroup.setAll("alpha", this.iconAlpha);
+            this.iconGroup.setAll("frame", 0);
 
         }
 
@@ -168,7 +182,7 @@ module z89 {
 
                     this.isOpen = true;
                     this.currentState.enableInteraction();
-                   
+
 
                 }, this);
 
@@ -176,81 +190,27 @@ module z89 {
 
         }
 
+        cleanAction(): void {
+            this.buttonGroup.forEach((element: Phaser.Sprite) => {
+
+                let _txt: Phaser.BitmapText = <Phaser.BitmapText>element.getChildAt(0);
+                _txt.tint = 0xffffff;
+
+            }, this);
+        }
+
         resetActions(): void {
-            
-            console.log("reset Actions")
-                        this.buttonGroup.forEach((element: Phaser.Sprite) => {
-            
-                            let _txt: Phaser.BitmapText = <Phaser.BitmapText>element.getChildAt(0);
-                            _txt.tint = 0xffffff;
-            
-                        }, this);
-            
-                        this.currentAction=-1;
-                        this.inventorySelected=[];
-                        this.iconGroup.setAll("alpha", this.iconAlpha);
-            
-            
-                    }
-
-        setActionText() {
-
-            console.log("setActionText")
-            let _actionObj = this.currentState.getActionObject();
-            
-            console.log(_actionObj);
 
 
-
-            if (_actionObj == null) {
-
-                if (this.currentState.getCurrentItem() != undefined) this.setText(this.currentState.getCurrentItem().name);
-
-            } else {
-                
-
-                if(_actionObj.inventory.length==0 && _actionObj.item==null){
-                    console.log("case 1")
-                    this.setText(this.getCurrentActionLabel());
-                }
-                else if(_actionObj.action!=-1 && _actionObj.inventory.length==0 && _actionObj.item!=null){
-                    console.log("case 2")
-                    this.setText(this.getCurrentActionLabel() + " " + _actionObj.item.name);
-                }
-                else if(_actionObj.inventory.length>0 && _actionObj.item==null){
-                    console.log("case 3")
-
-                    if(_actionObj.inventory.length==1){
-
-                        this.setText(this.getCurrentActionLabel() + " " + _actionObj.inventory[0].name + " on ");
-                    }
-
-
-                }
-                else if(_actionObj.inventory.length>0 && _actionObj.item!=null){
-                    console.log("case 4")
-
-                    if(_actionObj.inventory.length==1){
-
-                        this.setText(this.getCurrentActionLabel() + " " + _actionObj.inventory[0].name + " on " + _actionObj.item.name);
-                    }
-
-
-                }
-
-                else if(_actionObj.key=="noAction" && _actionObj.item!=null){
-                    console.log("case 5",_actionObj.item.name);
-                    this.setText(_actionObj.item.name);
-
-                }
-
-               
-
-
-            }
+            this.cleanAction();
+            this.currentAction = -1;
+            this.inventorySelected = [];
+            this.iconGroup.setAll("frame", 0);
 
 
         }
+
+
 
 
         hide() {
@@ -262,6 +222,10 @@ module z89 {
                 this.currentAction = -1;
 
                 this.deselectItems();
+                this.resetActions();
+                this.currentState.setActionObject(null);
+                this.setText("");
+
 
             }, this);
 
@@ -270,10 +234,10 @@ module z89 {
         }
 
 
-        hideText(){
+        hideText() {
             if (this.actionTextTween != undefined) this.actionTextTween.stop();
-            this.actionTextTween=this.game.add.tween(this.actionText).to({ alpha: 0, x: 500 }, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
-            this.actionTextTween.onComplete.add(()=>{ this.actionText.x=200; },this);
+            this.actionTextTween = this.game.add.tween(this.actionText).to({ alpha: 0, x: 500 }, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            this.actionTextTween.onComplete.add(() => { this.actionText.x = 200; }, this);
 
         }
 
@@ -283,34 +247,28 @@ module z89 {
         getCurrentActionString(): string { return this.actionListFunctions[this.currentAction] }
         getCurrentActionLabel(): string { return this.actionList[this.currentAction] }
 
-        private setText(_string: string): void {
+        setText(_string: string): void {
 
-            console.log("setText",_string)
+            //console.log("setText",_string)
             this.actionText.text = _string;
 
-           /* if (this.actionText.tint == 0x00ff00) {
-                this.actionText.tint = 0x00ffff
-            } else { this.actionText.tint = 0x00ff00 }
-            */
-            this.actionText.tint = 0x00ff00 + this.game.rnd.integerInRange(0,20)
+            /* if (this.actionText.tint == 0x00ff00) {
+                 this.actionText.tint = 0x00ffff
+             } else { this.actionText.tint = 0x00ff00 }
+             */
+            this.actionText.tint = 0x00ff00 + this.game.rnd.integerInRange(0, 20)
 
-           if (this.actionTextTween != undefined) this.actionTextTween.stop();
-           this.actionTextTween=this.game.add.tween(this.actionText).to({ alpha: 1, x: 320 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            if (this.actionTextTween != undefined) this.actionTextTween.stop();
+            this.actionTextTween = this.game.add.tween(this.actionText).to({ alpha: 1, x: 320 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
 
         }
 
         removeItems(items: Array<Items>): void {
 
-
             this.cleanInventoryIcons();
-           // console.log("items to remove:", items);
-           // console.log("start inventory", this.inventory);
             this.cleanInventoryFromItems(items);
-           // console.log("new inventory", this.inventory);
             this.remapInventoryItemsIndex();
-           // console.log(this.inventory);
             this.assignItemToIcon();
-
 
         }
 
@@ -325,13 +283,13 @@ module z89 {
 
         private assignItemToIcon(): void {
 
-
             let _icon: Phaser.Sprite;
             this.inventory.forEach((element: Items, index: number) => {
 
-                _icon = <Phaser.Sprite>this.iconGroup.getChildAt(index);
-
-                _icon.addChild(this.game.add.sprite(0, 0, element.itemObj.sprite));
+                _icon= <Phaser.Sprite>this.iconGroup.getChildAt(index);
+                let _inv:Phaser.Sprite=this.game.add.sprite(35, 35, element.itemObj.sprite);
+                _inv.anchor.set(.5);
+                _icon.addChild(_inv);
 
             });
 
@@ -346,7 +304,7 @@ module z89 {
 
             }, this);
 
-            this.iconGroup.setAll("alpha", this.iconAlpha);
+            this.iconGroup.setAll("frame", 0);
 
         }
 
@@ -379,21 +337,31 @@ module z89 {
         addItem(item: Items): void {
 
             item.inventoryIndex = this.inventory.length;
-            this.inventory.push(this.currentState.currentItem);
+            this.inventory.push(item);
 
             let _icon: Phaser.Sprite = <Phaser.Sprite>this.iconGroup.getChildAt(this.inventory.length - 1)
 
-            _icon.addChild(this.game.add.sprite(0, 0, this.currentState.currentItem.itemObj.sprite));
+            let _inv:Phaser.Sprite=this.game.add.sprite(35, 35, item.itemObj.sprite);
+            _inv.anchor.set(.5);
+            _icon.addChild(_inv);
 
-            this.setText("");
 
+        }
+
+        isInInventory(item: Items): boolean {
+
+            let match: boolean = false;
+            this.inventory.forEach(element => {
+                //console.log(item.itemObj.id, element.itemObj.id)
+                if (item.itemObj.id == element.itemObj.id) match = true;
+
+            });
+
+            return match;
         }
 
 
         private dropItem(): void { }
-
-
-
 
 
     }
