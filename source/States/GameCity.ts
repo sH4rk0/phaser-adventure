@@ -6,6 +6,7 @@ module z89 {
                 playerMenu: PlayerMenu;
                 playerActions: PlayerActions;
                 playerBaloon: PlayerBaloon;
+                conversationBaloon: conversationBaloon;
                 currentItem: Items;
 
                 private bg: Phaser.TileSprite;
@@ -40,6 +41,8 @@ module z89 {
 
                 create() {
 
+                        console.log(getZero89Data());
+                        this.game.cache.getBitmapFont("commodore").font.lineHeight = 45;
                         this.game.world.setBounds(0, 0, 5000, 768);
 
 
@@ -86,6 +89,9 @@ module z89 {
                         this.playerBaloon = new PlayerBaloon(this.game);
                         this.groupBaloon.add(this.playerBaloon);
 
+                        this.conversationBaloon = new conversationBaloon(this.game, 0, 0);
+                        this.groupBaloon.add(this.conversationBaloon);
+
                         this.playerActions = new PlayerActions(this.game);
                         this.groupAction.add(this.playerActions);
 
@@ -96,8 +102,8 @@ module z89 {
 
                                 if (element.onStart) {
 
-                                                this.addItem(element.id)
-                                       
+                                        this.addItem(element.id)
+
 
                                 }
 
@@ -122,51 +128,65 @@ module z89 {
                         }, this, null, [this.ground]);
 
 
-                this.addItem(11);
-                       
+                        //this.addInventoryItem(this.getItemSpriteId(8));
+                        //this.addInventoryItem(this.getItemSpriteId(15));
 
-                }
-
-
-                addDelay(delay:number,callback:any){
-
-
-                        this.game.time.events.add(delay,callback);
+                        //this.meteor(null);
 
 
                 }
 
-                addItem(id:number){
 
-                        let _itemObj:any= this.getItembyId(id);
+                addDelay(delay: number, callback: any): void {
 
-                        switch (_itemObj.type){
 
-                                case 1:
-                                case 2:
-                                case 3:
-                                case 4:
-                                case 5:
-                                case 6:
-                                case 7:
-                                this.groupAll.add(new Items(this.game, _itemObj));
-                                break;
+                        this.game.time.events.add(delay, callback);
+
+
+                }
+
+                addItem(id: number): void {
+
+                        let _itemObj: any = this.getItembyId(id);
+
+                        switch (_itemObj.type) {
+
 
                                 case 8:
-                                this.groupAll.add(new ItemsTruck(this.game, _itemObj));
-                                break;
+                                        this.groupAll.add(new ItemsTruck(this.game, _itemObj));
+                                        break;
 
 
-                        } 
-                       
-                      
+                                default:
+                                        this.groupAll.add(new Items(this.game, _itemObj));
+                                        break;
+
+
+                        }
+
+
 
                 }
 
-                getItembyId(id:number):any{
+                getItembyId(id: number): any {
 
-                       let _itemObj:any;
-                        gameData.ingame.items.forEach(element => { if(element.id==id) _itemObj=element; });
+                        let _itemObj: any;
+                        gameData.ingame.items.forEach(element => { if (element.id == id) _itemObj = element; });
+
+                        return _itemObj;
+
+                }
+
+                getItemSpriteId(id: number): any {
+
+                        let _itemObj: Items;
+
+                        this.groupAll.forEach((element: any) => {
+                                
+                                               if(element.id==id) _itemObj=element;
+                                
+                                            }, this);
+
 
                         return _itemObj;
 
@@ -192,8 +212,20 @@ module z89 {
                         //this.game.debug.body(this.player.myArea)
                 }
 
+                startConversation(): void {
+
+
+
+                        let _actionObj = this.getActionObject();
+
+                        this.conversationBaloon.setUpConversation(_actionObj);
+
+
+
+                }
+
                 doActionSequence(_item?: Items): void {
-                        console.log("checkActions");
+                        // console.log("checkActions");
                         this.createActionObject(); //create the action object based on action/inventory/items selection
                         this.createActionText(); //create the action text based on the above selection
 
@@ -204,7 +236,7 @@ module z89 {
                                 if (this.executeActionLogic(_item)) {
                                         this.resetActions();
                                         this.setActionObject(null);
-                                        this.game.time.events.add(3000,()=>{  this.playerActions.setText(""); })
+                                        this.game.time.events.add(3000, () => { this.playerActions.setText(""); })
                                 }
                         }
 
@@ -213,7 +245,7 @@ module z89 {
 
                 createActionObject(_itemSelected?: Items): any {
 
-                        console.log("createActionObject");
+                        // console.log("createActionObject");
                         let returnObj: any = {
                                 key: null,
                                 action: null,
@@ -278,9 +310,9 @@ module z89 {
 
                 }
 
-                createActionText() {
+                createActionText(): void {
 
-                        console.log("createActionText")
+                        //console.log("createActionText")
                         let _actionObj = this.getActionObject();
 
                         let _actionText: string = "";
@@ -342,32 +374,75 @@ module z89 {
 
                 }
 
+                checkCombinedItems(): boolean {
+                        let _actionObj: any = this.getActionObject();
+                        if (_actionObj.inventory.length == 2) {
+
+
+                                let _key = this.getCurrentActionLabel() + "_" + _actionObj.inventory[0].id + "_" + _actionObj.inventory[1].id;
+                                // console.log(_key)
+                                if (gameData.ingame.logic[_key] != undefined) return true;
+                                _key = this.getCurrentActionLabel() + "_" + _actionObj.inventory[1].id + "_" + _actionObj.inventory[0].id;
+                                if (gameData.ingame.logic[_key] != undefined) return true;
+                                // console.log(_key)
+                        }
+                        return false;
+
+                }
+
+                checkCombinedItemsKey(): string {
+                        let _actionObj: any = this.getActionObject();
+                        if (_actionObj.inventory.length == 2) {
+
+
+                                let _key = this.getCurrentActionLabel() + "_" + _actionObj.inventory[0].id + "_" + _actionObj.inventory[1].id;
+                                // console.log(_key)
+                                if (gameData.ingame.logic[_key] != undefined) return _key;
+                                _key = this.getCurrentActionLabel() + "_" + _actionObj.inventory[1].id + "_" + _actionObj.inventory[0].id;
+                                if (gameData.ingame.logic[_key] != undefined) return _key;
+                                // console.log(_key)
+                        }
+                        return "";
+
+                }
+
                 executeActionLogic(_item?: any): boolean {
 
-                        console.log("executeActionLogic");
+                        //console.log("executeActionLogic");
 
                         let _actionObj: any = this.getActionObject();
 
-
+                        //console.log(this.checkCombinedItems())
                         if (_actionObj.inventory.length > 0 && _actionObj.item == null) {
 
 
+                                // console.log(_actionObj);
+
                                 if (_actionObj.inventory.length == 1 && _actionObj.inventory[0].itemObj.logic[this.getCurrentActionString()] != undefined) {
-                                        console.log("logic 1")
-                                        
+                                        //console.log("logic 1")
+
                                         _actionObj.inventory[0].itemObj.logic[this.getCurrentActionString()](this);
                                         return true;
+
+                                } else if (_actionObj.inventory.length == 2 && this.checkCombinedItems()) {
+
+
+                                        // console.log("logic item on item", _actionObj.key);
+
+                                        gameData.ingame.logic[this.checkCombinedItemsKey()](this);
+                                        return true;
+
                                 }
 
                         }
                         else if (_actionObj.inventory.length == 0 && _actionObj.item != null) {
-                                console.log("logic 2", _actionObj.item)
+                                //console.log("logic 2", _actionObj.item)
 
                                 if (_actionObj.item.itemObj.logic != undefined && _actionObj.item.itemObj.logic[this.getCurrentActionString()] != undefined) { _actionObj.item.itemObj.logic[this.getCurrentActionString()](this); return true; }
 
                         }
                         else if (_actionObj.inventory.length > 0 && _actionObj.item != null && gameData.ingame.logic[_actionObj.key] != undefined) {
-                                console.log("logic 3", _actionObj.key)
+                                //console.log("logic 3", _actionObj.key)
 
                                 gameData.ingame.logic[_actionObj.key](this);
                                 return true;
@@ -380,26 +455,36 @@ module z89 {
 
                 }
 
-                resetActions() {
-                        console.log("resetActions ")
+                resetActions(): void {
+                        //console.log("resetActions ")
                         this.playerActions.resetActions();
                         this.currentItem = null;
 
                 }
 
                 returnMessage(): void {
-                        
-                        
-                                    let _currActionObj: any = this.getActionObject();
-                                    let _item:Items;
-                                        if(_currActionObj.item==null){_item=_currActionObj.inventory[0]}else{_item=_currActionObj.item}
 
-                                    
-                                    let _mess: string = _item.itemObj.actions[_currActionObj.action].answer[this.game.rnd.integerInRange(0, _item.itemObj.actions[_currActionObj.action].answer.length - 1)];
-                                   
-                                    this.player.showBaloon(_mess);
-                        
-                                }
+
+                        let _currActionObj: any = this.getActionObject();
+                        let _item: Items;
+                        if (_currActionObj.item == null) { _item = _currActionObj.inventory[0] } else { _item = _currActionObj.item }
+
+
+                        let _mess: string = _item.itemObj.actions[_currActionObj.action].answer[this.game.rnd.integerInRange(0, _item.itemObj.actions[_currActionObj.action].answer.length - 1)];
+
+                        this.player.showBaloon(_mess);
+
+                }
+
+                returnMessageExtra():void{
+                        let _currActionObj: any = this.getActionObject();
+                        let _item: Items;
+                        if (_currActionObj.item == null) { _item = _currActionObj.inventory[0] } else { _item = _currActionObj.item }
+
+                        let _obj: any = _item.itemObj.actions[_currActionObj.action];
+                        this.player.showBaloonExtra(_obj);
+
+                }
 
 
                 setCurrentItem(_item: Items): void { this.currentItem = _item; }
@@ -410,7 +495,7 @@ module z89 {
 
                 getInventorySelected(): Array<Items> { return this.playerActions.getInventorySelected(); }
 
-                setActionText(_text: string) { console.log("setActionText: "+ _text); this.playerActions.setText(_text) }
+                setActionText(_text: string) { console.log("setActionText: " + _text); this.playerActions.setText(_text) }
 
                 getActionObject(): any { return this.logicCombination; }
 
@@ -428,66 +513,158 @@ module z89 {
 
                 enableInteraction(): void { this.gameInteracion = true; }
 
-                addInventoryItem(): void {
 
-                        let _currActionObj: any = this.getActionObject();
-                        let _item:Items;
-                        if(_currActionObj.item==null){_item=_currActionObj.inventory[0]}else{_item=_currActionObj.item}
 
-                        console.log(this.playerActions.isInInventory(_item));
 
-                        if(this.playerActions.isInInventory(_item)){
 
-                                this.player.showBaloon(z89.getLabel(28));
+                addInventoryItem(item?: Items): void {
 
-                        }else{
+                        if (item != undefined) {
 
-                                this.player.play("pickdrop");
-                                this.playerActions.addItem(_item);
-                                this.groupAll.remove(_item);
-                                this.setCurrentItem(null);
+                                // console.log(item);
 
-                               
+                                this.playerActions.addItem(item);
+                                this.groupAll.remove(item);
+
+
+                        } else {
+
+                                let _currActionObj: any = this.getActionObject();
+                                let _item: Items;
+                                if (_currActionObj.item == null) { _item = _currActionObj.inventory[0] } else { _item = _currActionObj.item }
+
+                                //console.log(this.playerActions.isInInventory(_item));
+
+                                if (this.playerActions.isInInventory(_item)) {
+
+                                        this.player.showBaloon(z89.getLabel(28));
+
+                                } else {
+
+                                        this.player.play("pickdrop");
+                                        this.playerActions.addItem(_item);
+                                        this.groupAll.remove(_item);
+                                        this.setCurrentItem(null);
+
+
+
+                                }
+
 
                         }
-                       
+
+
 
                 }
 
-                removeInventoryItems() { this.playerActions.removeItems(this.getActionObject().inventory); }
+                removeInventoryItems(): void { this.playerActions.removeItems(this.getActionObject().inventory); }
 
-                dropInventoryItem() { 
-                        
+                dropInventoryItem(): void {
+
                         let _currActionObj: any = this.getActionObject();
-                        let _item:Items;
+                        let _item: Items;
 
-                        if(_currActionObj.item==null){_item=_currActionObj.inventory[0]}else{_item=_currActionObj.item}
+                        if (_currActionObj.item == null) { _item = _currActionObj.inventory[0] } else { _item = _currActionObj.item }
 
-                        if(this.player.y>=705){
-                                _item.itemObj.fixedToCamera=true;
 
-                                let _x=this.player.x*1.08;
+                        if (!this.playerActions.isInInventory(_item)) { return; }
 
-                                _item.itemObj.x=_x;
-                                _item.itemObj.y=this.player.y;
 
-                        }else{_item.itemObj.fixedToCamera=false;}
-                        let _newItem=new Items(this.game, _item.itemObj);
+                        if (this.player.y >= 705) {
+                                _item.itemObj.fixedToCamera = true;
 
-                        if(!_item.itemObj.fixedToCamera){
-                              
-                                _newItem.x=this.player.x;
-                                _newItem.y=this.player.y+10;
+                                let _x = this.player.x * 1.08;
+
+                                _item.itemObj.x = _x;
+                                _item.itemObj.y = this.player.y;
+
+                        } else { _item.itemObj.fixedToCamera = false; }
+                        let _newItem = new Items(this.game, _item.itemObj);
+
+                        if (!_item.itemObj.fixedToCamera) {
+
+                                _newItem.x = this.player.x;
+                                _newItem.y = this.player.y + 10;
                         }
-                      
+
                         this.groupAll.add(_newItem);
 
                         this.playerActions.removeItem(_item);
                         _item.destroy();
 
-                        this.player.play("pickdrop"); 
-                
+                        this.player.play("pickdrop");
+
                 }
+
+
+                meteor(target:Items){
+
+                        //console.log(target);
+                        
+                        let _meteor = this.game.add.sprite(600,-100,"meteor");
+
+                        _meteor.anchor.set(.5);
+                        _meteor.animations.add("run",[0,1,2,3,4,5,6,7,8],5,true).play();
+                        this.game.add.tween(_meteor).to({ y: 600 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false).onComplete.add((a,b,c:Phaser.Sprite)=>{
+
+                                this.game.camera.flash();
+                                this.groupAll.remove(this.getItemSpriteId(16));
+                                let exp=this.game.add.sprite(600,600,"explosion");
+                                exp.anchor.set(.5);
+                                exp.scale.set(2);
+                                exp.animations.add("run",[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27],25,false).play().onComplete.add((a,b,c)=>{
+
+                                a.kill();
+                                this.playerBaloon.showBaloon("Noooooooooo!!!! :D");
+                               
+                                },exp);
+
+
+                        c.kill()
+
+
+                        },this,null,_meteor);
+                       
+                }
+
+                meteor2(target:Items){
+                        
+                                                //console.log(target);
+                                                
+                                                let _meteor = this.game.add.sprite(this.player.x,-100,"meteor");
+                        
+                                                _meteor.anchor.set(.5);
+                                                _meteor.animations.add("run",[0,1,2,3,4,5,6,7,8],5,true).play();
+                                                this.game.add.tween(_meteor).to({ y: 600 }, 1000, Phaser.Easing.Quadratic.In, true, 0, 0, false).onComplete.add((a,b,c:Phaser.Sprite)=>{
+                        
+                                                        this.game.camera.flash();
+                                                        this.player.kill();
+                                                       
+                                                        let exp=this.game.add.sprite(this.player.x,this.player.y-50,"explosion");
+                                                        exp.anchor.set(.5);
+                                                        exp.scale.set(2);
+                                                        exp.animations.add("run",[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27],25,false).play().onComplete.add((sprite)=>{
+                        
+                                                                sprite.kill();
+                                                       // this.playerBaloon.showBaloon("Noooooooooo!!!! :D");
+
+                                                      
+                                                       this.conversationBaloon.setUpConversation({
+                                                        key: "TALKTO_custom",
+                                                        action: null,
+                                                        inventory: null,
+                                                        item: target
+                                                });
+                                                       
+                                                        },exp);
+                        
+                        
+                                                c.kill()
+                        
+                        
+                                                },this,null,_meteor);
+                                               
+                                        }
 
 
 

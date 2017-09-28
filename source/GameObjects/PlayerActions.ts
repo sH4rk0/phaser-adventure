@@ -256,7 +256,7 @@ module z89 {
                  this.actionText.tint = 0x00ffff
              } else { this.actionText.tint = 0x00ff00 }
              */
-            this.actionText.tint = 0x00ff00 + this.game.rnd.integerInRange(0, 20)
+            this.actionText.tint = 0x00ff00;
 
             if (this.actionTextTween != undefined) this.actionTextTween.stop();
             this.actionTextTween = this.game.add.tween(this.actionText).to({ alpha: 1, x: 320 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
@@ -265,10 +265,11 @@ module z89 {
 
         removeItems(items: Array<Items>): void {
 
-            this.cleanInventoryIcons();
-            this.cleanInventoryFromItems(items);
-            this.remapInventoryItemsIndex();
-            this.assignItemToIcon();
+            items.forEach(element => {
+                
+                this.removeItem(element);
+            });
+           
 
         }
 
@@ -308,17 +309,7 @@ module z89 {
 
         }
 
-        // remove itemes from inventory array
-        private cleanInventoryFromItems(items: Array<Items>): void {
-
-
-            items.forEach(element => {
-
-                this.inventory.splice(element.inventoryIndex, 1);
-
-            });
-
-        }
+       
 
         // remove itemes from inventory array
         private cleanInventoryFromItem(item: Items): void {
@@ -341,6 +332,7 @@ module z89 {
 
             let _icon: Phaser.Sprite = <Phaser.Sprite>this.iconGroup.getChildAt(this.inventory.length - 1)
 
+            console.log(item);
             let _inv:Phaser.Sprite=this.game.add.sprite(35, 35, item.itemObj.sprite);
             _inv.anchor.set(.5);
             _icon.addChild(_inv);

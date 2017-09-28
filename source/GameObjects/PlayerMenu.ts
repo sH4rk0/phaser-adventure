@@ -18,7 +18,7 @@ module z89 {
 
 
             this.fixedToCamera = true;
-
+            
             this.currentState = <GameCity>this.game.state.getCurrentState();
 
             this.menuBg = this.game.add.sprite(512, 450, "menuBg")
@@ -26,8 +26,8 @@ module z89 {
             this.menuBg.anchor.set(0.5);
             this.menuBg.height = 350;
             this.add(this.menuBg);
-
             this.menuBg.inputEnabled=true;
+            this.menuBg.input.priorityID=2;
             this.menuBg.events.onInputDown.add(function () {
                 this.hide();
             }, this);
@@ -37,6 +37,9 @@ module z89 {
 
                 blinkBtn = this.game.add.sprite(element.x, element.y, "icons")
                 blinkBtn.inputEnabled = true;
+                blinkBtn.frame = element.frame;
+                blinkBtn.input.priorityID=3;
+                
                 blinkBtn.events.onInputDown.add(function () {
                     this.currentState.player.blinkTo(element.to);
                 }, this);
@@ -47,6 +50,7 @@ module z89 {
             let actionBtn:Phaser.Sprite;
             actionBtn = this.game.add.sprite(-60, -290, "icons")
             actionBtn.inputEnabled = true;
+            actionBtn.input.priorityID=3;
             actionBtn.events.onInputDown.add(function () {
                 this.currentState.playerActions.show();
                 this.hide();

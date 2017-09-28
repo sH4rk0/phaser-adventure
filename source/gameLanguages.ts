@@ -31,6 +31,19 @@ let languages={
         "I already have this!",//28
         "Select an ACTION first!",//29
         "I'm not stupid!",//30
+        "Michele",//31
+        "He is Mike. Founder of DEV DAY Salerno.",//32
+        "Hey, Mike! What's up.",//33
+        "Hey, Francesco, it's ok. Don't forget our next meetup.",//34
+        "Sure! Where and when?",//35
+        "Saturday 16th September at Puntolingue. We'll talk about blockchain and bitcoins",//36
+        "AMAZING!!!",//37
+        "Here the Devday team organize montly tech meetups!!!",//38
+        "@##@ @##@!!!",//39
+        "Gerardo",//40
+        "Daniele",//41
+        "Davide",//42
+        "He is Gerardo. Founder of DEV DAY Avellino.",//43
         
 
     ]};

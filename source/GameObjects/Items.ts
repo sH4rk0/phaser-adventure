@@ -15,14 +15,14 @@ module z89 {
             //console.log(itemObj)
             super(game, itemObj.x, itemObj.y, itemObj.sprite);
 
-            
+
 
             if (itemObj.animations != undefined) {
                 itemObj.animations.forEach(element => {
 
                     this.animations.add(element.name, element.frames, element.rate, element.loop);
                     this.play(element.name);
-                    
+
                 });
             }
 
@@ -39,11 +39,13 @@ module z89 {
 
             this.fixedToCamera = itemObj.fixedToCamera;
 
+            if(itemObj.turnLeft!=undefined) this.turnLeft();
+
             this.events.onInputDown.add(() => {
 
                 let _currentItem: Items = this.currentState.getCurrentItem();
 
-                if (this.currentState.playerActions.IsOpen() && _currentItem != undefined && _currentItem.id != this.id) this.currentState.playerActions.hide();
+               // if (this.currentState.playerActions.IsOpen() && _currentItem != undefined && _currentItem.id != this.id) this.currentState.playerActions.hide();
 
                 let _playerDest: number = this.x;
                 if (this.currentState.player.x < this.x) {
@@ -66,8 +68,8 @@ module z89 {
 
         update() {
 
-           if (this.fixedToCamera) this.cameraOffset.x = (this.currentState.camera.x * -1.1) + this.itemObj.x;
-           
+            if (this.fixedToCamera) this.cameraOffset.x = (this.currentState.camera.x * -1.1) + this.itemObj.x;
+
         }
 
         isInteractive(): boolean {
@@ -76,7 +78,19 @@ module z89 {
 
         }
 
-     
+        turnLeft(): void {
+
+            this.scale.x = -1;
+
+        }
+
+        turnRight(): void {
+
+            this.scale.x = 1;
+
+        }
+
+
 
 
 

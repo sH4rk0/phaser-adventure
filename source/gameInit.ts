@@ -15,9 +15,13 @@ module z89 {
     var _gameSetup: boolean = false;
     var _gameSounds: Array<Phaser.Sound> = [];
     var _ismobile: boolean = true;
+    var _089Data: any;
 
     export function setFirstTime(_val: boolean): void { _firstTime = _val; }
     export function getFirstTime(): boolean { return _firstTime; }
+
+    export function setZero89Data(_values: any): void { _089Data = _values; }
+    export function getZero89Data(): any { return _089Data; }
 
     export function getScore(): number { return _playerScore; }
     export function setScore(val: number): void { _playerScore = val; }
@@ -151,6 +155,33 @@ module z89 {
         return languages[currentLang][_index];
     }
 
+    export class z89Data{
+
+    
+        getContents():any
+        {
+           
+            $.ajax({
+                url: "http://www.zero89.it/api/jsonp/api/core.aspx",
+                dataType: "jsonp",
+                type: "GET",
+                data: {
+                    token:"106113083108048118078075121108099112079102104072056055121119050098068111115117083077089116083117067067107066101106100122047121069070118100079114098050078111049076100102120108052081110100048069",
+                    format: "json"
+                },
+            }).done(function(data) {
+                
+                setZero89Data(data);
+                
+              })
+              .fail(function(xhr) {
+
+                
+                console.log('error', xhr);
+              });;
+        }
+    }
+
 
     export class initGame {
 
@@ -176,14 +207,16 @@ module z89 {
 
             } catch (err) { }
 
+
+            const _data = new z89Data();
+            _data.getContents();
+
             this.game = new Phaser.Game(width, height, Phaser.CANVAS, "", null, false, true);
 
             this.game.state.add("Boot", Boot, false);
             this.game.state.add("Preloader", Preloader, false);
             this.game.state.add("GameCity", GameCity, false);
             this.game.state.start("Boot");
-
-
 
 
         }
@@ -207,7 +240,99 @@ const WebFontConfig = {
 
 };
 
-
+Phaser.BitmapText.prototype.updateText = function() {
+    
+      var data = this._data.font;
+    
+      if (!data) {
+        return;
+      }
+    
+      var text = this.text;
+      var scale = this._fontSize / data.size;
+      var lines = [];
+    
+      var y = 0;
+    
+      this.textWidth = 0;
+    
+      do {
+        var line = this.scanLine(data, scale, text);
+    
+        line.y = y;
+    
+        lines.push(line);
+    
+        if (line.width > this.textWidth) {
+          this.textWidth = line.width;
+        }
+    
+        y += (data.lineHeight * scale);
+    
+        text = text.substr(line.text.length + 1);
+    
+      } while (line.end === false);
+    
+      this.textHeight = y;
+    
+      var t = 0;
+      var align = 0;
+      var ax = this.textWidth * this.anchor.x;
+      var ay = this.textHeight * this.anchor.y;
+    
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+    
+        if (this._align === 'right') {
+          align = this.textWidth - line.width;
+        } else if (this._align === 'center') {
+          align = (this.textWidth - line.width) / 2;
+        }
+    
+        for (var c = 0; c < line.text.length; c++) {
+          var charCode = line.text.charCodeAt(c);
+          var charData = data.chars[charCode];
+    
+          if (charData === undefined) {
+            charCode = 32;
+            charData = data.chars[charCode];
+          }
+    
+          var g = this._glyphs[t];
+    
+          if (g) {
+            //  Sprite already exists in the glyphs pool, so we'll reuse it for this letter
+            g.texture = charData.texture;
+          } else {
+            //  We need a new sprite as the pool is empty or exhausted
+            g = new PIXI.Sprite(charData.texture);
+            g.name = line.text[c];
+            this._glyphs.push(g);
+          }
+    
+          g.position.x = (line.chars[c] + align) - ax;
+          g.position.y = (line.y + (charData.yOffset * scale)) - ay;
+    
+          g.scale.set(scale);
+          g.tint = this.tint;
+          g.texture.requiresReTint = true;
+          g.cachedTint = 0xFFFFFF;
+    
+          if (!g.parent) {
+            this.addChild(g);
+          }
+    
+          t++;
+        }
+      }
+    
+      //  Remove unnecessary children
+      //  This moves them from the display list (children array) but retains them in the _glyphs pool
+      for (i = t; i < this._glyphs.length; i++) {
+        this.removeChild(this._glyphs[i]);
+      }
+    
+    };
 
 
 

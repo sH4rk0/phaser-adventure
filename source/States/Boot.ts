@@ -71,14 +71,14 @@ module z89{
 			this.game.cache.addBitmapData('baloonBg', bmd);
 
 			bmd = this.game.add.bitmapData(340,5);
-			bmd.ctx.fillStyle = '#00ff00';
+			bmd.ctx.fillStyle = '#ffffff';
 			bmd.ctx.beginPath();
 			bmd.ctx.rect(0, 0, 340, 5);
 			bmd.ctx.fill();
 			this.game.cache.addBitmapData('baloonBorder', bmd);
 
 			bmd = this.game.add.bitmapData(25,25);
-			bmd.ctx.fillStyle = '#00ff00';
+			bmd.ctx.fillStyle = '#ffffff';
 			bmd.ctx.beginPath();
 			bmd.ctx.moveTo(0, 12.5);
 			bmd.ctx.lineTo(25, 12.5);
@@ -94,8 +94,20 @@ module z89{
 			this.game.cache.addBitmapData('inventoryIconBg', bmd);
 
 
-			
-		
+			bmd = this.game.add.bitmapData(320,50);
+			bmd.ctx.fillStyle = '#ffffff';
+			bmd.ctx.beginPath();
+			bmd.ctx.rect(0, 0, 320, 50);
+			bmd.ctx.fill();
+			this.game.cache.addBitmapData('forkBtn', bmd);
+
+			bmd = this.game.add.bitmapData(100,100);
+			bmd.ctx.fillStyle = '#00ff00';
+			bmd.ctx.beginPath();
+			bmd.ctx.rect(0, 0, 100, 100);
+			bmd.ctx.fill();
+			this.game.cache.addBitmapData('meteor', bmd);
+
 
 
 
