@@ -6,7 +6,7 @@ module z89 {
 
         private currentState: GameCity;
         public itemObj: any;
-        private id: number;
+        public id: number;
         public inventoryIndex: number;
 
 
@@ -30,6 +30,9 @@ module z89 {
             this.currentState = <GameCity>this.game.state.getCurrentState();
 
             this.anchor.set(0.5, 1);
+
+            if (itemObj.scale != undefined) this.scale.set(itemObj.scale);
+            
             this.id = itemObj.id;
             this.itemObj = itemObj;
             this.inputEnabled = true;
@@ -80,12 +83,13 @@ module z89 {
 
         turnLeft(): void {
 
+            
             this.scale.x = -1;
 
         }
 
         turnRight(): void {
-
+           
             this.scale.x = 1;
 
         }

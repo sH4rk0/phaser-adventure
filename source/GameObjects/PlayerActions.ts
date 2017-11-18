@@ -95,7 +95,7 @@ module z89 {
                             this.currentState.player.showBaloon(z89.getLabel(29));
                         } else {
 
-                           icon.frame=0;
+                            icon.frame = 0;
                             this.currentState.doActionSequence();
                         }
 
@@ -107,7 +107,7 @@ module z89 {
                             this.currentState.player.showBaloon(z89.getLabel(29));
                         } else {
 
-                            icon.frame = 1; 
+                            icon.frame = 1;
                             this.inventorySelected.push(icon.z);
                             this.currentState.doActionSequence();
                         }
@@ -201,7 +201,7 @@ module z89 {
 
         resetActions(): void {
 
-
+            //console.log("reset action")
             this.cleanAction();
             this.currentAction = -1;
             this.inventorySelected = [];
@@ -235,6 +235,7 @@ module z89 {
 
 
         hideText() {
+
             if (this.actionTextTween != undefined) this.actionTextTween.stop();
             this.actionTextTween = this.game.add.tween(this.actionText).to({ alpha: 0, x: 500 }, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
             this.actionTextTween.onComplete.add(() => { this.actionText.x = 200; }, this);
@@ -266,10 +267,10 @@ module z89 {
         removeItems(items: Array<Items>): void {
 
             items.forEach(element => {
-                
+
                 this.removeItem(element);
             });
-           
+
 
         }
 
@@ -287,8 +288,8 @@ module z89 {
             let _icon: Phaser.Sprite;
             this.inventory.forEach((element: Items, index: number) => {
 
-                _icon= <Phaser.Sprite>this.iconGroup.getChildAt(index);
-                let _inv:Phaser.Sprite=this.game.add.sprite(35, 35, element.itemObj.sprite);
+                _icon = <Phaser.Sprite>this.iconGroup.getChildAt(index);
+                let _inv: Phaser.Sprite = this.game.add.sprite(35, 35, element.itemObj.sprite);
                 _inv.anchor.set(.5);
                 _icon.addChild(_inv);
 
@@ -309,7 +310,7 @@ module z89 {
 
         }
 
-       
+
 
         // remove itemes from inventory array
         private cleanInventoryFromItem(item: Items): void {
@@ -332,10 +333,13 @@ module z89 {
 
             let _icon: Phaser.Sprite = <Phaser.Sprite>this.iconGroup.getChildAt(this.inventory.length - 1)
 
-            console.log(item);
-            let _inv:Phaser.Sprite=this.game.add.sprite(35, 35, item.itemObj.sprite);
+
+
+            let _inv: Phaser.Sprite = this.game.add.sprite(35, 35, item.itemObj.sprite);
             _inv.anchor.set(.5);
             _icon.addChild(_inv);
+
+            this.currentState.updatePlayerInventory(this.inventory);
 
 
         }

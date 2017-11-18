@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>z89 Adventure</title>
+    <title>Zero89 Adventure</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=9">
     <meta name="format-detection" content="telephone=no">
@@ -15,10 +15,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="RUN RUN">
     <meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0 minimal-ui" />
-    <meta property="og:title" content="X-MAS RUN 2k16" />
+    <meta property="og:title" content="Zero89 Adventure" />
     <meta property="og:type" content="article" />
-    <meta property="og:url" content="http://xmas2016.zero89.it/index.html"/>
-    <meta property="og:image" content="http://xmas2016.zero89.it/cover.jpg"/>
+    <meta property="og:url" content="http://adventure.zero89.it/index.html"/>
+    <meta property="og:image" content="http://adventure.zero89.it/cover.jpg"/>
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="800" />
     <meta property="og:image:height" content="600" />
@@ -26,82 +26,13 @@
 
     <link rel="stylesheet" href="css/global.css" type="text/css" charset="utf-8" />
     <script src="js/libs/jquery.js" type="text/javascript"></script>
-	<script src="js/libs/phaser.js" type="text/javascript"></script>
+	<script src="js/libs/phaser.min.js" type="text/javascript"></script>
     <script src="js/libs/phaser.plugin.stateTransition.js" type="text/javascript"></script>
-    <script src="js/libs/phaser.scroller.js" type="text/javascript"></script>
 	<script src="js/game/game.js?v1.4" type="text/javascript"></script>
   
 </head>
 <body>
 
-    <!--
-    <div class="contentItem template7 mix " idkey="212" style="display: inline-block;">
-    <canvas class="coverImage" id="cover0" width="799" height="600"></canvas><img src="/covers.aspx?img=/public/core_related/212/212_1.jpg&amp;w=0&amp;h=0" alt="" class="imageCover fullwidth" align="left" id="cover0"> 
-    <div><h3><a href="http://www.zero89.it/it/2/articles/dettaglio-212-guess-who-healthware-international.aspx" idkey="089043113098071116065097054080078071055103072106103098117070115119061061">Guess who?... Healthware International!</a></h3>
-    <p class="contentDescription">I have created a Guess Who game to celebrate the HealthwareInternational new year.</p></div></div>
-    
-    
-    <div class="contentItem template7 mix 2015 game html5 javascript phaser xmas" idkey="211" style="display: inline-block;">
-    <canvas class="coverImage" id="cover1" width="800" height="600"></canvas><img src="/covers.aspx?img=/public/core_related/211/211_1.jpg&amp;w=0&amp;h=0" alt="" class="imageCover fullwidth" align="left" id="cover1"> 
-    <div><h3><a href="http://www.zero89.it/it/2/articles/dettaglio-211-escape-for-christmas-2015-salerno-edition.aspx" idkey="056113068104104114075106077097111114108114107116120115056111083103061061">Escape for Christmas 2015 Salerno edition</a></h3>
-    <p class="contentDescription">A little Xmas game dedicated to Salerno</p></div></div>
-    
-    
-    <div class="contentItem template7 mix agnitio cegedim clm html5" idkey="210" style="display: inline-block;">
-    <canvas class="coverImage" id="cover2" width="600" height="421"></canvas><img src="/covers.aspx?img=/public/core_related/210/210_1.jpg&amp;w=0&amp;h=0" alt="" class="imageCover fullwidth" align="left" id="cover2"> 
-    <div><h3><a href="http://www.zero89.it/it/2/articles/dettaglio-210-edetailing-migration-from-agnitio-to-cegedim-a-nice-trip-to-mordor.aspx" idkey="113080090078056065066122122121088057055120084109118087083054047065061061">Edetailing migration from Agnitio to Cegedim, a nice trip to Mordor.</a></h3>
-    <p class="contentDescription">One CLM to bring them all and in the darkness bind them.</p></div></div>
-    
-    
-    <div class="contentItem template7 mix " idkey="209" style="display: inline-block;">
-    <canvas class="coverImage" id="cover3" width="600" height="415"></canvas><img src="/covers.aspx?img=/public/core_related/209/209_1.jpg&amp;w=0&amp;h=0" alt="" class="imageCover fullwidth" align="left" id="cover3"> 
-    <div><h3><a href="http://www.zero89.it/it/2/articles/dettaglio-209-an-8bit-tribute-to-a-manholes-man.aspx" idkey="090055065100048107121116118107090085102103048090054100075055077119061061">An 8bit tribute to a manholes man</a></h3>
-    <p class="contentDescription"></p></div></div>
-    
-    
-    
-    <div class="contentItem template7 mix clm cyclosee edetailing html5" idkey="208" style="display: inline-block;">
-    <canvas class="coverImage" id="cover4" width="551" height="480"></canvas><img src="/covers.aspx?img=/public/core_related/208/208_1.jpg&amp;w=0&amp;h=0" alt="" class="imageCover fullwidth" align="left" id="cover4"> 
-    <div><h3><a href="http://www.zero89.it/it/2/articles/dettaglio-208-an-example-of-interactive-html5-edetailing-using-cyclosee-platform.aspx" idkey="053105078057047073097071086116065057117065065069115088056070103081061061">An example of interactive html5 edetailing using CYCLOSEE platform</a></h3>
-    <p class="contentDescription">A CYCLOSEE presentation mockup for a LED monitors company</p></div></div>
-    
-    
-    
-    <div class="contentItem template7 mix game javascript phaser" idkey="196" style="display: inline-block;">
-    <canvas class="coverImage" id="cover5" width="640" height="481"></canvas><img src="/covers.aspx?img=/public/core_related/196/196_1.jpg&amp;w=0&amp;h=0" alt="" class="imageCover fullwidth" align="left" id="cover5"> 
-    <div><h3><a href="http://www.zero89.it/it/2/articles/dettaglio-196-rebels-from-hidden-worlds.aspx" idkey="078047106112102087049118072118082086069071102107056090065085100119061061">Rebels from Hidden Worlds</a></h3>
-    <p class="contentDescription">A 30 sec phaser intro for a small game</p></div></div>
-    
-    
-    
-    <div class="contentItem template7 mix iframe javascript postmessage" idkey="206" style="display: inline-block;">
-    <canvas class="coverImage" id="cover6" width="600" height="200"></canvas><img src="/covers.aspx?img=/public/core_related/206/206_1.jpg&amp;w=0&amp;h=0" alt="" class="imageCover fullwidth" align="left" id="cover6"> 
-    <div><h3><a href="http://www.zero89.it/it/2/articles/dettaglio-206-using-javascript-postmessage-to-talk-to-iframes.aspx" idkey="115104110052078114084118066090043056057071075047089112081117051119061061">Using javascript postmessage to talk to iframes</a></h3>
-    <p class="contentDescription">An example script to create a communication channel between iframe and his parent page using postmessage</p></div></div>
-    
-    
-    
-    <div class="contentItem template7 mix ajax game parallax phaser" idkey="207" style="display: inline-block;">
-    <canvas class="coverImage" id="cover7" width="622" height="401"></canvas><img src="/covers.aspx?img=/public/core_related/207/207_1.jpg&amp;w=0&amp;h=0" alt="" class="imageCover fullwidth" align="left" id="cover7"> 
-    <div><h3><a href="http://www.zero89.it/it/2/articles/dettaglio-207-a-tribute-to-our-mighty-governor.aspx" idkey="067113071055121073088106115117086099114088104086120080104111120119061061">A tribute to our mighty Governor</a></h3>
-    <p class="contentDescription">can you guess which phrases are true and which are false?</p></div></div>
-    
-    
-    
-    <div class="contentItem template7 mix cegedim clm veeva" idkey="201" style="display: inline-block;">
-    <canvas class="coverImage" id="cover8" width="394" height="420"></canvas><img src="/covers.aspx?img=/public/core_related/201/201_1.jpg&amp;w=0&amp;h=0" alt="" class="imageCover fullwidth" align="left" id="cover8"> 
-    <div><h3><a href="http://www.zero89.it/it/2/articles/dettaglio-201-cegedimzator-and-veevazator.aspx" idkey="104065112049087052050103080047085104071049119077121083066079076081061061">CEGEDIMzator and VEEVAzator</a></h3>
-    <p class="contentDescription">Two Adobe AIR applications that helps me in packaging HTML presentation for Cegedim and Veeva platforms.</p></div></div>
-    
-    
-    
-    <div class="contentItem template7 mix c64 commodore" idkey="197" style="display: inline-block;">
-    <canvas class="coverImage" id="cover9" width="800" height="506"></canvas><img src="/covers.aspx?img=/public/core_related/197/197_1.jpg&amp;w=0&amp;h=0" alt="" class="imageCover fullwidth" align="left" id="cover9"> 
-    <div><h3><a href="http://www.zero89.it/it/2/articles/dettaglio-197-a-commodore-64-tribute.aspx" idkey="105083055082084051070066108090087083118106057084074100108086073081061061">A Commodore 64 tribute</a></h3>
-    <p class="contentDescription">A personal web tribute to the mighty Commodore 64.</p></div></div>
-    -->
-    
- 
-
+   
 </body>
 </html>

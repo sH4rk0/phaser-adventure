@@ -44,6 +44,18 @@ let languages={
         "Daniele",//41
         "Davide",//42
         "He is Gerardo. Founder of DEV DAY Avellino.",//43
+        "Chain",//44
+        "A broken chain",//45
+        "Block",//46
+        "A concrete block",//47
+        "DevDay in Bits",//48
+        "A bunch of bits",//49
+        "Blockchain",//50
+        "A blockchain",//51
+        "Bitcoin",//52
+        "A bitcoin",//53
+        "Devday pass",//54
+        "Devday pass",//55
         
 
     ]};

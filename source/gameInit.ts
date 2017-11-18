@@ -7,15 +7,16 @@
 
 module z89 {
 
-    var _newGame: initGame;
-    var _playerScore: number = 0;
-    var _firstTime: boolean = true;
-    var _level: number = 2;
-    var _game: Phaser.Game;
-    var _gameSetup: boolean = false;
-    var _gameSounds: Array<Phaser.Sound> = [];
-    var _ismobile: boolean = true;
-    var _089Data: any;
+    let _newGame: initGame;
+    let _playerScore: number = 0;
+    let _firstTime: boolean = true;
+    let _level: number = 2;
+    let _game: Phaser.Game;
+    let _gameSetup: boolean = false;
+    let _gameSounds: Array<Phaser.Sound> = [];
+    let _ismobile: boolean = true;
+    let _089Data: any;
+   
 
     export function setFirstTime(_val: boolean): void { _firstTime = _val; }
     export function getFirstTime(): boolean { return _firstTime; }
@@ -28,6 +29,10 @@ module z89 {
 
     export function setGame(game: Phaser.Game) { _game = game; }
     export function getGame(): Phaser.Game { return _game; }
+
+   
+    export function isSaved(): boolean { return true; }
+
 
     export function getSound(_sound: gameSound): Phaser.Sound {
 
@@ -46,6 +51,8 @@ module z89 {
         _gameSounds[_sound].stop();
 
     }
+
+
 
     export function pauseSound(_sound: gameSound): void {
 
@@ -155,42 +162,21 @@ module z89 {
         return languages[currentLang][_index];
     }
 
-    export class z89Data{
-
-    
-        getContents():any
-        {
-           
-            $.ajax({
-                url: "http://www.zero89.it/api/jsonp/api/core.aspx",
-                dataType: "jsonp",
-                type: "GET",
-                data: {
-                    token:"106113083108048118078075121108099112079102104072056055121119050098068111115117083077089116083117067067107066101106100122047121069070118100079114098050078111049076100102120108052081110100048069",
-                    format: "json"
-                },
-            }).done(function(data) {
-                
-                setZero89Data(data);
-                
-              })
-              .fail(function(xhr) {
-
-                
-                console.log('error', xhr);
-              });;
-        }
-    }
-
+  
 
     export class initGame {
 
 
-        public game: Phaser.Game;
+        private game: Phaser.Game;
+        private width: number;
+        private height: number;
 
         constructor(width?: number, height?: number) {
 
             var dpr: number = 1;
+            if (width != undefined) this.width = width;
+            if (height != undefined) this.height = height;
+
             try {
                 if (devicePixelRatio != undefined) {
                     dpr = devicePixelRatio || 1;
@@ -207,18 +193,34 @@ module z89 {
 
             } catch (err) { }
 
+            this.getContents();
 
-            const _data = new z89Data();
-            _data.getContents();
 
-            this.game = new Phaser.Game(width, height, Phaser.CANVAS, "", null, false, true);
+        }
+
+        startLoading() {
+
+            this.game = new Phaser.Game(this.width, this.height, Phaser.AUTO, "", null, false, true);
 
             this.game.state.add("Boot", Boot, false);
             this.game.state.add("Preloader", Preloader, false);
             this.game.state.add("GameCity", GameCity, false);
             this.game.state.start("Boot");
 
+        }
 
+        getContents() {
+
+            $.ajax({
+                url: "http://www.zero89.it/api/jsonp/api/core.aspx",
+                dataType: "jsonp",
+                type: "GET",
+                data: {
+                    token: "047078118106073053084083117049077089110099113107120099081115118116110050110084081047084055082118122117081052079104113103107108052054043071051118068084098077105105071106104110050101084108106119071069078121085067085071073067085112119117049101108115051116120119061061",
+                    format: "json"
+                },
+            }).done(function (data) { setZero89Data(data.values.value); _newGame.startLoading(); })
+                .fail(function (xhr) { console.log('error', xhr); });
         }
 
     }
@@ -240,99 +242,99 @@ const WebFontConfig = {
 
 };
 
-Phaser.BitmapText.prototype.updateText = function() {
-    
-      var data = this._data.font;
-    
-      if (!data) {
+Phaser.BitmapText.prototype.updateText = function () {
+
+    var data = this._data.font;
+
+    if (!data) {
         return;
-      }
-    
-      var text = this.text;
-      var scale = this._fontSize / data.size;
-      var lines = [];
-    
-      var y = 0;
-    
-      this.textWidth = 0;
-    
-      do {
+    }
+
+    var text = this.text;
+    var scale = this._fontSize / data.size;
+    var lines = [];
+
+    var y = 0;
+
+    this.textWidth = 0;
+
+    do {
         var line = this.scanLine(data, scale, text);
-    
+
         line.y = y;
-    
+
         lines.push(line);
-    
+
         if (line.width > this.textWidth) {
-          this.textWidth = line.width;
+            this.textWidth = line.width;
         }
-    
+
         y += (data.lineHeight * scale);
-    
+
         text = text.substr(line.text.length + 1);
-    
-      } while (line.end === false);
-    
-      this.textHeight = y;
-    
-      var t = 0;
-      var align = 0;
-      var ax = this.textWidth * this.anchor.x;
-      var ay = this.textHeight * this.anchor.y;
-    
-      for (var i = 0; i < lines.length; i++) {
+
+    } while (line.end === false);
+
+    this.textHeight = y;
+
+    var t = 0;
+    var align = 0;
+    var ax = this.textWidth * this.anchor.x;
+    var ay = this.textHeight * this.anchor.y;
+
+    for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
-    
+
         if (this._align === 'right') {
-          align = this.textWidth - line.width;
+            align = this.textWidth - line.width;
         } else if (this._align === 'center') {
-          align = (this.textWidth - line.width) / 2;
+            align = (this.textWidth - line.width) / 2;
         }
-    
+
         for (var c = 0; c < line.text.length; c++) {
-          var charCode = line.text.charCodeAt(c);
-          var charData = data.chars[charCode];
-    
-          if (charData === undefined) {
-            charCode = 32;
-            charData = data.chars[charCode];
-          }
-    
-          var g = this._glyphs[t];
-    
-          if (g) {
-            //  Sprite already exists in the glyphs pool, so we'll reuse it for this letter
-            g.texture = charData.texture;
-          } else {
-            //  We need a new sprite as the pool is empty or exhausted
-            g = new PIXI.Sprite(charData.texture);
-            g.name = line.text[c];
-            this._glyphs.push(g);
-          }
-    
-          g.position.x = (line.chars[c] + align) - ax;
-          g.position.y = (line.y + (charData.yOffset * scale)) - ay;
-    
-          g.scale.set(scale);
-          g.tint = this.tint;
-          g.texture.requiresReTint = true;
-          g.cachedTint = 0xFFFFFF;
-    
-          if (!g.parent) {
-            this.addChild(g);
-          }
-    
-          t++;
+            var charCode = line.text.charCodeAt(c);
+            var charData = data.chars[charCode];
+
+            if (charData === undefined) {
+                charCode = 32;
+                charData = data.chars[charCode];
+            }
+
+            var g = this._glyphs[t];
+
+            if (g) {
+                //  Sprite already exists in the glyphs pool, so we'll reuse it for this letter
+                g.texture = charData.texture;
+            } else {
+                //  We need a new sprite as the pool is empty or exhausted
+                g = new PIXI.Sprite(charData.texture);
+                g.name = line.text[c];
+                this._glyphs.push(g);
+            }
+
+            g.position.x = (line.chars[c] + align) - ax;
+            g.position.y = (line.y + (charData.yOffset * scale)) - ay;
+
+            g.scale.set(scale);
+            g.tint = this.tint;
+            g.texture.requiresReTint = true;
+            g.cachedTint = 0xFFFFFF;
+
+            if (!g.parent) {
+                this.addChild(g);
+            }
+
+            t++;
         }
-      }
-    
-      //  Remove unnecessary children
-      //  This moves them from the display list (children array) but retains them in the _glyphs pool
-      for (i = t; i < this._glyphs.length; i++) {
+    }
+
+    //  Remove unnecessary children
+    //  This moves them from the display list (children array) but retains them in the _glyphs pool
+    for (i = t; i < this._glyphs.length; i++) {
         this.removeChild(this._glyphs[i]);
-      }
-    
-    };
+    }
+
+};
 
 
 

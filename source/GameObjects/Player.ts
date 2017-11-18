@@ -53,7 +53,7 @@ module z89 {
             this.myArea.events.onInputDown.add(() => { this.currentState.playerMenu.toggle(); }, this);
 
             this.addChild(this.myArea);
-
+           
             this.game.add.existing(this);
 
 
@@ -109,6 +109,8 @@ module z89 {
 
             //moving player tween end
             this.playerTween.onComplete.add((_player: Player, _tween: Phaser.Tween, _intersect: boolean) => {
+
+               this.currentState.updatePlayerPosition(_player.x,_player.y);
                 this.play("idle");
 
                 //check if an item is passed as destination
@@ -217,7 +219,7 @@ module z89 {
         beamIn(toX: number) {
 
 
-
+            this.direction= PlayerDirection.RIGHT;
             this.y = 648;
             this.x = toX;
             this.width = 126;
@@ -231,7 +233,7 @@ module z89 {
             beam.alpha = 0;
             beam.animations.add("beam", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 15, true).play();
 
-            this.tweenTint(this, 0x00ff00, 0xffffff, 500, 0, null);
+            this.currentState.tweenTint(this, 0x00ff00, 0xffffff, 500, 0, null);
 
             let tweenBeam: Phaser.Tween = this.game.add.tween(beam).to({ alpha: .5, width: 200 }, 500, Phaser.Easing.Quadratic.InOut, true, 300, 0, false);
 
@@ -276,7 +278,7 @@ module z89 {
 
             });
 
-            this.tweenTint(this, 0xffffff, 0x00ff00, 300, 0, null);
+            this.currentState.tweenTint(this, 0xffffff, 0x00ff00, 300, 0, null);
 
             let test: Phaser.Tween = this.game.add.tween(this).to({ height: 30, width: 200 }, 300, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
 
@@ -294,31 +296,10 @@ module z89 {
 
         }
 
-        tweenTint(obj, startColor, endColor, time = 250, delay = 0, callback = null) {
-            // check if is valid object
-            if (obj) {
-                // create a step object
-                let colorBlend = { step: 0 };
-                // create a tween to increment that step from 0 to 100.
-                let colorTween = this.game.add.tween(colorBlend).to({ step: 100 }, time, Phaser.Easing.Linear.None, delay);
-                // add an anonomous function with lexical scope to change the tint, calling Phaser.Colour.interpolateColor
-                colorTween.onUpdateCallback(() => {
-                    obj.tint = Phaser.Color.interpolateColor(startColor, endColor, 100, colorBlend.step, null);
-                });
-                // set object to the starting colour
-                obj.tint = startColor;
-                // if you passed a callback, add it to the tween on complete
-                if (callback) {
-                    colorTween.onComplete.add(callback, this);
-                }
-                // finally, start the tween
-                colorTween.start();
-            }
-        }
+       
 
         public showBaloon(_text: string) { this.currentState.playerBaloon.showBaloon(_text); }
         public showBaloonExtra(_obj: any) { this.currentState.playerBaloon.showBaloonExtra(_obj); }
-
         public hideBaloon() { this.currentState.playerBaloon.hideBaloon(); }
 
 
