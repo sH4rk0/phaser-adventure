@@ -2,7 +2,7 @@ module z89 {
 
     export class saveGame {
 
-
+        private currentState:GameCity;
         private playerX: number = 0;
         private playerY: number = 0;
         private savedObj: any;
@@ -10,8 +10,9 @@ module z89 {
         private inventory: Array<any>;
         private items:Array<any>;
 
-        constructor() {
+        constructor(currentState:GameCity) {
 
+            this.currentState=currentState;
             this.checkSaved();
 
         }
@@ -34,13 +35,14 @@ module z89 {
         }
 
 
-        updateItems(_items:Array<any>){
+        updateItems(){
 
             
             let _itemsObj:Array<any>=[];
 
-            //console.log(_items);
-            _items.forEach(element => {
+            
+            console.log(this.currentState.groupAll);
+            this.currentState.groupAll.children.forEach((element:Items) => {
                 
                 if(element.itemObj!=undefined){
 
@@ -107,7 +109,7 @@ module z89 {
 
             }
 
-            console.log(obj);
+           // console.log(obj);
             this.setSaved(obj);
 
         }

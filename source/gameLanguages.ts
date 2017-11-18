@@ -61,3 +61,10 @@ let languages={
     ]};
 
 let currentLang = "en";
+let gameData={
+
+    chapters:null,
+    ingame:{conversation:null,logic:null,items:null},
+    assets:null,
+    menuBlink:null
+}

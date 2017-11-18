@@ -233,7 +233,7 @@ module z89 {
             beam.alpha = 0;
             beam.animations.add("beam", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 15, true).play();
 
-            this.currentState.tweenTint(this, 0x00ff00, 0xffffff, 500, 0, null);
+            this.currentState.gameUtils.tweenTint(this, 0x00ff00, 0xffffff, 500, 0, null);
 
             let tweenBeam: Phaser.Tween = this.game.add.tween(beam).to({ alpha: .5, width: 200 }, 500, Phaser.Easing.Quadratic.InOut, true, 300, 0, false);
 
@@ -278,7 +278,7 @@ module z89 {
 
             });
 
-            this.currentState.tweenTint(this, 0xffffff, 0x00ff00, 300, 0, null);
+            this.currentState.gameUtils.tweenTint(this, 0xffffff, 0x00ff00, 300, 0, null);
 
             let test: Phaser.Tween = this.game.add.tween(this).to({ height: 30, width: 200 }, 300, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
 

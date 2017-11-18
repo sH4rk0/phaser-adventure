@@ -139,9 +139,9 @@ module z89 {
                 this.arrowLeft.events.onInputDown.add(() => {this.arrowLeft.tint=0x00FF00;this.goPrev();}, this);
                 this.arrowLeft.events.onInputUp.add(() => {this.arrowLeft.tint=0xFFFFFF;}, this);
 
-                this.currentState.tweenTint(this.arrowLeft,0x222222,0xffffff,1000,0,null);
-                this.currentState.tweenTint(this.arrowRight,0x222222,0xffffff,1000,0,null);
-                this.currentState.tweenTint(this.contentImage,0x222222,0xffffff,1000,0,null);
+                this.currentState.gameUtils.tweenTint(this.arrowLeft,0x222222,0xffffff,1000,0,null);
+                this.currentState.gameUtils.tweenTint(this.arrowRight,0x222222,0xffffff,1000,0,null);
+                this.currentState.gameUtils.tweenTint(this.contentImage,0x222222,0xffffff,1000,0,null);
                 this.contentImage.filters=[this.filtersArr[0],this.filtersArr[1]];
                 this.contentText.filters=[this.filtersArr[1]];
                 this.spinner.filters=[this.filtersArr[1]];

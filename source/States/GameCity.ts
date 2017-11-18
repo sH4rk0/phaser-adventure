@@ -25,7 +25,7 @@ module z89 {
                 private ground: Phaser.Sprite;
 
                 private groupStreet: Phaser.Group;
-                private groupAll: Phaser.Group;
+                public groupAll: Phaser.Group;
                 private groupBaloon: Phaser.Group;
 
                 private groupCity: Phaser.Group;
@@ -36,7 +36,10 @@ module z89 {
 
                 private filters: Array<Phaser.Filter>;
                 private gameInteracion: boolean = true;
-                private saveGameObj: saveGame;
+        
+                public saveGameObj: saveGame;
+                public gameUtils: GameUtils;
+                public gameItemsUtils: GameItemsUtils;
 
                 constructor() {
 
@@ -51,9 +54,11 @@ module z89 {
 
                 create() {
 
+                        
 
-                        this.game.cache.getBitmapFont("commodore").font.lineHeight = 45;
-                        this.game.world.setBounds(0, 0, 5000, 768);
+       
+                        this.gameUtils=new GameUtils(this.game,this);
+                        this.gameItemsUtils=new GameItemsUtils(this.game,this);
 
                         this.groupCity = this.game.add.group();
                         this.groupStreet = this.game.add.group();
@@ -64,6 +69,9 @@ module z89 {
 
                         this.groupAction = this.game.add.group();
                         this.groupMenu = this.game.add.group();
+
+                        this.game.cache.getBitmapFont("commodore").font.lineHeight = 45;
+                        this.game.world.setBounds(0, 0, 5000, 768);
 
                         let sky: Phaser.Image = this.game.add.image(0, 0, 'sky');
                         sky.fixedToCamera = true;
@@ -79,7 +87,6 @@ module z89 {
                         this.groupCity.add(this.bg2);
 
                         this.groupCity.add(this.game.add.image(0, 0, 'city'));
-
 
                         this.street = this.game.add.tileSprite(0, 0, 1024, 768, 'streetLvl1');
                         this.street.fixedToCamera = true;
@@ -105,8 +112,6 @@ module z89 {
                         this.playerMenu = new PlayerMenu(this.game);
                         this.groupMenu.add(this.playerMenu);
 
-
-
                         this.ground = this.game.add.sprite(0, 644, this.game.cache.getBitmapData("ground"));
                         this.ground.inputEnabled = true;
                         this.ground.input.priorityID = 0;
@@ -125,7 +130,7 @@ module z89 {
                         }, this, null, [this.ground]);
 
 
-                        this.saveGameObj = new saveGame();
+                        this.saveGameObj = new saveGame(this);
                         
 
                         //console.log(this.saveGameObj.gameIsSaved())
@@ -133,7 +138,9 @@ module z89 {
 
 
                         //if game is saved
-                        if (this.saveGameObj.gameIsSaved()) {
+                        if (!this.saveGameObj.gameIsSaved()) {
+
+                                
 
                                 //retrive games obj from saved obj
                                 this.processSavedGame();
@@ -146,7 +153,7 @@ module z89 {
 
                                         if (element.onStart) {
 
-                                                this.addItem(element.id)
+                                                this.gameItemsUtils.addItem(element.id)
 
                                         }
 
@@ -156,7 +163,7 @@ module z89 {
                                 this.playerMenu.openOnStart();
                         }
 
-                        this.game.time.events.repeat(2000, 10, this.updateItems, this);
+                        //this.game.time.events.repeat(2000, 10, this.saveGameObj.updateItems, this);
                         // this.game.time.events.add()
 
 
@@ -242,7 +249,7 @@ module z89 {
                         if (_saved.items != undefined) {
 
                                 _saved.items.forEach(element => {
-                                        this.addItem(element.id)
+                                        this.gameItemsUtils.addItem(element.id)
                                 });
 
 
@@ -275,7 +282,7 @@ module z89 {
                                         
                                         //console.log(element,this.getItemSpriteId(element))
 
-                                        this.addInventoryItem(this.getItemSpriteId(element.id));
+                                        this.addInventoryItem(this.gameItemsUtils.getItemById(element.id));
                                 });
 
                         }
@@ -285,16 +292,8 @@ module z89 {
 
                 }
 
-                updateItems() {
+               
 
-                        console.log("update items");
-
-
-                        this.saveGameObj.updateItems(this.groupAll.children);
-
-
-
-                }
                 //save player position in localstorage
                 updatePlayerPosition(x: number, y: number) {
 
@@ -316,72 +315,7 @@ module z89 {
 
                 }
 
-                addDelay(delay: number, callback: any): void {
-
-
-                        this.game.time.events.add(delay, callback);
-
-
-                }
-
-                addItem(id: number): void {
-
-                        let _itemObj: any = this.getItembyId(id);
-                        if (_itemObj != undefined) {
-
-
-                                switch (_itemObj.type) {
-
-
-                                        case 2:
-                                                this.groupAll.add(new ItemsTruck(this.game, _itemObj));
-                                                break;
-
-                                        case 3:
-                                                this.groupAll.add(new ItemsContent(this.game, _itemObj));
-                                                break;
-
-
-                                        default:
-                                                this.groupAll.add(new Items(this.game, _itemObj));
-                                                break;
-
-
-                                }
-                        }
-
-
-                }
-
-                getItembyId(id: number): any {
-
-                        let _itemObj: any;
-                        gameData.ingame.items.forEach(element => { if (element.id == id) _itemObj = element; });
-
-                        return _itemObj;
-
-                }
-
-                getItemSpriteId(id: number): Items {
-
-                        let _itemObj: Items;
-
-                
-
-                        this.groupAll.forEach((element: any) => {
-
-                                if (element.id == id) _itemObj = element;
-
-                        }, this);
-
-
-                        return _itemObj;
-
-                }
-
-
-
-
+             
 
                 render() {
 
@@ -776,7 +710,7 @@ module z89 {
 
                         this.playerActions.removeItem(_item);
                         _item.destroy();
-                        //his.updateItems();
+                        
 
                         this.player.play("pickdrop");
 
@@ -815,28 +749,7 @@ module z89 {
 
                 }
 
-                tweenTint(obj, startColor, endColor, time = 250, delay = 0, callback = null) {
-                        // check if is valid object
-                        if (obj) {
-                                // create a step object
-                                let colorBlend = { step: 0 };
-                                // create a tween to increment that step from 0 to 100.
-                                let colorTween = this.game.add.tween(colorBlend).to({ step: 100 }, time, Phaser.Easing.Linear.None, delay);
-                                // add an anonomous function with lexical scope to change the tint, calling Phaser.Colour.interpolateColor
-                                colorTween.onUpdateCallback(() => {
-
-                                        obj.tint = Phaser.Color.interpolateColor(startColor, endColor, 100, colorBlend.step, null);
-                                });
-                                // set object to the starting colour
-                                obj.tint = startColor;
-                                // if you passed a callback, add it to the tween on complete
-                                if (callback) {
-                                        colorTween.onComplete.add(callback, this);
-                                }
-                                // finally, start the tween
-                                colorTween.start();
-                        }
-                }
+                
 
                 shootFromHigh(targets: Array<number>, shot: any, callback: any) {
 
@@ -872,7 +785,7 @@ module z89 {
                                                         _explosion = this.game.add.sprite(sprite.x, sprite.y, "explosion");
                                                         _explosion.anchor.set(.5, 1);
                                                         _explosion.scale.set(2);
-                                                        this.groupAll.remove(this.getItemSpriteId(sprite.id));
+                                                        this.groupAll.remove(this.gameItemsUtils.getItemById(sprite.id));
                                                         _explosion.animations.add("run", shot.explosion.animation.frames, shot.explosion.animation.rate, shot.explosion.animation.loop).play().onComplete.add((explosion: Phaser.Sprite) => {
 
                                                                 explosion.kill();

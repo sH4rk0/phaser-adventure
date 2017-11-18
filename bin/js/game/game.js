@@ -688,899 +688,222 @@ var languages = {
 };
 var currentLang = "en";
 var gameData = {
-    chapters: [
-        {
-            title: "Chapter one",
-            completed: false,
-            tasks: [
-                {}
-            ]
-        }
+    chapters: null,
+    ingame: { conversation: null, logic: null, items: null },
+    assets: null,
+    menuBlink: null
+};
+gameData.assets = {
+    spritesheets: [
+        { name: "player", path: "assets/images/game/player.png", width: 126, height: 126, frames: 64 },
+        { name: "phoneWork", path: "assets/images/game/items/phoneWork.png", width: 56, height: 132, frames: 2 },
+        { name: "phoneNotWork", path: "assets/images/game/items/phoneNotWork.png", width: 52, height: 132, frames: 5 },
+        { name: "arete", path: "assets/images/game/people/arete.png", width: 65, height: 138, frames: 4 },
+        { name: "daniele", path: "assets/images/game/people/daniele.png", width: 65, height: 138, frames: 4 },
+        { name: "davide", path: "assets/images/game/people/davide.png", width: 65, height: 138, frames: 4 },
+        { name: "michele", path: "assets/images/game/people/michele.png", width: 65, height: 138, frames: 4 },
+        { name: "inventory", path: "assets/images/game/inventory.png", width: 70, height: 70, frames: 2 },
+        { name: "icons", path: "assets/images/game/icons/icons.png", width: 50, height: 50, frames: 3 },
+        { name: "beam", path: "assets/images/game/beam.png", width: 200, height: 200, frames: 12 },
+        { name: "devday", path: "assets/images/game/items/devday.png", width: 320, height: 87, frames: 2 },
+        { name: "explosion", path: "assets/images/game/explosion.png", width: 80, height: 80, frames: 28 },
+        { name: "meteor", path: "assets/images/game/meteor.png", width: 80, height: 109, frames: 9 },
+        { name: "travolta", path: "assets/images/game/people/travolta2.png", width: 248, height: 200, frames: 25 },
     ],
-    ingame: {
-        // 0-PUSH, 1-PULL, 2-GIVE, 3-OPEN, 4-CLOSE, 5-EXAMINE, 6-USE, 7-PICKUP, 8-TALKTO
-        //game logic
-        conversations: {
-            EXAMINE_12: [{
-                    text: "Here is where the DEVDAY Team organize montly meeting...",
-                    isItem: false,
-                    fork: true,
-                    options: [{ option: "Devday website", link: "http://www.devday.it" }]
-                }],
-            TALKTO_15: [{
-                    text: z89.getLabel(33),
-                    isItem: false,
-                    next: 2000,
-                },
-                {
-                    text: z89.getLabel(34),
-                    isItem: true,
-                    next: 2000,
-                },
-                {
-                    text: z89.getLabel(35),
-                    isItem: false,
-                    next: 2000,
-                },
-                {
-                    text: z89.getLabel(36),
-                    isItem: true,
-                    next: 5000,
-                },
-                {
-                    text: z89.getLabel(37),
-                    isItem: false,
-                    end: 2000
-                },
-            ],
-            TALKTO_custom: [
-                {
-                    text: "OK! ora puoi entrare!",
-                    isItem: true,
-                    next: 2000,
-                },
-                {
-                    text: "@##@ @##@!!!",
-                    isItem: false,
-                    end: 2000,
-                }
-            ],
-            TALKTO_13: [
-                {
-                    text: "Ciao Daniele, e' iniziato l'evento?",
-                    isItem: false,
-                    next: 3000,
-                },
-                {
-                    text: "Hai prenotato il biglietto?",
-                    isItem: true,
-                    next: 3000,
-                },
-                {
-                    text: "No! Ma io sono Francesco del Devday Salerno!!!",
-                    isItem: false,
-                    next: 4000,
-                },
-                {
-                    text: "No Biglietto! No Meetup!",
-                    isItem: true,
-                    end: 3000,
-                }
-            ]
-        },
-        logic: {
-            //use money on drink machine
-            USE_8_1: function (currentState) {
-                currentState.player.play("use");
-                currentState.removeInventoryItems();
-                currentState.addDelay(2000, function () { currentState.addItem(7); });
-            },
-            USE_24_23: function (currentState) {
-                console.log("use");
-                currentState.player.play("use");
-                currentState.removeInventoryItems();
-                currentState.addDelay(1000, function () { currentState.getItemSpriteId(22).start(); });
-            },
-            //use coin o coin
-            USE_8_15: function (currentState) {
-                console.log("coin on coins");
-                currentState.removeInventoryItems();
-                currentState.addItem(7);
-                currentState.addInventoryItem(currentState.getItemSpriteId(7));
-            },
-            //use coin o coin
-            USE_8_28: function (currentState) {
-                console.log("block on chain");
-                currentState.playerBaloon.showBaloon("I GOT BLOCKCHAIN!");
-                currentState.removeInventoryItems();
-                currentState.addItem(30);
-                currentState.addInventoryItem(currentState.getItemSpriteId(30));
-            },
-            //use bit o coin
-            USE_29_15: function (currentState) {
-                console.log("bit on coin");
-                currentState.playerBaloon.showBaloon("I GOT A BITCOIN!");
-                currentState.removeInventoryItems();
-                currentState.addItem(32);
-                currentState.addInventoryItem(currentState.getItemSpriteId(32));
-            },
-            USE_30_32: function (currentState) {
-                console.log("bitcoin on blockchain");
-                currentState.playerBaloon.showBaloon("I GOT DEVDAY PASS!");
-                currentState.removeInventoryItems();
-                currentState.addItem(31);
-                currentState.addInventoryItem(currentState.getItemSpriteId(31));
-            },
-            GIVE_31_13: function (currentState) {
-                console.log("pass to daniele");
-                currentState.player.play("use");
-                currentState.removeInventoryItems();
-                var convObj = {
-                    key: "TALKTO_custom",
-                    action: null,
-                    inventory: null,
-                    item: currentState.currentItem
-                };
-                currentState.addDelay(1000, function () {
-                    currentState.conversationBaloon.setUpConversation(convObj);
-                });
-            }
-        },
-        //items logic
-        items: [
-            {
-                id: 1,
-                type: 1,
-                sprite: "drink-machine",
-                name: z89.getLabel(0),
-                x: 1100,
-                y: 724,
-                onStart: true,
-                interactive: true,
-                firstMessage: [z89.getLabel(15)],
-                actions: {
-                    0: { action: false, answer: [z89.getLabel(1)] },
-                    1: { action: false, answer: [z89.getLabel(2)] },
-                    2: { action: false, answer: [z89.getLabel(3)] },
-                    3: { action: false, answer: [z89.getLabel(4)] },
-                    4: { action: false, answer: [z89.getLabel(5)] },
-                    5: { action: true, janswer: [z89.getLabel(6), z89.getLabel(14)] },
-                    6: { action: true, answer: [z89.getLabel(7)] },
-                    7: { action: false, answer: [z89.getLabel(8)] },
-                    8: { action: false, answer: [z89.getLabel(22)] },
-                    9: { action: false, answer: [z89.getLabel(9)] }
-                },
-                logic: {
-                    PUSH: function (currentState) {
-                        currentState.returnMessage();
-                    },
-                    PULL: function (currentState) {
-                        currentState.returnMessage();
-                    },
-                    GIVE: function (currentState) {
-                        currentState.returnMessage();
-                    },
-                    OPEN: function (currentState) {
-                        currentState.returnMessage();
-                    },
-                    CLOSE: function (currentState) {
-                        currentState.returnMessage();
-                    },
-                    EXAMINE: function (currentState) {
-                        currentState.returnMessage();
-                    },
-                    USE: function (currentState) {
-                        currentState.returnMessage();
-                    },
-                    PICKUP: function (currentState) {
-                        currentState.returnMessage();
-                    },
-                    DROP: function (currentState) {
-                        currentState.returnMessage();
-                    },
-                    TALKTO: function (currentState) {
-                        currentState.returnMessage();
-                    }
-                },
-                offsetX: 70,
-                fixedToCamera: true,
-                checkIntersect: true
-            },
-            {
-                id: 2,
-                type: 1,
-                onStart: true,
-                sprite: "phoneNotWork",
-                animations: [{ name: "idle", frames: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4], rate: 5, loop: true }],
-                name: z89.getLabel(12),
-                x: 1214,
-                y: 644,
-                interactive: true,
-                offsetX: 50,
-                coins: 0,
-                fixedToCamera: false,
-                checkIntersect: false
-            },
-            {
-                id: 3,
-                type: 1,
-                onStart: true,
-                sprite: "phoneWork",
-                animations: [{ name: "idle", frames: [0, 1], rate: 3, loop: true }],
-                name: z89.getLabel(12),
-                x: 1526,
-                y: 644,
-                interactive: true,
-                offsetX: 50,
-                fixedToCamera: false,
-                checkIntersect: false
-            },
-            {
-                id: 4,
-                type: 1,
-                onStart: true,
-                sprite: "trash",
-                name: z89.getLabel(16),
-                x: 500,
-                y: 649,
-                interactive: true,
-                firstMessage: [z89.getLabel(18)],
-                offsetX: 50,
-                fixedToCamera: false,
-                checkIntersect: false
-            },
-            {
-                id: 5,
-                type: 1,
-                onStart: true,
-                sprite: "hydrant",
-                name: z89.getLabel(17),
-                x: 852,
-                y: 712,
-                interactive: true,
-                offsetX: 50,
-                fixedToCamera: true,
-                checkIntersect: true
-            },
-            {
-                id: 6,
-                type: 1,
-                onStart: true,
-                sprite: "hydrant",
-                name: z89.getLabel(17),
-                x: 1809,
-                y: 712,
-                interactive: true,
-                offsetX: 50,
-                fixedToCamera: true,
-                checkIntersect: true
-            },
-            {
-                id: 7,
-                type: 1,
-                sprite: "coke",
-                onStart: false,
-                name: z89.getLabel(10),
-                x: 1000,
-                y: 745,
-                interactive: true,
-                actions: {
-                    0: { action: false, answer: [z89.getLabel(1)] },
-                    5: { action: false, answer: [z89.getLabel(26)] },
-                },
-                logic: {
-                    PICKUP: function (currentState) { currentState.addInventoryItem(); },
-                    DROP: function (currentState) { currentState.dropInventoryItem(); },
-                    EXAMINE: function (currentState) { currentState.returnMessage(); }
-                },
-                offsetX: 30,
-                fixedToCamera: true,
-                checkIntersect: true
-            },
-            {
-                id: 8,
-                type: 1,
-                sprite: "chain",
-                onStart: false,
-                name: z89.getLabel(44),
-                x: 1000,
-                y: 745,
-                interactive: true,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(45)] },
-                },
-                logic: {
-                    PICKUP: function (currentState) { currentState.addInventoryItem(); },
-                    DROP: function (currentState) { currentState.dropInventoryItem(); },
-                    EXAMINE: function (currentState) { currentState.returnMessage(); },
-                },
-                offsetX: 30,
-                fixedToCamera: true,
-                checkIntersect: false
-            },
-            {
-                id: 9,
-                type: 1,
-                sprite: "coins",
-                onStart: false,
-                name: z89.getLabel(23),
-                x: 350,
-                y: 660,
-                interactive: true,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(27)] },
-                },
-                logic: {
-                    PICKUP: function (currentState) { currentState.addInventoryItem(); },
-                },
-                offsetX: 30,
-                fixedToCamera: false,
-                checkIntersect: false
-            },
-            {
-                id: 10,
-                type: 1,
-                sprite: "block",
-                onStart: false,
-                name: z89.getLabel(46),
-                x: 380,
-                y: 740,
-                interactive: true,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(47)] },
-                },
-                logic: {
-                    PICKUP: function (currentState) { currentState.addInventoryItem(); },
-                },
-                offsetX: 30,
-                fixedToCamera: true,
-                checkIntersect: false
-            },
-            {
-                id: 11,
-                type: 1,
-                sprite: "bit",
-                onStart: false,
-                name: z89.getLabel(48),
-                x: 570,
-                y: 650,
-                interactive: true,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(49)] },
-                },
-                logic: {
-                    PICKUP: function (currentState) { currentState.addInventoryItem(); },
-                },
-                offsetX: 30,
-                fixedToCamera: false,
-                checkIntersect: false
-            },
-            {
-                id: 12,
-                type: 1,
-                sprite: "blockchain",
-                onStart: false,
-                name: z89.getLabel(50),
-                x: 550,
-                y: 650,
-                interactive: true,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(51)] },
-                },
-                logic: {
-                    PICKUP: function (currentState) { currentState.addInventoryItem(); },
-                },
-                offsetX: 30,
-                fixedToCamera: true,
-                checkIntersect: false
-            },
-            {
-                id: 13,
-                type: 1,
-                sprite: "invite",
-                onStart: false,
-                name: z89.getLabel(54),
-                x: 550,
-                y: 650,
-                interactive: true,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(55)] },
-                },
-                logic: {
-                    PICKUP: function (currentState) { currentState.addInventoryItem(); },
-                },
-                offsetX: 30,
-                fixedToCamera: true,
-                checkIntersect: false
-            },
-            {
-                id: 14,
-                type: 1,
-                sprite: "bitcoin",
-                onStart: false,
-                name: z89.getLabel(52),
-                x: 550,
-                y: 650,
-                interactive: true,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(53)] },
-                },
-                logic: {
-                    PICKUP: function (currentState) { currentState.addInventoryItem(); },
-                },
-                offsetX: 30,
-                fixedToCamera: true,
-                checkIntersect: false
-            },
-            {
-                id: 15,
-                type: 1,
-                onStart: false,
-                sprite: "travolta",
-                animations: [{ name: "idle", frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1], rate: 15, loop: true }],
-                name: "John",
-                x: 1050,
-                y: 610,
-                interactive: true,
-                offsetX: 80,
-                scale: .55,
-                fixedToCamera: false,
-                checkIntersect: false,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(43)] },
-                },
-                logic: {
-                    TALKTO: function (currentState) { currentState.startConversation(); },
-                    EXAMINE: function (currentState) { currentState.returnMessage(); },
-                },
-            },
-            {
-                id: 16,
-                type: 1,
-                onStart: false,
-                sprite: "arete",
-                animations: [{ name: "idle", frames: [0, 1, 2, 3], rate: 4, loop: true }],
-                name: z89.getLabel(40),
-                x: 600,
-                y: 650,
-                interactive: true,
-                offsetX: 80,
-                fixedToCamera: false,
-                checkIntersect: false,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(43)] },
-                },
-                logic: {
-                    TALKTO: function (currentState) { currentState.startConversation(); },
-                    EXAMINE: function (currentState) { currentState.returnMessage(); },
-                },
-            },
-            {
-                id: 17,
-                type: 1,
-                onStart: false,
-                sprite: "daniele",
-                animations: [{ name: "idle", frames: [0, 1, 2, 3], rate: 5, loop: true }],
-                name: z89.getLabel(41),
-                x: 650,
-                y: 650,
-                turnLeft: true,
-                interactive: true,
-                offsetX: 80,
-                fixedToCamera: false,
-                checkIntersect: false,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(32)] },
-                },
-                logic: {
-                    TALKTO: function (currentState) { currentState.startConversation(); },
-                    EXAMINE: function (currentState) { currentState.returnMessage(); },
-                },
-            },
-            {
-                id: 18,
-                type: 1,
-                onStart: false,
-                sprite: "davide",
-                animations: [{ name: "idle", frames: [0, 1, 2, 3], rate: 5.5, loop: true }],
-                name: z89.getLabel(42),
-                x: 950,
-                y: 650,
-                interactive: true,
-                offsetX: 80,
-                fixedToCamera: false,
-                checkIntersect: false,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(32)] },
-                },
-                logic: {
-                    TALKTO: function (currentState) { currentState.startConversation(); },
-                    EXAMINE: function (currentState) { currentState.returnMessage(); },
-                },
-            },
-            {
-                id: 19,
-                type: 1,
-                onStart: false,
-                sprite: "michele",
-                animations: [{ name: "idle", frames: [0, 1, 2, 3], rate: 5, loop: true }],
-                name: z89.getLabel(31),
-                x: 600,
-                y: 650,
-                interactive: true,
-                offsetX: 80,
-                fixedToCamera: false,
-                checkIntersect: false,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(32)] },
-                },
-                logic: {
-                    TALKTO: function (currentState) { currentState.startConversation(); },
-                    EXAMINE: function (currentState) { currentState.returnMessage(); },
-                },
-            },
-            {
-                id: 20,
-                type: 2,
-                onStart: false,
-                sprite: "truck-empty",
-                name: "",
-                x: 0,
-                y: 680,
-                interactive: false,
-                offsetX: 50,
-                fixedToCamera: false,
-                checkIntersect: true
-            },
-            {
-                id: 21,
-                type: 1,
-                onStart: true,
-                animations: [{ name: "idle", frames: [0, 1], rate: 1, loop: true }],
-                sprite: "devday",
-                name: "DEV DAY PALACE",
-                x: 869,
-                y: 198,
-                interactive: true,
-                offsetX: 0,
-                fixedToCamera: false,
-                checkIntersect: false,
-                actions: {
-                    5: { action: false, answer: [z89.getLabel(38)], options: [{ option: "DEVDAY galaxy", link: "http://dd.zero89.it" }, { option: "DEVDAY WEBSITE", link: "http://www.devday.it" }] },
-                },
-                logic: {
-                    EXAMINE: function (currentState) { currentState.returnMessageExtra(); },
-                }
-            },
-            {
-                id: 22,
-                type: 3,
-                onStart: true,
-                sprite: "newsbg",
-                name: "Dev day events",
-                x: 866,
-                y: 339,
-                interactive: true,
-                offsetX: 0,
-                fixedToCamera: false,
-                contexts: ["gamedev", "phaser"]
-            },
-            {
-                id: 23,
-                type: 1,
-                sprite: "cable",
-                onStart: true,
-                name: "Broken cable",
-                x: 650,
-                y: 600,
-                interactive: true,
-                actions: {},
-                logic: {},
-                offsetX: 30,
-                fixedToCamera: false,
-                checkIntersect: false
-            },
-            {
-                id: 24,
-                type: 1,
-                sprite: "scotch",
-                onStart: true,
-                name: "Scotch",
-                x: 450,
-                y: 700,
-                interactive: true,
-                actions: {
-                    5: { action: false, answer: ["Scotch"] },
-                },
-                logic: {
-                    PICKUP: function (currentState) { currentState.addInventoryItem(); },
-                    DROP: function (currentState) { currentState.dropInventoryItem(); },
-                },
-                offsetX: 30,
-                fixedToCamera: true,
-                checkIntersect: false
-            },
-        ]
-    },
-    assets: {
-        spritesheets: [
-            { name: "player", path: "assets/images/game/player.png", width: 126, height: 126, frames: 64 },
-            { name: "phoneWork", path: "assets/images/game/items/phoneWork.png", width: 56, height: 132, frames: 2 },
-            { name: "phoneNotWork", path: "assets/images/game/items/phoneNotWork.png", width: 52, height: 132, frames: 5 },
-            { name: "arete", path: "assets/images/game/people/arete.png", width: 65, height: 138, frames: 4 },
-            { name: "daniele", path: "assets/images/game/people/daniele.png", width: 65, height: 138, frames: 4 },
-            { name: "davide", path: "assets/images/game/people/davide.png", width: 65, height: 138, frames: 4 },
-            { name: "michele", path: "assets/images/game/people/michele.png", width: 65, height: 138, frames: 4 },
-            { name: "inventory", path: "assets/images/game/inventory.png", width: 70, height: 70, frames: 2 },
-            { name: "icons", path: "assets/images/game/icons/icons.png", width: 50, height: 50, frames: 3 },
-            { name: "beam", path: "assets/images/game/beam.png", width: 200, height: 200, frames: 12 },
-            { name: "devday", path: "assets/images/game/items/devday.png", width: 320, height: 87, frames: 2 },
-            { name: "explosion", path: "assets/images/game/explosion.png", width: 80, height: 80, frames: 28 },
-            { name: "meteor", path: "assets/images/game/meteor.png", width: 80, height: 109, frames: 9 },
-            { name: "travolta", path: "assets/images/game/people/travolta2.png", width: 248, height: 200, frames: 25 },
-        ],
-        images: [
-            { name: "city", path: "assets/images/game/cityBW.png" },
-            { name: "bg2", path: "assets/images/game/city2.png" },
-            { name: "bg", path: "assets/images/game/bgBW.png" },
-            { name: "streetLvl1", path: "assets/images/game/streetLvl1BW.png" },
-            { name: "streetLvl0", path: "assets/images/game/streetLvl0BW.png" },
-            { name: "sky", path: "assets/images/game/skyBW.png" },
-            { name: "menuBg", path: "assets/images/game/menu.png" },
-            { name: "drink-machine", path: "assets/images/game/items/drink-machine.png" },
-            { name: "trash", path: "assets/images/game/items/trash.png" },
-            { name: "hydrant", path: "assets/images/game/items/hydrant.png" },
-            { name: "coke", path: "assets/images/game/items/coke.png" },
-            { name: "coins", path: "assets/images/game/items/coins.png" },
-            { name: "truck", path: "assets/images/game/items/truck.png" },
-            { name: "truck-wheel", path: "assets/images/game/items/truck-wheel.png" },
-            { name: "truck-empty", path: "assets/images/game/items/truck-empty.png" },
-            { name: "hack", path: "assets/images/game/items/hack.png" },
-            { name: "chain", path: "assets/images/game/items/chain.png" },
-            { name: "block", path: "assets/images/game/items/block.png" },
-            { name: "bit", path: "assets/images/game/items/bit.png" },
-            { name: "blockchain", path: "assets/images/game/items/blockchain.png" },
-            { name: "bitcoin", path: "assets/images/game/items/bitcoin.png" },
-            { name: "invite", path: "assets/images/game/items/invite.png" },
-            { name: "newsbg", path: "assets/images/game/items/news-bg.png" },
-            { name: "triangleBtn", path: "assets/images/game/triangle-btn.png" },
-            { name: "cable", path: "assets/images/game/items/cable.png" },
-            { name: "scotch", path: "assets/images/game/items/scotch.png" },
-            { name: "spinner", path: "assets/images/game/spinner.png" },
-        ],
-        sounds: [],
-        bitmapfont: [
-            { name: "commodore", imgpath: "assets/fonts/carrier_command.png", xmlpath: "assets/fonts/carrier_command.xml" }
-        ]
-    },
-    menuBlink: [
-        { name: "HOME", frame: 0, to: 100, x: -130, y: -290 },
-        { name: "DevDay", frame: 2, to: 875, x: -130, y: -220 },
-        { name: "News", frame: 0, to: 1354, x: -60, y: -220 },
-        { name: "Cake", frame: 0, to: 1590, x: 10, y: -220 },
-        { name: "Arcade", frame: 1, to: 2100, x: 80, y: -220 },
-        { frame: 0, to: 2580, x: -130, y: -150 },
-        { frame: 0, to: 3170, x: -60, y: -150 },
-        { frame: 0, to: 4000, x: 10, y: -150 },
-        { frame: 0, to: 4500, x: 80, y: -150 }
+    images: [
+        { name: "city", path: "assets/images/game/cityBW.png" },
+        { name: "bg2", path: "assets/images/game/city2.png" },
+        { name: "bg", path: "assets/images/game/bgBW.png" },
+        { name: "streetLvl1", path: "assets/images/game/streetLvl1BW.png" },
+        { name: "streetLvl0", path: "assets/images/game/streetLvl0BW.png" },
+        { name: "sky", path: "assets/images/game/skyBW.png" },
+        { name: "menuBg", path: "assets/images/game/menu.png" },
+        { name: "drink-machine", path: "assets/images/game/items/drink-machine.png" },
+        { name: "trash", path: "assets/images/game/items/trash.png" },
+        { name: "hydrant", path: "assets/images/game/items/hydrant.png" },
+        { name: "coke", path: "assets/images/game/items/coke.png" },
+        { name: "coins", path: "assets/images/game/items/coins.png" },
+        { name: "truck", path: "assets/images/game/items/truck.png" },
+        { name: "truck-wheel", path: "assets/images/game/items/truck-wheel.png" },
+        { name: "truck-empty", path: "assets/images/game/items/truck-empty.png" },
+        { name: "hack", path: "assets/images/game/items/hack.png" },
+        { name: "chain", path: "assets/images/game/items/chain.png" },
+        { name: "block", path: "assets/images/game/items/block.png" },
+        { name: "bit", path: "assets/images/game/items/bit.png" },
+        { name: "blockchain", path: "assets/images/game/items/blockchain.png" },
+        { name: "bitcoin", path: "assets/images/game/items/bitcoin.png" },
+        { name: "invite", path: "assets/images/game/items/invite.png" },
+        { name: "newsbg", path: "assets/images/game/items/news-bg.png" },
+        { name: "triangleBtn", path: "assets/images/game/triangle-btn.png" },
+        { name: "cable", path: "assets/images/game/items/cable.png" },
+        { name: "scotch", path: "assets/images/game/items/scotch.png" },
+        { name: "spinner", path: "assets/images/game/spinner.png" },
+    ],
+    sounds: [],
+    bitmapfont: [
+        { name: "commodore", imgpath: "assets/fonts/carrier_command.png", xmlpath: "assets/fonts/carrier_command.xml" }
     ]
 };
-var gameData = {
-    chapters: [
+gameData.chapters = [
+    {
+        title: "Chapter one",
+        completed: false,
+        tasks: [
+            {}
+        ]
+    }
+];
+gameData.ingame.conversation = {
+    TALKTO_custom: [
         {
-            title: "Chapter one",
-            completed: false,
-            tasks: [
-                {}
-            ]
+            text: "OK! ora puoi entrare!",
+            isItem: true,
+            next: 2000,
+        },
+        {
+            text: "@##@ @##@!!!",
+            isItem: false,
+            end: 2000,
         }
     ],
-    ingame: {
-        // 0-PUSH, 1-PULL, 2-GIVE, 3-OPEN, 4-CLOSE, 5-EXAMINE, 6-USE, 7-PICKUP, 8-TALKTO
-        //game logic
-        conversations: {
-            TALKTO_custom: [
-                {
-                    text: "OK! ora puoi entrare!",
-                    isItem: true,
-                    next: 2000,
-                },
-                {
-                    text: "@##@ @##@!!!",
-                    isItem: false,
-                    end: 2000,
-                }
-            ],
-            TALKTO_13: [
-                {
-                    text: "Ciao Daniele, e' iniziato l'evento?",
-                    isItem: false,
-                    next: 3000,
-                },
-                {
-                    text: "Hai prenotato il biglietto?",
-                    isItem: true,
-                    next: 3000,
-                },
-                {
-                    text: "No! Ma io sono Francesco del Devday Salerno!!!",
-                    isItem: false,
-                    next: 4000,
-                },
-                {
-                    text: "No Biglietto! No Meetup!",
-                    isItem: true,
-                    end: 3000,
-                }
-            ]
+    TALKTO_13: [
+        {
+            text: "Ciao Daniele, e' iniziato l'evento?",
+            isItem: false,
+            next: 3000,
         },
-        logic: {
-            //use money on drink machine
-            USE_8_1: function (currentState) {
-                currentState.player.play("use");
-                currentState.removeInventoryItems();
-                currentState.addDelay(2000, function () { currentState.addItem(7); });
-            },
-            USE_24_23: function (currentState) {
-                console.log("use");
-                currentState.player.play("use");
-                currentState.removeInventoryItems();
-                currentState.addDelay(1000, function () { currentState.getItemSpriteId(22).start(); });
-            },
-            //use coin o coin
-            USE_8_15: function (currentState) {
-                console.log("coin on coins");
-                currentState.removeInventoryItems();
-                currentState.addItem(7);
-                currentState.addInventoryItem(currentState.getItemSpriteId(7));
-            },
-            //use coin o coin
-            USE_8_28: function (currentState) {
-                console.log("block on chain");
-                currentState.playerBaloon.showBaloon("I GOT BLOCKCHAIN!");
-                currentState.removeInventoryItems();
-                currentState.addItem(30);
-                currentState.addInventoryItem(currentState.getItemSpriteId(30));
-            },
-            //use bit o coin
-            USE_29_15: function (currentState) {
-                console.log("bit on coin");
-                currentState.playerBaloon.showBaloon("I GOT A BITCOIN!");
-                currentState.removeInventoryItems();
-                currentState.addItem(32);
-                currentState.addInventoryItem(currentState.getItemSpriteId(32));
-            },
-            USE_30_32: function (currentState) {
-                console.log("bitcoin on blockchain");
-                currentState.playerBaloon.showBaloon("I GOT DEVDAY PASS!");
-                currentState.removeInventoryItems();
-                currentState.addItem(31);
-                currentState.addInventoryItem(currentState.getItemSpriteId(31));
-            },
-            GIVE_31_13: function (currentState) {
-                console.log("pass to daniele");
-                currentState.player.play("use");
-                currentState.removeInventoryItems();
-                var convObj = {
-                    key: "TALKTO_custom",
-                    action: null,
-                    inventory: null,
-                    item: currentState.currentItem
-                };
-                currentState.addDelay(1000, function () {
-                    currentState.conversationBaloon.setUpConversation(convObj);
-                });
-            }
+        {
+            text: "Hai prenotato il biglietto?",
+            isItem: true,
+            next: 3000,
         },
-        //items logic
-        items: [
-            {
-                id: 23,
-                type: 1,
-                sprite: "cable",
-                onStart: true,
-                name: "Broken cable",
-                x: 650,
-                y: 600,
-                interactive: true,
-                actions: {},
-                logic: {},
-                offsetX: 30,
-                fixedToCamera: false,
-                checkIntersect: false
-            },
-            {
-                id: 24,
-                type: 1,
-                sprite: "scotch",
-                onStart: true,
-                name: "Scotch",
-                x: 450,
-                y: 700,
-                interactive: true,
-                actions: {
-                    5: { action: false, answer: ["Scotch"] },
-                },
-                logic: {
-                    PICKUP: function (currentState) { currentState.addInventoryItem(); },
-                    DROP: function (currentState) { currentState.dropInventoryItem(); },
-                },
-                offsetX: 30,
-                fixedToCamera: true,
-                checkIntersect: false
-            },
-        ]
-    },
-    assets: {
-        spritesheets: [
-            { name: "player", path: "assets/images/game/player.png", width: 126, height: 126, frames: 64 },
-            { name: "phoneWork", path: "assets/images/game/items/phoneWork.png", width: 56, height: 132, frames: 2 },
-            { name: "phoneNotWork", path: "assets/images/game/items/phoneNotWork.png", width: 52, height: 132, frames: 5 },
-            { name: "arete", path: "assets/images/game/people/arete.png", width: 65, height: 138, frames: 4 },
-            { name: "daniele", path: "assets/images/game/people/daniele.png", width: 65, height: 138, frames: 4 },
-            { name: "davide", path: "assets/images/game/people/davide.png", width: 65, height: 138, frames: 4 },
-            { name: "michele", path: "assets/images/game/people/michele.png", width: 65, height: 138, frames: 4 },
-            { name: "inventory", path: "assets/images/game/inventory.png", width: 70, height: 70, frames: 2 },
-            { name: "icons", path: "assets/images/game/icons/icons.png", width: 50, height: 50, frames: 3 },
-            { name: "beam", path: "assets/images/game/beam.png", width: 200, height: 200, frames: 12 },
-            { name: "devday", path: "assets/images/game/items/devday.png", width: 320, height: 87, frames: 2 },
-            { name: "explosion", path: "assets/images/game/explosion.png", width: 80, height: 80, frames: 28 },
-            { name: "meteor", path: "assets/images/game/meteor.png", width: 80, height: 109, frames: 9 },
-            { name: "travolta", path: "assets/images/game/people/travolta2.png", width: 248, height: 200, frames: 25 },
-        ],
-        images: [
-            { name: "city", path: "assets/images/game/cityBW.png" },
-            { name: "bg2", path: "assets/images/game/city2.png" },
-            { name: "bg", path: "assets/images/game/bgBW.png" },
-            { name: "streetLvl1", path: "assets/images/game/streetLvl1BW.png" },
-            { name: "streetLvl0", path: "assets/images/game/streetLvl0BW.png" },
-            { name: "sky", path: "assets/images/game/skyBW.png" },
-            { name: "menuBg", path: "assets/images/game/menu.png" },
-            { name: "drink-machine", path: "assets/images/game/items/drink-machine.png" },
-            { name: "trash", path: "assets/images/game/items/trash.png" },
-            { name: "hydrant", path: "assets/images/game/items/hydrant.png" },
-            { name: "coke", path: "assets/images/game/items/coke.png" },
-            { name: "coins", path: "assets/images/game/items/coins.png" },
-            { name: "truck", path: "assets/images/game/items/truck.png" },
-            { name: "truck-wheel", path: "assets/images/game/items/truck-wheel.png" },
-            { name: "truck-empty", path: "assets/images/game/items/truck-empty.png" },
-            { name: "hack", path: "assets/images/game/items/hack.png" },
-            { name: "chain", path: "assets/images/game/items/chain.png" },
-            { name: "block", path: "assets/images/game/items/block.png" },
-            { name: "bit", path: "assets/images/game/items/bit.png" },
-            { name: "blockchain", path: "assets/images/game/items/blockchain.png" },
-            { name: "bitcoin", path: "assets/images/game/items/bitcoin.png" },
-            { name: "invite", path: "assets/images/game/items/invite.png" },
-            { name: "newsbg", path: "assets/images/game/items/news-bg.png" },
-            { name: "triangleBtn", path: "assets/images/game/triangle-btn.png" },
-            { name: "cable", path: "assets/images/game/items/cable.png" },
-            { name: "scotch", path: "assets/images/game/items/scotch.png" },
-            { name: "spinner", path: "assets/images/game/spinner.png" },
-        ],
-        sounds: [],
-        bitmapfont: [
-            { name: "commodore", imgpath: "assets/fonts/carrier_command.png", xmlpath: "assets/fonts/carrier_command.xml" }
-        ]
-    },
-    menuBlink: [
-        { name: "HOME", frame: 0, to: 100, x: -130, y: -290 },
-        { name: "DevDay", frame: 2, to: 875, x: -130, y: -220 },
-        { name: "News", frame: 0, to: 1354, x: -60, y: -220 },
-        { name: "Cake", frame: 0, to: 1590, x: 10, y: -220 },
-        { name: "Arcade", frame: 1, to: 2100, x: 80, y: -220 },
-        { frame: 0, to: 2580, x: -130, y: -150 },
-        { frame: 0, to: 3170, x: -60, y: -150 },
-        { frame: 0, to: 4000, x: 10, y: -150 },
-        { frame: 0, to: 4500, x: 80, y: -150 }
+        {
+            text: "No! Ma io sono Francesco del Devday Salerno!!!",
+            isItem: false,
+            next: 4000,
+        },
+        {
+            text: "No Biglietto! No Meetup!",
+            isItem: true,
+            end: 3000,
+        }
     ]
 };
+gameData.ingame.logic =
+    {
+        //use money on drink machine
+        USE_8_1: function (currentState) {
+            currentState.player.play("use");
+            currentState.removeInventoryItems();
+            currentState.gameUtils.addDelay(2000, function () { currentState.gameItemsUtils.addItem(7); });
+        },
+        USE_24_23: function (currentState) {
+            console.log("use");
+            currentState.player.play("use");
+            currentState.removeInventoryItems();
+            currentState.gameUtils.addDelay(1000, function () { currentState.gameUtils.getItemById(22).start(); });
+        },
+        //use coin o coin
+        USE_8_15: function (currentState) {
+            console.log("coin on coins");
+            currentState.removeInventoryItems();
+            currentState.gameItemsUtils.addItem(7);
+            currentState.addInventoryItem(currentState.gameItemsUtils.getItemById(7));
+        },
+        //use coin o coin
+        USE_8_28: function (currentState) {
+            console.log("block on chain");
+            currentState.playerBaloon.showBaloon("I GOT BLOCKCHAIN!");
+            currentState.removeInventoryItems();
+            currentState.gameItemsUtils.addItem(30);
+            currentState.addInventoryItem(currentState.gameItemsUtils.getItemById(30));
+        },
+        //use bit o coin
+        USE_29_15: function (currentState) {
+            console.log("bit on coin");
+            currentState.playerBaloon.showBaloon("I GOT A BITCOIN!");
+            currentState.removeInventoryItems();
+            currentState.gameItemsUtils.addItem(32);
+            currentState.addInventoryItem(currentState.gameItemsUtils.getItemById(32));
+        },
+        USE_30_32: function (currentState) {
+            console.log("bitcoin on blockchain");
+            currentState.playerBaloon.showBaloon("I GOT DEVDAY PASS!");
+            currentState.removeInventoryItems();
+            currentState.gameItemsUtils.addItem(31);
+            currentState.addInventoryItem(currentState.gameItemsUtils.getItemById(31));
+        },
+        GIVE_31_13: function (currentState) {
+            console.log("pass to daniele");
+            currentState.player.play("use");
+            currentState.removeInventoryItems();
+            var convObj = {
+                key: "TALKTO_custom",
+                action: null,
+                inventory: null,
+                item: currentState.currentItem
+            };
+            currentState.gameUtils.addDelay(1000, function () {
+                currentState.conversationBaloon.setUpConversation(convObj);
+            });
+        }
+    },
+    gameData.ingame.items = [
+        {
+            id: 23,
+            type: 1,
+            sprite: "cable",
+            onStart: true,
+            name: "Broken cable",
+            x: 650,
+            y: 600,
+            interactive: true,
+            actions: {},
+            logic: {},
+            offsetX: 30,
+            fixedToCamera: false,
+            checkIntersect: false
+        },
+        {
+            id: 24,
+            type: 1,
+            sprite: "scotch",
+            onStart: true,
+            name: "Scotch",
+            x: 950,
+            y: 650,
+            interactive: true,
+            actions: {
+                5: { action: false, answer: ["Scotch"] },
+            },
+            logic: {
+                PICKUP: function (currentState) { currentState.addInventoryItem(); },
+                DROP: function (currentState) { currentState.dropInventoryItem(); },
+            },
+            offsetX: 30,
+            fixedToCamera: false,
+            checkIntersect: false
+        },
+    ];
+gameData.menuBlink = [
+    { name: "HOME", frame: 0, to: 100, x: -130, y: -290 },
+    { name: "DevDay", frame: 2, to: 875, x: -130, y: -220 },
+    { name: "News", frame: 0, to: 1354, x: -60, y: -220 },
+    { name: "Cake", frame: 0, to: 1590, x: 10, y: -220 },
+    { name: "Arcade", frame: 1, to: 2100, x: 80, y: -220 },
+    { frame: 0, to: 2580, x: -130, y: -150 },
+    { frame: 0, to: 3170, x: -60, y: -150 },
+    { frame: 0, to: 4000, x: 10, y: -150 },
+    { frame: 0, to: 4500, x: 80, y: -150 }
+];
 var z89;
 (function (z89) {
     var saveGame = (function () {
-        function saveGame() {
+        function saveGame(currentState) {
             this.playerX = 0;
             this.playerY = 0;
             this.isSaved = false;
+            this.currentState = currentState;
             this.checkSaved();
         }
         saveGame.prototype.updatePlayerPosition = function (x, y) {
@@ -1592,10 +915,10 @@ var z89;
             this.inventory = inventory;
             this.updateSaveObj();
         };
-        saveGame.prototype.updateItems = function (_items) {
+        saveGame.prototype.updateItems = function () {
             var _itemsObj = [];
-            //console.log(_items);
-            _items.forEach(function (element) {
+            console.log(this.currentState.groupAll);
+            this.currentState.groupAll.children.forEach(function (element) {
                 if (element.itemObj != undefined) {
                     _itemsObj.push(element.itemObj);
                 }
@@ -1639,7 +962,7 @@ var z89;
                 inventory: this.inventory,
                 items: this.items
             };
-            console.log(obj);
+            // console.log(obj);
             this.setSaved(obj);
         };
         return saveGame;
@@ -1860,6 +1183,85 @@ var z89;
 })(z89 || (z89 = {}));
 var z89;
 (function (z89) {
+    var GameItemsUtils = (function () {
+        function GameItemsUtils(game, currentState) {
+            this.game = game;
+            this.currentState = currentState;
+        }
+        GameItemsUtils.prototype.addItem = function (id) {
+            var _itemObj = this.getItemObjById(id);
+            if (_itemObj != undefined) {
+                switch (_itemObj.type) {
+                    case 2:
+                        this.currentState.groupAll.add(new z89.ItemsTruck(this.game, _itemObj));
+                        break;
+                    case 3:
+                        this.currentState.groupAll.add(new z89.ItemsContent(this.game, _itemObj));
+                        break;
+                    default:
+                        this.currentState.groupAll.add(new z89.Items(this.game, _itemObj));
+                        break;
+                }
+            }
+        };
+        GameItemsUtils.prototype.getItemObjById = function (id) {
+            var _itemObj;
+            gameData.ingame.items.forEach(function (element) { if (element.id == id)
+                _itemObj = element; });
+            return _itemObj;
+        };
+        GameItemsUtils.prototype.getItemById = function (id) {
+            var _itemObj;
+            this.currentState.groupAll.forEach(function (element) {
+                if (element.id == id)
+                    _itemObj = element;
+            }, this);
+            return _itemObj;
+        };
+        return GameItemsUtils;
+    }());
+    z89.GameItemsUtils = GameItemsUtils;
+})(z89 || (z89 = {}));
+var z89;
+(function (z89) {
+    var GameUtils = (function () {
+        function GameUtils(game, currentState) {
+            this.game = game;
+            this.currentState = currentState;
+        }
+        GameUtils.prototype.addDelay = function (delay, callback) {
+            this.game.time.events.add(delay, callback);
+        };
+        GameUtils.prototype.tweenTint = function (obj, startColor, endColor, time, delay, callback) {
+            if (time === void 0) { time = 250; }
+            if (delay === void 0) { delay = 0; }
+            if (callback === void 0) { callback = null; }
+            // check if is valid object
+            if (obj) {
+                // create a step object
+                var colorBlend_1 = { step: 0 };
+                // create a tween to increment that step from 0 to 100.
+                var colorTween = this.game.add.tween(colorBlend_1).to({ step: 100 }, time, Phaser.Easing.Linear.None, delay);
+                // add an anonomous function with lexical scope to change the tint, calling Phaser.Colour.interpolateColor
+                colorTween.onUpdateCallback(function () {
+                    obj.tint = Phaser.Color.interpolateColor(startColor, endColor, 100, colorBlend_1.step, null);
+                });
+                // set object to the starting colour
+                obj.tint = startColor;
+                // if you passed a callback, add it to the tween on complete
+                if (callback) {
+                    colorTween.onComplete.add(callback, this);
+                }
+                // finally, start the tween
+                colorTween.start();
+            }
+        };
+        return GameUtils;
+    }());
+    z89.GameUtils = GameUtils;
+})(z89 || (z89 = {}));
+var z89;
+(function (z89) {
     var Items = (function (_super) {
         __extends(Items, _super);
         function Items(game, itemObj) {
@@ -2008,9 +1410,9 @@ var z89;
                 _this.game.add.tween(_this.arrowRight).to({ x: _this.arrowRight.x + 10 }, 1000, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
                 _this.arrowLeft.events.onInputDown.add(function () { _this.arrowLeft.tint = 0x00FF00; _this.goPrev(); }, _this);
                 _this.arrowLeft.events.onInputUp.add(function () { _this.arrowLeft.tint = 0xFFFFFF; }, _this);
-                _this.currentState.tweenTint(_this.arrowLeft, 0x222222, 0xffffff, 1000, 0, null);
-                _this.currentState.tweenTint(_this.arrowRight, 0x222222, 0xffffff, 1000, 0, null);
-                _this.currentState.tweenTint(_this.contentImage, 0x222222, 0xffffff, 1000, 0, null);
+                _this.currentState.gameUtils.tweenTint(_this.arrowLeft, 0x222222, 0xffffff, 1000, 0, null);
+                _this.currentState.gameUtils.tweenTint(_this.arrowRight, 0x222222, 0xffffff, 1000, 0, null);
+                _this.currentState.gameUtils.tweenTint(_this.contentImage, 0x222222, 0xffffff, 1000, 0, null);
                 _this.contentImage.filters = [_this.filtersArr[0], _this.filtersArr[1]];
                 _this.contentText.filters = [_this.filtersArr[1]];
                 _this.spinner.filters = [_this.filtersArr[1]];
@@ -2355,7 +1757,7 @@ var z89;
             beam.width = 150;
             beam.alpha = 0;
             beam.animations.add("beam", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 15, true).play();
-            this.currentState.tweenTint(this, 0x00ff00, 0xffffff, 500, 0, null);
+            this.currentState.gameUtils.tweenTint(this, 0x00ff00, 0xffffff, 500, 0, null);
             var tweenBeam = this.game.add.tween(beam).to({ alpha: .5, width: 200 }, 500, Phaser.Easing.Quadratic.InOut, true, 300, 0, false);
             tweenBeam.onComplete.add(function () {
                 _this.game.add.tween(_this).to({ alpha: 1 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
@@ -2380,7 +1782,7 @@ var z89;
                     beam.destroy();
                 });
             });
-            this.currentState.tweenTint(this, 0xffffff, 0x00ff00, 300, 0, null);
+            this.currentState.gameUtils.tweenTint(this, 0xffffff, 0x00ff00, 300, 0, null);
             var test = this.game.add.tween(this).to({ height: 30, width: 200 }, 300, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
             test.onComplete.add(function () {
                 _this.game.add.tween(_this).to({ width: 20, height: 700, alpha: 0 }, 300, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(function () {
@@ -3093,8 +2495,8 @@ var z89;
         };
         GameCity.prototype.create = function () {
             var _this = this;
-            this.game.cache.getBitmapFont("commodore").font.lineHeight = 45;
-            this.game.world.setBounds(0, 0, 5000, 768);
+            this.gameUtils = new z89.GameUtils(this.game, this);
+            this.gameItemsUtils = new z89.GameItemsUtils(this.game, this);
             this.groupCity = this.game.add.group();
             this.groupStreet = this.game.add.group();
             this.groupAll = this.game.add.group();
@@ -3102,6 +2504,8 @@ var z89;
             this.groupFront = this.game.add.group();
             this.groupAction = this.game.add.group();
             this.groupMenu = this.game.add.group();
+            this.game.cache.getBitmapFont("commodore").font.lineHeight = 45;
+            this.game.world.setBounds(0, 0, 5000, 768);
             var sky = this.game.add.image(0, 0, 'sky');
             sky.fixedToCamera = true;
             this.groupCity.add(sky);
@@ -3141,10 +2545,10 @@ var z89;
                     _this.playerActions.hide();
                 _this.player.goTo(_this.game.input.x + _this.game.camera.x, _this.game.input.y);
             }, this, null, [this.ground]);
-            this.saveGameObj = new z89.saveGame();
+            this.saveGameObj = new z89.saveGame(this);
             //console.log(this.saveGameObj.gameIsSaved())
             //if game is saved
-            if (this.saveGameObj.gameIsSaved()) {
+            if (!this.saveGameObj.gameIsSaved()) {
                 //retrive games obj from saved obj
                 this.processSavedGame();
             }
@@ -3152,13 +2556,13 @@ var z89;
                 //display default start objects
                 gameData.ingame.items.forEach(function (element) {
                     if (element.onStart) {
-                        _this.addItem(element.id);
+                        _this.gameItemsUtils.addItem(element.id);
                     }
                 });
                 this.updatePlayerPosition(this.player.x, this.player.y);
                 this.playerMenu.openOnStart();
             }
-            this.game.time.events.repeat(2000, 10, this.updateItems, this);
+            //this.game.time.events.repeat(2000, 10, this.saveGameObj.updateItems, this);
             // this.game.time.events.add()
             //this.addInventoryItem(this.getItemSpriteId(31));
             //this.addInventoryItem(this.getItemSpriteId(15));
@@ -3216,7 +2620,7 @@ var z89;
             this.player.y = _saved.position.y;
             if (_saved.items != undefined) {
                 _saved.items.forEach(function (element) {
-                    _this.addItem(element.id);
+                    _this.gameItemsUtils.addItem(element.id);
                 });
             }
             if (_saved.inventory != undefined && _saved.inventory.length > 0) {
@@ -3235,13 +2639,9 @@ var z89;
                             break;
                     }
                     //console.log(element,this.getItemSpriteId(element))
-                    _this.addInventoryItem(_this.getItemSpriteId(element.id));
+                    _this.addInventoryItem(_this.gameItemsUtils.getItemById(element.id));
                 });
             }
-        };
-        GameCity.prototype.updateItems = function () {
-            console.log("update items");
-            this.saveGameObj.updateItems(this.groupAll.children);
         };
         //save player position in localstorage
         GameCity.prototype.updatePlayerPosition = function (x, y) {
@@ -3254,39 +2654,6 @@ var z89;
                 _inventory.push(item.itemObj);
             });
             this.saveGameObj.updatePlayerInventory(_inventory);
-        };
-        GameCity.prototype.addDelay = function (delay, callback) {
-            this.game.time.events.add(delay, callback);
-        };
-        GameCity.prototype.addItem = function (id) {
-            var _itemObj = this.getItembyId(id);
-            if (_itemObj != undefined) {
-                switch (_itemObj.type) {
-                    case 2:
-                        this.groupAll.add(new z89.ItemsTruck(this.game, _itemObj));
-                        break;
-                    case 3:
-                        this.groupAll.add(new z89.ItemsContent(this.game, _itemObj));
-                        break;
-                    default:
-                        this.groupAll.add(new z89.Items(this.game, _itemObj));
-                        break;
-                }
-            }
-        };
-        GameCity.prototype.getItembyId = function (id) {
-            var _itemObj;
-            gameData.ingame.items.forEach(function (element) { if (element.id == id)
-                _itemObj = element; });
-            return _itemObj;
-        };
-        GameCity.prototype.getItemSpriteId = function (id) {
-            var _itemObj;
-            this.groupAll.forEach(function (element) {
-                if (element.id == id)
-                    _itemObj = element;
-            }, this);
-            return _itemObj;
         };
         GameCity.prototype.render = function () {
             //this.game.debug.cameraInfo(this.game.camera, 500, 232);
@@ -3582,7 +2949,6 @@ var z89;
             this.groupAll.add(_newItem);
             this.playerActions.removeItem(_item);
             _item.destroy();
-            //his.updateItems();
             this.player.play("pickdrop");
         };
         GameCity.prototype.getContentsBycontexts = function (contexts) {
@@ -3608,30 +2974,6 @@ var z89;
             });
             return _result;
         };
-        GameCity.prototype.tweenTint = function (obj, startColor, endColor, time, delay, callback) {
-            if (time === void 0) { time = 250; }
-            if (delay === void 0) { delay = 0; }
-            if (callback === void 0) { callback = null; }
-            // check if is valid object
-            if (obj) {
-                // create a step object
-                var colorBlend_1 = { step: 0 };
-                // create a tween to increment that step from 0 to 100.
-                var colorTween = this.game.add.tween(colorBlend_1).to({ step: 100 }, time, Phaser.Easing.Linear.None, delay);
-                // add an anonomous function with lexical scope to change the tint, calling Phaser.Colour.interpolateColor
-                colorTween.onUpdateCallback(function () {
-                    obj.tint = Phaser.Color.interpolateColor(startColor, endColor, 100, colorBlend_1.step, null);
-                });
-                // set object to the starting colour
-                obj.tint = startColor;
-                // if you passed a callback, add it to the tween on complete
-                if (callback) {
-                    colorTween.onComplete.add(callback, this);
-                }
-                // finally, start the tween
-                colorTween.start();
-            }
-        };
         GameCity.prototype.shootFromHigh = function (targets, shot, callback) {
             var _this = this;
             //console.log(target);
@@ -3655,7 +2997,7 @@ var z89;
                             _explosion = _this.game.add.sprite(sprite.x, sprite.y, "explosion");
                             _explosion.anchor.set(.5, 1);
                             _explosion.scale.set(2);
-                            _this.groupAll.remove(_this.getItemSpriteId(sprite.id));
+                            _this.groupAll.remove(_this.gameItemsUtils.getItemById(sprite.id));
                             _explosion.animations.add("run", shot.explosion.animation.frames, shot.explosion.animation.rate, shot.explosion.animation.loop).play().onComplete.add(function (explosion) {
                                 explosion.kill();
                                 if (index == targets.length - 1) {
