@@ -16,7 +16,55 @@ module z89 {
     let _gameSounds: Array<Phaser.Sound> = [];
     let _ismobile: boolean = true;
     let _089Data: any;
-   
+    let _c64Colors: Array<number> = [0x000000, 0xffffff, 0x68372b, 0x9A6759, 0x70A4B2, 0x6F3D86, 0x588D43, 0x9AD284, 0x352879, 0xB8C76F, 0x6F4F25, 0x433900, 0x444444, 0x6C6C6C, 0x6C5EB5, 0x959595];
+    let _gameName:string;
+
+    export enum c64ColorsEnum {
+        black = 0x000000,
+        white = 0xffffff,
+        red = 0x68372b,
+        light_red = 0x9A6759,
+        cyan = 0x70A4B2,
+        purple =  0x6F3D86,
+        green = 0x588D43,
+        light_green = 0x9AD284,
+        blue = 0x352879,
+        yellow = 0xB8C76F,
+        orange = 0x6F4F25,
+        brown = 0x433900,
+        dark_grey = 0x444444,
+        grey = 0x6C6C6C,
+        light_blue = 0x6C5EB5,
+        light_grey = 0x959595
+    }
+
+    
+    export function getGameName():string{
+        
+                return _gameName
+        
+            }
+        
+    export function setGameName(game:Phaser.Game):void{
+
+    
+        let games:Array<string>=[
+            "ZERO89.IT",
+            "COMMANDO +2 / FLT",
+            "ACCOLADE COMICS / TYC"
+
+        ];
+
+        let index:number=game.rnd.integerInRange(0,games.length-1);
+      
+        _gameName = games[index];
+       
+
+    }
+
+    export function getC64Color(_index:number): number {
+        return _c64Colors[_index];
+    }
 
     export function setFirstTime(_val: boolean): void { _firstTime = _val; }
     export function getFirstTime(): boolean { return _firstTime; }
@@ -30,7 +78,7 @@ module z89 {
     export function setGame(game: Phaser.Game) { _game = game; }
     export function getGame(): Phaser.Game { return _game; }
 
-   
+
     export function isSaved(): boolean { return true; }
 
 
@@ -51,8 +99,6 @@ module z89 {
         _gameSounds[_sound].stop();
 
     }
-
-
 
     export function pauseSound(_sound: gameSound): void {
 
@@ -93,6 +139,8 @@ module z89 {
 
             //console.log("gameSetup");
             setGame(_game);
+           
+          
 
             var _sound: Phaser.Sound;
             for (var i = 0; i < gameData.assets.sounds.length; i++) {
@@ -115,7 +163,6 @@ module z89 {
 
         _ismobile = isMobile;
     }
-
 
     export function getUrlParameter(sParam: string): any {
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -162,7 +209,7 @@ module z89 {
         return languages[currentLang][_index];
     }
 
-  
+
 
     export class initGame {
 
@@ -172,6 +219,8 @@ module z89 {
         private height: number;
 
         constructor(width?: number, height?: number) {
+
+            
 
             var dpr: number = 1;
             if (width != undefined) this.width = width;
@@ -200,12 +249,15 @@ module z89 {
 
         startLoading() {
 
-            this.game = new Phaser.Game(this.width, this.height, Phaser.AUTO, "", null, false, true);
-
+            this.game = new Phaser.Game(this.width, this.height, Phaser.AUTO, "", null, true, true);
+            setGameName(this.game);
             this.game.state.add("Boot", Boot, false);
             this.game.state.add("Preloader", Preloader, false);
             this.game.state.add("GameCity", GameCity, false);
             this.game.state.start("Boot");
+
+            setUpGame(this.game);
+            
 
         }
 
@@ -220,7 +272,10 @@ module z89 {
                     format: "json"
                 },
             }).done(function (data) { setZero89Data(data.values.value); _newGame.startLoading(); })
-                .fail(function (xhr) { console.log('error', xhr); });
+                .fail(function (xhr) { console.log('error', xhr);
+            
+                _newGame.startLoading();
+            });
         }
 
     }
@@ -228,7 +283,7 @@ module z89 {
 
     window.onresize = () => { }
 
-    window.onload = () => { _newGame = new initGame(1024, 768); }
+    window.onload = () => { _newGame = new initGame(1080, 720); }
 
 
 }

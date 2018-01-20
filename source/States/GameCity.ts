@@ -1,12 +1,6 @@
 module z89 {
 
-        export enum c64ColorsStates {
-                black = "#000000", white = "#ffffff",
-                red = "#68372b", light_red = "#9A6759", cyan = "#70A4B2", purple = "#6F3D86", green = "#588D43",
-                light_green = "#9AD284", blue = "#352879", yellow = "#B8C76F", orange = "#6F4F25", brown = "#433900",
-                dark_grey = "#444444",
-                grey = "#6C6C6C", light_blue = "#6C5EB5", light_grey = "#959595"
-        }
+
 
 
         export class GameCity extends Phaser.State {
@@ -17,9 +11,10 @@ module z89 {
                 playerBaloon: PlayerBaloon;
                 conversationBaloon: conversationBaloon;
                 currentItem: Items;
+                Terminal: Terminal;
 
-                private bg: Phaser.TileSprite;
-                private bg2: Phaser.TileSprite;
+                private bgLevel1: Phaser.TileSprite;
+                private bgLevel2: Phaser.TileSprite;
                 private street: Phaser.TileSprite;
                 private front: Phaser.TileSprite;
                 private ground: Phaser.Sprite;
@@ -28,7 +23,7 @@ module z89 {
                 public groupAll: Phaser.Group;
                 private groupBaloon: Phaser.Group;
 
-                private groupCity: Phaser.Group;
+                public groupCity: Phaser.Group;
                 private groupFront: Phaser.Group;
                 private groupMenu: Phaser.Group;
                 private groupAction: Phaser.Group;
@@ -36,10 +31,13 @@ module z89 {
 
                 private filters: Array<Phaser.Filter>;
                 private gameInteracion: boolean = true;
-        
+
                 public saveGameObj: saveGame;
                 public gameUtils: GameUtils;
                 public gameItemsUtils: GameItemsUtils;
+
+                public chapterTitle: Phaser.BitmapText;
+                public currentChapter: number;
 
                 constructor() {
 
@@ -54,71 +52,131 @@ module z89 {
 
                 create() {
 
+                        document.getElementsByTagName("body")[0].className = "game";
+
+                        this.game.cache.getBitmapFont("commodore").font.lineHeight = 18;
+                        this.game.cache.getBitmapFont("commodore2").font.lineHeight = 36;
+                        this.game.world.setBounds(0, 0, 3670, 720);
+                        //this.game.renderer.renderSession.roundPixels=true;
+
+                        this.gameUtils = new GameUtils(this.game);
+                        this.gameItemsUtils = new GameItemsUtils(this.game);
+                        this.saveGameObj = new saveGame(this.game);
+
+
+                        // +++++++++++++++++++++++++++++++++++++++
+                        // group city
+                        // +++++++++++++++++++++++++++++++++++++++
+                       this.groupCity = this.game.add.group();
+                       
+                        let bgLevel0: Phaser.Image = this.game.add.image(0, 0, 'bg-level0');
+                        bgLevel0.fixedToCamera = true;
+                        this.groupCity.add(bgLevel0);
+   
+                        //palazzi sfondo bg lvl1
+                        this.bgLevel1 = this.game.add.tileSprite(0, 0, 1080, 642, 'bg-level1');
+                        this.bgLevel1.fixedToCamera = true;
+                        this.groupCity.add(this.bgLevel1);
+
+                        //palazzi group bg lvl2
+                        this.bgLevel2 = this.game.add.tileSprite(0, 55, 1080, 548, 'bg-level2');
+                        this.bgLevel2.fixedToCamera = true;
+                        this.groupCity.add(this.bgLevel2);
                         
+                        
+                        let street:Phaser.Image=this.game.add.image(0, 592, 'street-level0');
+                        street.fixedToCamera = true;
+                        this.groupCity.add(street);
 
-       
-                        this.gameUtils=new GameUtils(this.game,this);
-                        this.gameItemsUtils=new GameItemsUtils(this.game,this);
+                        let buildings:Array<any>=[{s:"bg-home",x:0,y:640-48},{s:"bg-devday",x:624,y:640-48}]
+                        let building:Phaser.Image;
+                        buildings.forEach(element => {
+                                
+                                building=this.game.add.image(element.x, element.y, element.s,0,this.groupCity);
+                                building.anchor.set(0,1)
 
-                        this.groupCity = this.game.add.group();
+                               
+                                
+                        });
+
+                        // +++++++++++++++++++++++++++++++++++++++
+                        // group street
+                        // +++++++++++++++++++++++++++++++++++++++
                         this.groupStreet = this.game.add.group();
-
-                        this.groupAll = this.game.add.group();
-                        this.groupBaloon = this.game.add.group();
-                        this.groupFront = this.game.add.group();
-
-                        this.groupAction = this.game.add.group();
-                        this.groupMenu = this.game.add.group();
-
-                        this.game.cache.getBitmapFont("commodore").font.lineHeight = 45;
-                        this.game.world.setBounds(0, 0, 5000, 768);
-
-                        let sky: Phaser.Image = this.game.add.image(0, 0, 'sky');
-                        sky.fixedToCamera = true;
-
-                        this.groupCity.add(sky);
-
-                        this.bg = this.game.add.tileSprite(0, 0, 1024, 768, 'bg');
-                        this.bg.fixedToCamera = true;
-                        this.groupCity.add(this.bg);
-
-                        this.bg2 = this.game.add.tileSprite(0, 0, 1024, 768, 'bg2');
-                        this.bg2.fixedToCamera = true;
-                        this.groupCity.add(this.bg2);
-
-                        this.groupCity.add(this.game.add.image(0, 0, 'city'));
-
-                        this.street = this.game.add.tileSprite(0, 0, 1024, 768, 'streetLvl1');
+                        this.street = this.game.add.tileSprite(0, 703-48, 1080, 65, 'street-level1');
                         this.street.fixedToCamera = true;
                         this.groupStreet.add(this.street);
 
-                        this.front = this.game.add.tileSprite(0, 0, 1024, 768, 'streetLvl0');
+
+                        // +++++++++++++++++++++++++++++++++++++++
+                        // group All
+                        // +++++++++++++++++++++++++++++++++++++++
+                        this.groupAll = this.game.add.group();
+                        this.player = new Player(this.game);
+
+                        this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, .1, .1);
+
+
+                        this.groupAll.add(this.player);
+
+                        // +++++++++++++++++++++++++++++++++++++++
+                        // group Front
+                        // +++++++++++++++++++++++++++++++++++++++
+                        this.groupFront = this.game.add.group();
+                        this.front = this.game.add.tileSprite(0, 768 - 93 -48, 1080, 720, 'street-level2');
                         this.front.fixedToCamera = true;
                         this.groupFront.add(this.front);
 
-                        this.player = new Player(this.game);
-                        this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
-                        this.groupAll.add(this.player);
-
+                        // +++++++++++++++++++++++++++++++++++++++
+                        // group Baloon
+                        // +++++++++++++++++++++++++++++++++++++++
+                        this.groupBaloon = this.game.add.group();
                         this.playerBaloon = new PlayerBaloon(this.game);
                         this.groupBaloon.add(this.playerBaloon);
 
                         this.conversationBaloon = new conversationBaloon(this.game, 0, 0);
                         this.groupBaloon.add(this.conversationBaloon);
 
+                        // +++++++++++++++++++++++++++++++++++++++
+                        // group Action
+                        // +++++++++++++++++++++++++++++++++++++++
+                        this.groupAction = this.game.add.group();
                         this.playerActions = new PlayerActions(this.game);
                         this.groupAction.add(this.playerActions);
 
+                        // +++++++++++++++++++++++++++++++++++++++
+                        // group Menu
+                        // +++++++++++++++++++++++++++++++++++++++
+                        this.groupMenu = this.game.add.group();
                         this.playerMenu = new PlayerMenu(this.game);
                         this.groupMenu.add(this.playerMenu);
 
-                        this.ground = this.game.add.sprite(0, 644, this.game.cache.getBitmapData("ground"));
+                        // +++++++++++++++++++++++++++++++++++++++
+                        // group Terminal
+                        // +++++++++++++++++++++++++++++++++++++++
+
+                        this.Terminal = new Terminal(this.game);
+                        this.Terminal.fixedToCamera = true;
+                        this.Terminal.cameraOffset.x = (1024 - 640) / 2;
+                        this.Terminal.cameraOffset.y = (768 - 500) / 2;
+                        this.Terminal.inputEnableChildren = false;
+                        this.Terminal.alpha = 0;
+
+                        //this.groupTerminal.alpha=0;
+
+                        // this.groupTerminal.fixedToCamera=true;
+                        // +++++++++++++++++++++++++++++++++++++++
+                        // GROUND
+                        // +++++++++++++++++++++++++++++++++++++++
+
+                        
+                        
+                        this.ground = this.game.add.sprite(0, 0, this.game.cache.getBitmapData("ground"));
                         this.ground.inputEnabled = true;
                         this.ground.input.priorityID = 0;
 
                         this.ground.fixedToCamera = true;
                         this.ground.alpha = 0;
-
 
                         this.ground.events.onInputDown.add((ground: Phaser.Sprite) => {
 
@@ -128,27 +186,12 @@ module z89 {
                                 this.player.goTo(this.game.input.x + this.game.camera.x, this.game.input.y);
 
                         }, this, null, [this.ground]);
-
-
-                        this.saveGameObj = new saveGame(this);
                         
 
-                        //console.log(this.saveGameObj.gameIsSaved())
-
-
-
                         //if game is saved
-                        if (!this.saveGameObj.gameIsSaved()) {
-
-                                
-
-                                //retrive games obj from saved obj
+                        if (this.saveGameObj.gameIsSaved()) {
                                 this.processSavedGame();
-
-
                         } else {
-
-                                //display default start objects
                                 gameData.ingame.items.forEach(element => {
 
                                         if (element.onStart) {
@@ -157,15 +200,59 @@ module z89 {
 
                                         }
 
-
                                 });
-                                this.updatePlayerPosition(this.player.x,this.player.y);
+                                this.saveGameObj.updatePlayerPosition(this.player.x, this.player.y);
+                                this.saveGameObj.updateItems();
                                 this.playerMenu.openOnStart();
                         }
 
-                        //this.game.time.events.repeat(2000, 10, this.saveGameObj.updateItems, this);
-                        // this.game.time.events.add()
 
+                        let half: Phaser.Sprite = this.game.add.sprite(0, 0, "halftone");
+                        half.fixedToCamera = true;
+
+                        let half2: Phaser.Sprite = this.game.add.sprite(1080, 0, "halftone");
+                        half2.fixedToCamera = true;
+                        half2.scale.x = -1;
+
+                        this.chapterTitle = this.game.add.bitmapText(512, 384, "commodore2", "", 48);
+                        this.chapterTitle.fixedToCamera = true;
+                        this.chapterTitle.anchor.set(.5);
+                        this.chapterTitle.alpha = 0;
+
+                        // this.chapterTitle.tint=0x00ff00;
+
+
+                        /*  let convObj: any = {
+                                 key: "TALKTO_devday",
+                                 action: null,
+                                 inventory: null,
+                                 item: null
+                             }
+                             
+                 
+                                 this.conversationBaloon.setUpConversation(convObj);
+ 
+                        let half3:Phaser.Sprite=this.game.add.sprite(1024,0,"halftone");
+                         half3.fixedToCamera=true;
+                        // half3.scale.x = -1;
+                         half3.angle=90;
+ 
+                         let half4:Phaser.Sprite=this.game.add.sprite(0,768,"halftone");
+                         half4.fixedToCamera=true;
+                        // half3.scale.x = -1;
+                         half4.angle=-90;
+                        */
+                        /*  gameData.ingame.items.forEach(element => {
+  
+                                  if (element.onStart) {
+  
+                                          this.gameItemsUtils.addItem(element.id)
+  
+                                  }
+  
+  
+                          });
+                          */
 
 
                         //this.addInventoryItem(this.getItemSpriteId(31));
@@ -217,6 +304,15 @@ module z89 {
 
 
                         // this.game.add.sprite(100,100,this.game.cache.getBitmapData("roundedBtn"))
+
+                }
+
+                restartGame() {
+
+                        this.saveGameObj.destroy();
+                        document.location.reload();
+                        console.log("restart game")
+
                 }
 
                 update() {
@@ -224,15 +320,17 @@ module z89 {
 
                         //this.filters[0].randomize();
                         //this.filters[0].update();
-                        if (this.gameInteracion) {
+                        //if (this.gameInteracion) {
 
-                                this.bg.tilePosition.x = this.camera.x * -0.2;
-                                this.bg2.tilePosition.x = this.camera.x * -0.7;
-                                this.street.tilePosition.x = this.camera.x * -1.1;
-                                this.front.tilePosition.x = this.camera.x * -1.25;
-                                this.groupAll.sort('y', Phaser.Group.SORT_ASCENDING);
+                        
+                        this.bgLevel1.tilePosition.x = this.camera.x * -0.2;
+                        this.bgLevel2.tilePosition.x = this.camera.x * -0.7;
+                        this.street.tilePosition.x = this.camera.x * -1.1;
+                        this.front.tilePosition.x = this.camera.x * -1.25;
 
-                        }
+                        this.groupAll.sort('y', Phaser.Group.SORT_ASCENDING);
+
+                        //}
 
 
 
@@ -242,15 +340,12 @@ module z89 {
 
 
                         let _saved = this.saveGameObj.getSaved();
-                        console.log(_saved);
                         this.player.x = _saved.position.x;
                         this.player.y = _saved.position.y;
 
                         if (_saved.items != undefined) {
 
-                                _saved.items.forEach(element => {
-                                        this.gameItemsUtils.addItem(element.id)
-                                });
+                                this.gameItemsUtils.addSavedItems(_saved.items)
 
 
                         }
@@ -258,9 +353,9 @@ module z89 {
 
                         if (_saved.inventory != undefined && _saved.inventory.length > 0) {
                                 _saved.inventory.forEach(element => {
-                                        
-                                        let item:any;
-                                       // console.log(element.type )
+
+                                        let item: any;
+                                        // console.log(element.type )
                                         switch (element.type) {
 
 
@@ -279,7 +374,7 @@ module z89 {
 
 
                                         }
-                                        
+
                                         //console.log(element,this.getItemSpriteId(element))
 
                                         this.addInventoryItem(this.gameItemsUtils.getItemById(element.id));
@@ -292,30 +387,9 @@ module z89 {
 
                 }
 
-               
 
-                //save player position in localstorage
-                updatePlayerPosition(x: number, y: number) {
 
-                        this.saveGameObj.updatePlayerPosition(x, y);
 
-                }
-                //save Player inventory in localstorage
-                updatePlayerInventory(inventory: Array<Items>) {
-
-                        let _inventory: Array<any> = [];
-
-                        inventory.forEach((item) => {
-
-                                _inventory.push(item.itemObj);
-
-                        })
-
-                        this.saveGameObj.updatePlayerInventory(_inventory);
-
-                }
-
-             
 
                 render() {
 
@@ -524,26 +598,25 @@ module z89 {
 
                 executeActionLogic(_item?: any): boolean {
 
-                        //console.log("executeActionLogic");
+
 
                         let _actionObj: any = this.getActionObject();
-
+                        console.log(_actionObj);
                         //console.log(this.checkCombinedItems())
                         if (_actionObj.inventory.length > 0 && _actionObj.item == null) {
+                                console.log("logic 0")
 
+                                //console.log(_actionObj.inventory.length, this.getCurrentActionString(), _actionObj.key)
+                                if (_actionObj.inventory.length == 1 && gameData.ingame.logic[_actionObj.key] != undefined) {
+                                        console.log("logic 1")
 
-                                // console.log(_actionObj);
-
-                                if (_actionObj.inventory.length == 1 && _actionObj.inventory[0].itemObj.logic[this.getCurrentActionString()] != undefined) {
-                                        //console.log("logic 1")
-
-                                        _actionObj.inventory[0].itemObj.logic[this.getCurrentActionString()](this);
+                                        gameData.ingame.logic[_actionObj.key](this);
                                         return true;
 
                                 } else if (_actionObj.inventory.length == 2 && this.checkCombinedItems()) {
 
 
-                                        // console.log("logic item on item", _actionObj.key);
+                                        console.log("logic item on item", _actionObj.key);
 
                                         gameData.ingame.logic[this.checkCombinedItemsKey()](this);
                                         return true;
@@ -551,17 +624,29 @@ module z89 {
                                 }
 
                         }
-                        else if (_actionObj.inventory.length == 0 && _actionObj.item != null) {
-                                //console.log("logic 2", _actionObj.item)
+                        else if (_actionObj.inventory.length == 0 && _actionObj.item != null && gameData.ingame.logic[_actionObj.key] != undefined) {
+                                console.log("logic 2", _actionObj.key)
 
-                                if (_actionObj.item.itemObj.logic != undefined && _actionObj.item.itemObj.logic[this.getCurrentActionString()] != undefined) { _actionObj.item.itemObj.logic[this.getCurrentActionString()](this); return true; }
-
-                        }
-                        else if (_actionObj.inventory.length > 0 && _actionObj.item != null && gameData.ingame.logic[_actionObj.key] != undefined) {
-                                //console.log("logic 3", _actionObj.key)
+                                //if (_actionObj.item.itemObj.logic != undefined && _actionObj.item.itemObj.logic[this.getCurrentActionString()] != undefined) { _actionObj.item.itemObj.logic[this.getCurrentActionString()](this); return true; }
 
                                 gameData.ingame.logic[_actionObj.key](this);
                                 return true;
+
+
+
+
+                        }
+                        else if (_actionObj.inventory.length > 0 && _actionObj.item != null && gameData.ingame.logic[_actionObj.key] != undefined) {
+                                console.log("logic 3", _actionObj.key)
+
+                                gameData.ingame.logic[_actionObj.key](this);
+                                return true;
+
+                        }
+                        else {
+
+                                this.player.illogicAction();
+
 
                         }
 
@@ -613,7 +698,8 @@ module z89 {
 
                 setActionText(_text: string) {
                         // console.log("setActionText: " + _text); 
-                        this.playerActions.setText(_text) }
+                        this.playerActions.setText(_text)
+                }
 
                 getActionObject(): any { return this.logicCombination; }
 
@@ -631,7 +717,7 @@ module z89 {
 
                 enableInteraction(): void { this.gameInteracion = true; }
 
-
+                isInteractionDisabled(): boolean { return !this.gameInteracion; }
 
 
 
@@ -643,6 +729,7 @@ module z89 {
 
                                 this.playerActions.addItem(item);
                                 this.groupAll.remove(item);
+                                this.player.play("pickdrop");
 
 
                         } else {
@@ -672,6 +759,12 @@ module z89 {
                         }
 
 
+                        this.saveGameObj.updateItems();
+                }
+
+                updateItemObject(itemId: number, key: string, value: any): void {
+
+                        this.gameItemsUtils.getItemById(itemId).updateItemObj(key, value);
 
                 }
 
@@ -679,7 +772,7 @@ module z89 {
 
                 dropInventoryItem(): void {
 
-                        console.log("drop in");
+
                         let _currActionObj: any = this.getActionObject();
                         let _item: Items;
 
@@ -687,7 +780,6 @@ module z89 {
 
 
                         if (!this.playerActions.isInInventory(_item)) { return; }
-
 
                         if (this.player.y >= 705) {
                                 _item.itemObj.fixedToCamera = true;
@@ -697,28 +789,54 @@ module z89 {
                                 _item.itemObj.x = _x;
                                 _item.itemObj.y = this.player.y;
 
-                        } else { _item.itemObj.fixedToCamera = false; }
-                        let _newItem = new Items(this.game, _item.itemObj);
-
-                        if (!_item.itemObj.fixedToCamera) {
-
-                                _newItem.x = this.player.x;
-                                _newItem.y = this.player.y + 10;
+                        } else {
+                                _item.itemObj.fixedToCamera = false;
+                                _item.itemObj.x = this.player.x;
+                                _item.itemObj.y = this.player.y + 10;
                         }
+
+
+                        let _newItem = new Items(this.game, _item.itemObj);
 
                         this.groupAll.add(_newItem);
 
                         this.playerActions.removeItem(_item);
                         _item.destroy();
-                        
-
                         this.player.play("pickdrop");
+
+                        this.saveGameObj.updateItems();
+
+                }
+
+                displayChapterTitle(chapterIndex: number): void {
+
+
+                        this.currentChapter = chapterIndex;
+                        this.chapterTitle.text = gameData.chapters[chapterIndex].title
+                        this.game.add.tween(this.chapterTitle).to({ alpha: 1 }, 1000, Phaser.Easing.Quadratic.In, true, 500, 0, false).onComplete.add(() => {
+
+                                this.game.add.tween(this.chapterTitle).to({ alpha: 0 }, 1000, Phaser.Easing.Quadratic.In, true, 2000, 0, false);
+
+                        }, this);
+
+
+
+
+
+
+                }
+
+                removeItem(itemIndex: number): void {
+
+                        this.groupAll.remove(this.gameItemsUtils.getItemById(itemIndex), true);
 
                 }
 
                 getContentsBycontexts(contexts: Array<string>): Array<any> {
 
                         let _arr: Array<any> = getZero89Data();
+
+                        if (_arr == undefined) return [{}];
                         let _con: Array<any>;
                         let _result: Array<any> = [];
                         let ele: boolean = false;
@@ -749,9 +867,9 @@ module z89 {
 
                 }
 
-                
 
-                shootFromHigh(targets: Array<number>, shot: any, callback: any) {
+
+                shootFromHigh(targets: Array<number>, shot?: any, callback?: any) {
 
                         //console.log(target);
                         // obj example
@@ -780,8 +898,7 @@ module z89 {
 
                                                 this.game.add.tween(_shot).to({ y: sprite.y }, 1000, Phaser.Easing.Quadratic.In, true, shot.delay * index, 0, false).onComplete.add((shoot: Phaser.Sprite) => {
 
-                                                        this.game.camera.flash();
-
+                                                        this.game.camera.flash(0xffffff, 2000);
                                                         _explosion = this.game.add.sprite(sprite.x, sprite.y, "explosion");
                                                         _explosion.anchor.set(.5, 1);
                                                         _explosion.scale.set(2);
@@ -794,19 +911,12 @@ module z89 {
                                                                         console.log("callaback");
                                                                 }
 
-
                                                         }, _explosion);
 
                                                         shoot.kill()
 
-
-
                                                 }, this)
-
-
-
                                         }
-
 
                                 }, this)
 

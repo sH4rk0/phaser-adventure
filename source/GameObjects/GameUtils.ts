@@ -2,15 +2,15 @@ module z89 {
 
     export class GameUtils {
 
-        game: Phaser.Game;
-        currentState: GameCity;
+         game: Phaser.Game;
+         currentState: GameCity;
         
 
 
-        constructor(game: Phaser.Game, currentState: GameCity) {
+        constructor(game: Phaser.Game) {
 
             this.game=game;
-            this.currentState=currentState;
+            this.currentState=<GameCity>this.game.state.getCurrentState();
            
         }
 

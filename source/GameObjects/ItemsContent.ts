@@ -1,12 +1,12 @@
 module z89 {
 
-    export class ItemsContent extends Phaser.Sprite {
+    export class ItemsContent extends Items {
 
-        game: Phaser.Game;
+        //game: Phaser.Game;
 
-        private currentState: GameCity;
+        //private currentState: GameCity;
         public itemObj: any;
-        private id: number;
+       // private id: number;
         private arrowLeft: Phaser.Sprite;
         private arrowRight: Phaser.Sprite;
         private contents: Array<any>;
@@ -22,8 +22,9 @@ module z89 {
         constructor(game: Phaser.Game, itemObj: any) {
 
             //console.log(itemObj)
-            super(game, itemObj.x, itemObj.y, itemObj.sprite);
-            this.currentState = <GameCity>this.game.state.getCurrentState();
+            super(game, itemObj);
+           // super(game, itemObj.x, itemObj.y, itemObj.sprite);
+           // this.currentState = <GameCity>this.game.state.getCurrentState();
             this.anchor.set(0.5);
 
             if (itemObj.scale != undefined) this.scale.set(itemObj.scale);
@@ -38,12 +39,12 @@ module z89 {
             this.fixedToCamera = itemObj.fixedToCamera;
 
             this.contents = this.currentState.getContentsBycontexts(this.contexts);
-            console.log(this.contents);
+          
 
             this.events.onInputDown.add(() => {
 
                 //let _currentItem: Items = this.currentState.getCurrentItem();
-                console.log("item down")
+                //console.log("item down")
 
             }, this);
 
@@ -89,8 +90,7 @@ module z89 {
 
             this.arrowLeft = this.game.add.sprite(-30, 0, "triangleBtn");
             this.arrowLeft.anchor.set(.5);
-            this.arrowLeft.inputEnabled = true;
-            this.arrowLeft.input.priorityID = 3;
+            this.arrowLeft.inputEnabled = false;
             this.arrowLeft.scale.set(2);
             this.arrowLeft.angle=-90;
             this.arrowLeft.tint=0x222222;
@@ -99,8 +99,7 @@ module z89 {
 
             this.arrowRight = this.game.add.sprite(30, 0, "triangleBtn");
             this.arrowRight.anchor.set(.5);
-            this.arrowRight.inputEnabled = true;
-            this.arrowRight.input.priorityID = 3;
+            this.arrowRight.inputEnabled = false;
             this.arrowRight.scale.set(2);
             this.arrowRight.angle=90;
             this.arrowRight.tint=0x222222;
@@ -121,21 +120,20 @@ module z89 {
             this.filtersArr.push(new convergenceShader(this.game));
             //
 
-
-            
-
-          //  this.start();
+          if(this.itemObj.isStarted) this.start();
 
         }
 
         start(){
 
-          
+            this.itemObj.isStarted=true;
+           
             this.game.add.tween(this.arrowRight).to({x:210}, 1000, Phaser.Easing.Quadratic.InOut, true,0,0,false)
             this.game.add.tween(this.arrowLeft).to({x:-210}, 1000, Phaser.Easing.Quadratic.InOut, true,0,0,false).onComplete.add(()=>{
                 this.isStarted=true;
                 this.game.add.tween(this.arrowRight).to({ x: this.arrowRight.x+10 }, 1000, Phaser.Easing.Quadratic.InOut, true,0,-1,true);
-
+                this.arrowLeft.inputEnabled=true;
+                this.arrowLeft.input.priorityID=3;
                 this.arrowLeft.events.onInputDown.add(() => {this.arrowLeft.tint=0x00FF00;this.goPrev();}, this);
                 this.arrowLeft.events.onInputUp.add(() => {this.arrowLeft.tint=0xFFFFFF;}, this);
 
@@ -145,7 +143,8 @@ module z89 {
                 this.contentImage.filters=[this.filtersArr[0],this.filtersArr[1]];
                 this.contentText.filters=[this.filtersArr[1]];
                 this.spinner.filters=[this.filtersArr[1]];
-    
+                this.arrowRight.inputEnabled=true;
+                this.arrowRight.input.priorityID=3;
                 this.arrowRight.events.onInputDown.add(() => {this.arrowRight.tint=0x00FF00;this.goNext()}, this);
                 this.arrowRight.events.onInputUp.add(() => {this.arrowRight.tint=0xFFFFFF;}, this);
                 this.game.add.tween(this.arrowLeft).to({ x: this.arrowLeft.x-10 }, 1000, Phaser.Easing.Quadratic.InOut, true,0,-1,true);
@@ -203,9 +202,6 @@ module z89 {
             this.loadImage()
 
         }
-
-
-        
 
         isInteractive(): boolean {
 
@@ -286,8 +282,7 @@ module z89 {
             this.contentText.text=this.contents[this.currentIndex].t;
             this.game.add.tween(this.contentText).to({ alpha: 1, y:this.contentText.y-10 }, 500, Phaser.Easing.Quadratic.In, true, 100, 0, false).onComplete.add(() => {
                 
-                                this.isAnimating = false;
-                                
+                                this.isAnimating = false;             
                 
                             }, this);
             this.game.add.tween(this.contentImage).to({ alpha: .8 }, 300, Phaser.Easing.Quadratic.In, true, 0, 0, false)

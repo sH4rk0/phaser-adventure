@@ -10,8 +10,8 @@ module z89 {
 
         private cursors: Phaser.CursorKeys;
         private currentState: GameCity;
-        private yMin: number = 654;
-        private yMax: number = 768;
+        private yMin: number = 654-48;
+        private yMax: number = 720;
         private direction: PlayerDirection = PlayerDirection.RIGHT;
         private playerState: PlayerStates = PlayerStates.IDLE;
         public myArea: Phaser.Sprite;
@@ -24,7 +24,7 @@ module z89 {
 
         constructor(game: Phaser.Game) {
 
-            super(game, 100, 650, "player");
+            super(game, 300, 650-48, "player");
 
             this.animations.add("idle", [8, 9, 10, 11], 5, true);
             this.animations.add("walk", [0, 1, 2, 3, 4, 5, 6, 7], 7, true);
@@ -41,7 +41,7 @@ module z89 {
             this.money = 0;
 
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
-            this.body.collideWorldBounds = true;
+            this.body.collideWorldBounds = false;
             this.cursors = game.input.keyboard.createCursorKeys();
 
             this.myArea = this.game.add.sprite(0, -30, this.game.cache.getBitmapData("hitArea"))
@@ -50,7 +50,9 @@ module z89 {
             this.myArea.input.priorityID = 2;
             this.myArea.alpha = 0;
             this.myArea.height = this.height;
-            this.myArea.events.onInputDown.add(() => { this.currentState.playerMenu.toggle(); }, this);
+            this.myArea.events.onInputDown.add(() => { 
+                if(this.currentState.isInteractionDisabled()) return;
+                this.currentState.playerMenu.toggle(); }, this);
 
             this.addChild(this.myArea);
            
@@ -64,6 +66,9 @@ module z89 {
 
             this.hideBaloon();
 
+          
+            
+            
             if (this.currentState.playerActions.IsOpen() && this.currentState.currentItem != undefined && _item != undefined && this.currentState.currentItem.itemObj.id != _item.itemObj.id) this.currentState.playerActions.hide();
 
             if (this.currentState.conversationBaloon.isConversationActive() && (_x != this.x || _y != this.y - 5)) { this.currentState.conversationBaloon.stopConversation() }
@@ -99,18 +104,21 @@ module z89 {
 
             if (_y > this.yMax) _y = this.yMax;
             if (_y < this.yMin) _y = this.yMin;
+            
             let distance: number;
             let distanceX: number = Phaser.Math.distance(this.x, 0, _x, 0);
             let distanceY: number = Phaser.Math.distance(0, this.y, 0, _y);
 
             if (distanceX > distanceY) { distance = distanceX } else { distance = distanceY }
 
+            console.log("2",_x,_y)
             this.playerTween = this.game.add.tween(this).to({ x: _x, y: _y + 1 }, 7.5 * distance, Phaser.Easing.Default, true, 0, 0, false);
 
             //moving player tween end
             this.playerTween.onComplete.add((_player: Player, _tween: Phaser.Tween, _intersect: boolean) => {
 
-               this.currentState.updatePlayerPosition(_player.x,_player.y);
+                console.log("completed")
+               this.currentState.saveGameObj.updatePlayerPosition(_player.x,_player.y);
                 this.play("idle");
 
                 //check if an item is passed as destination
@@ -157,7 +165,7 @@ module z89 {
         illogicAction() {
 
 
-            this.currentState.player.showBaloon(this.illogicText[this.game.rnd.integerInRange(0, this.illogicText.length - 1)]);
+            this.showBaloon(this.illogicText[this.game.rnd.integerInRange(0, this.illogicText.length - 1)]);
 
         }
 
@@ -305,9 +313,11 @@ module z89 {
 
         update(): void {
 
+            /*
             this.body.velocity.x = 0;
             this.body.velocity.y = 0;
 
+            
 
             if (this.cursors.left.isDown) {
 
@@ -363,6 +373,8 @@ module z89 {
                 }
 
             }
+
+            */
 
 
 

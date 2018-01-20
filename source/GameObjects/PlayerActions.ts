@@ -43,7 +43,7 @@ module z89 {
             let _txt: Phaser.BitmapText;
             this.actionList.forEach((element, index) => {
 
-                _btn = this.game.add.sprite(70, index * 60, this.game.cache.getBitmapData("menuActionBtn"));
+                _btn = this.game.add.sprite(70, index * 55, this.game.cache.getBitmapData("menuActionBtn"));
                 _btn.name = element;
                 _btn.z = index;
                 _btn.anchor.set(0);
@@ -55,6 +55,7 @@ module z89 {
 
                 _btn.events.onInputDown.add((btn: Phaser.Sprite) => {
 
+                    if(this.currentState.isInteractionDisabled()) return;
                     this.resetActions();
 
                     this.currentAction = btn.z;
@@ -76,7 +77,7 @@ module z89 {
 
             //inventory ICONS
             let _icon: Phaser.Sprite;
-            let _iconPos: Array<any> = [{ x: 88, y: 600 }, { x: 178, y: 600 }, { x: 88, y: 685 }, { x: 178, y: 685 }];
+            let _iconPos: Array<any> = [{ x: 88, y: 555 }, { x: 178, y: 555 }, { x: 88, y: 640 }, { x: 178, y: 640 }];
             for (var index = 0; index < 4; index++) {
 
                 _icon = this.game.add.sprite(_iconPos[index].x, _iconPos[index].y, "inventory", 0, this.iconGroup);
@@ -85,7 +86,7 @@ module z89 {
                 _icon.input.priorityID = 2;
                 _icon.alpha = this.iconAlpha;
                 _icon.events.onInputDown.add((icon: Phaser.Sprite) => {
-
+                    if(this.currentState.isInteractionDisabled()) return;
                     if (icon.children.length == 0) return;
 
                     if (this.isInverntoryItemSelected(icon.z) != -1) {
@@ -121,7 +122,7 @@ module z89 {
 
             this.add(this.iconGroup);
 
-            this.actionText = this.game.add.bitmapText(320, 725, "commodore", "", 20);
+            this.actionText = this.game.add.bitmapText(320, 690, "commodore", "", 20);
             this.actionText.alpha = 0;
             this.addChild(this.actionText);
 
@@ -174,10 +175,12 @@ module z89 {
         }
 
         show() {
-            //console.log("show")
+          
+           
             if (!this.isOpen) {
 
                 this.currentState.disableInteraction();
+                
                 this.game.add.tween(this.cameraOffset).to({ x: -40 }, 200, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(() => {
 
                     this.isOpen = true;
@@ -281,6 +284,9 @@ module z89 {
             this.remapInventoryItemsIndex();
             this.assignItemToIcon();
 
+            this.currentState.saveGameObj.updatePlayerInventory(this.inventory);
+            
+
         }
 
         private assignItemToIcon(): void {
@@ -333,13 +339,11 @@ module z89 {
 
             let _icon: Phaser.Sprite = <Phaser.Sprite>this.iconGroup.getChildAt(this.inventory.length - 1)
 
-
-
             let _inv: Phaser.Sprite = this.game.add.sprite(35, 35, item.itemObj.sprite);
             _inv.anchor.set(.5);
             _icon.addChild(_inv);
 
-            this.currentState.updatePlayerInventory(this.inventory);
+            this.currentState.saveGameObj.updatePlayerInventory(this.inventory);
 
 
         }

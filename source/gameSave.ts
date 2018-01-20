@@ -2,19 +2,30 @@ module z89 {
 
     export class saveGame {
 
-        private currentState:GameCity;
+        private game: Phaser.Game;
+        private currentState: GameCity;
         private playerX: number = 0;
         private playerY: number = 0;
         private savedObj: any;
         private isSaved: boolean = false;
         private inventory: Array<any>;
-        private items:Array<any>;
+        private items: Array<any>;
 
-        constructor(currentState:GameCity) {
+        constructor(game: Phaser.Game) {
 
-            this.currentState=currentState;
+            this.game = game;
+            this.currentState = <GameCity>this.game.state.getCurrentState();
             this.checkSaved();
+            
 
+           // this.game.time.events.repeat(5000, 10, this.updateItems, this);
+
+
+        }
+
+        destroy(){
+
+            this.clearSaved();
         }
 
         updatePlayerPosition(x: number, y: number): void {
@@ -26,32 +37,39 @@ module z89 {
 
         }
 
-        updatePlayerInventory(inventory:Array<number>): void {
-
-            this.inventory=inventory;
-            this.updateSaveObj();
-
-
-        }
-
-
-        updateItems(){
-
+        updatePlayerInventory(inventory: Array<Items>) {
             
-            let _itemsObj:Array<any>=[];
-
+                                    let _inventory: Array<any> = [];
             
-            console.log(this.currentState.groupAll);
-            this.currentState.groupAll.children.forEach((element:Items) => {
-                
-                if(element.itemObj!=undefined){
+                                    inventory.forEach((item) => {
+            
+                                            _inventory.push(item.itemObj);
+            
+                                    })
+                                    this.inventory = _inventory;
+                                    this.updateItems();
+                                    this.updateSaveObj();
+                                   
+            
+                            }
+
+       
+
+        updateItems() {
+
+
+            let _itemsObj: Array<any> = [];
+
+            this.currentState.groupAll.children.forEach((element: Items) => {
+
+                if (element.itemObj != undefined) {
 
                     _itemsObj.push(element.itemObj)
                 }
             });
 
             //console.log(_itemsObj)
-            this.items=_itemsObj;
+            this.items = _itemsObj;
 
             this.updateSaveObj();
 
@@ -81,13 +99,13 @@ module z89 {
         checkSaved(): void {
 
             let _obj: any = JSON.parse(localStorage.getItem("savedObj"));
-           // console.log(_obj)
+            // console.log(_obj)
             if (_obj != null) {
                 this.savedObj = _obj;
-                this.inventory=this.savedObj.inventory;
-                this.items=this.savedObj.items;
-                this.playerX=this.savedObj.position.x;
-                this.playerY=this.savedObj.position.y;
+                this.inventory = this.savedObj.inventory;
+                this.items = this.savedObj.items;
+                this.playerX = this.savedObj.position.x;
+                this.playerY = this.savedObj.position.y;
                 this.isSaved = true;
             } else {
                 this.savedObj = null;
@@ -109,7 +127,7 @@ module z89 {
 
             }
 
-           // console.log(obj);
+            //console.log(obj);
             this.setSaved(obj);
 
         }

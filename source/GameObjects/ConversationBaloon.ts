@@ -23,7 +23,7 @@ module z89 {
         private isPlaying: boolean;
 
         private timeEvent: Phaser.TimerEvent;
-        private isSkippable:boolean;
+        private isSkippable: boolean;
 
         // this.game.time.events
 
@@ -32,8 +32,8 @@ module z89 {
             super(game);
 
             this.currentState = <GameCity>this.game.state.getCurrentState();
-            
-            this.isSkippable=true;
+
+            this.isSkippable = true;
             this.isPlaying = false;
             this.baloonBg = this.game.add.image(0, 20, this.game.cache.getBitmapData("baloonBg"));
             this.baloonBg.anchor.set(0.5, 1);
@@ -55,9 +55,9 @@ module z89 {
             this.baloonPin.anchor.set(0.5, 1);
             this.add(this.baloonPin);
 
-            this.baloonText = this.game.add.bitmapText(0, 0, "commodore", "", 18);
+            this.baloonText = this.game.add.bitmapText(-140, 0, "commodore", "", 16);
             this.baloonText.maxWidth = 300;
-            this.baloonText.anchor.set(0.5, 1);
+            this.baloonText.anchor.set(0, 1);
 
             this.add(this.baloonText);
             this.alpha = 0;
@@ -69,7 +69,7 @@ module z89 {
 
         skip(): void {
 
-            if(!this.isSkippable) return;
+            if (!this.isSkippable) return;
             this.hideBaloon();
             this.game.time.events.remove(this.timeEvent);
             this.currentStep++;
@@ -103,14 +103,18 @@ module z89 {
 
         stopConversation(): void {
             this.forkBtns.removeAll();
-            this.baloonText.y=0;
+            this.baloonText.y = 0;
             this.isPlaying = false;
             this.hideBaloon();
 
-            this.baloonX = this.baloonTarget.x;
-            this.baloonY = this.baloonTarget.y - this.baloonTarget.height - 50;
-            this.showBaloon(z89.getLabel(39));
-            this.game.time.events.add(1500, () => { this.hideBaloon(); }, this);
+            if (this.baloonTarget != null) {
+
+                this.baloonX = this.baloonTarget.x;
+                this.baloonY = this.baloonTarget.y - this.baloonTarget.height - 50;
+                this.showBaloon(z89.getLabel(39));
+                this.game.time.events.add(1500, () => { this.hideBaloon(); }, this);
+            }
+
 
 
         }
@@ -120,7 +124,7 @@ module z89 {
         setUpConversation(_actionObj: any): void {
             this.isPlaying = true;
             this.currentStep = 0;
-            this.setItemTarget(_actionObj.item);
+            if (_actionObj.item != null) this.setItemTarget(_actionObj.item);
             this.setConversationKey(_actionObj.key);
             this.setConversationObj(_actionObj.key);
 
@@ -129,7 +133,7 @@ module z89 {
 
         setItemTarget(item: Items): void { this.baloonTarget = item; }
         setConversationKey(key: string): void { this.conversationKey = key; }
-        setConversationObj(key: string): void { if (gameData.ingame.conversations[key] != undefined) this.conversationObj = gameData.ingame.conversations[key]; }
+        setConversationObj(key: string): void { if (gameData.ingame.conversation[key] != undefined) this.conversationObj = gameData.ingame.conversation[key]; }
 
         fixSize(): void {
 
@@ -142,24 +146,27 @@ module z89 {
 
         startConversation(): void {
 
-            if (this.currentState.player.x < this.baloonTarget.x) {
-                this.baloonTarget.turnLeft();
-            } else {
-                this.baloonTarget.turnRight();
+            if (this.baloonTarget != null) {
+                if (this.currentState.player.x < this.baloonTarget.x) {
+                    this.baloonTarget.turnLeft();
+                } else {
+                    this.baloonTarget.turnRight();
+                }
             }
+
             this.hideBaloon();
             this.displayStep();
 
         }
 
         displayStep(): void {
-            this.baloonText.y=0;
+            this.baloonText.y = 0;
             this.forkBtns.removeAll();
-            this.isSkippable=true;
+            this.isSkippable = true;
             if (!this.isPlaying) { return; };
             let _obj = this.conversationObj[this.currentStep];
-            if(_obj==undefined) {this.hideBaloon(); return;}
-            
+            if (_obj == undefined) { this.hideBaloon(); return; }
+
 
             if (_obj.isItem) {
                 this.baloonText.tint = 0xffffff;
@@ -179,12 +186,17 @@ module z89 {
             }
 
 
-            if (_obj.next != undefined) { this.timeEvent = this.game.time.events.add(_obj.next, () => { this.currentStep++; this.displayStep(); }, this) }
+            if (_obj.next != undefined) { this.timeEvent = this.game.time.events.add(this.getTime(_obj.text.length), () => { this.currentStep++; this.displayStep(); }, this) }
 
-            if (_obj.end != undefined) { this.timeEvent = this.game.time.events.add(_obj.end, () => { this.currentStep = 0; this.hideBaloon(); this.isPlaying = false; }, this) }
+            if (_obj.end != undefined) { this.timeEvent = this.game.time.events.add(this.getTime(_obj.text.length), () => { this.currentStep = 0; this.hideBaloon(); this.isPlaying = false; }, this) }
+
+            if (_obj.callback != undefined) {
+                
+                _obj.callback(this.currentState);
+             }
 
             if (_obj.fork != undefined) {
-                this.isSkippable=false;
+                this.isSkippable = false;
                 this.showOptions(_obj);
                 return;
 
@@ -196,6 +208,17 @@ module z89 {
 
         }
 
+        getTime(textLenght:number):number{
+
+           let _time:number=(textLenght*1000)/15;
+            
+           if(_time<1500) return 1500;
+
+           return _time;
+            
+
+
+        }
         showOptions(_obj: any): void {
 
 
@@ -203,56 +226,54 @@ module z89 {
             this.x = this.baloonX;
             this.y = this.baloonY;
 
-            let _btn:Phaser.Sprite;
-            let _btnText:Phaser.BitmapText;
-            let _nextPos:number=0;
-            let _totHeight:number=0;
-            _obj.options.forEach((element,index) => {
+            let _btn: Phaser.Sprite;
+            let _btnText: Phaser.BitmapText;
+            let _nextPos: number = 0;
+            let _totHeight: number = 0;
+            _obj.options.forEach((element, index) => {
 
-                
-                _btn=this.game.add.sprite(0,_nextPos,this.game.cache.getBitmapData("forkBtn"))
-                _btn.inputEnabled=true;
-                _btn.anchor.set(.5,1);
-               
-               
-                _btn.events.onInputDown.add((a,b,c)=>{ 
-                    
-                   //console.log(this.goToLabel(c));
 
-                   if(c.goto!=undefined) {this.currentStep=this.goToLabel(c.goto);}
-                   if(c.link!=undefined) {this.currentStep++; window.open(c.link,"_blank");}
-                   if(c.function!=undefined) { c.function(this.currentState,this.baloonTarget); this.hideBaloon(); return;}
+                _btn = this.game.add.sprite(0, _nextPos, this.game.cache.getBitmapData("forkBtn"))
+                _btn.inputEnabled = true;
+                _btn.input.priorityID=10;
+                _btn.anchor.set(.5, 1);
 
-                   this.displayStep();
-                
-                },this,null, element);
+                _btn.events.onInputDown.add((a, b, c) => {
 
-                _btnText=this.game.add.bitmapText(0,_nextPos,"commodore",element.option,18);
-                _btnText.maxWidth = 300;
-                
+                    if (c.goto != undefined) { this.currentStep = this.goToLabel(c.goto); }
+                    if (c.link != undefined) { this.currentStep++; window.open(c.link, "_blank"); }
+                    if (c.action != undefined) { c.action(this.currentState, this.baloonTarget); this.hideBaloon(); return; }
+
+                    this.displayStep();
+
+                }, this, null, element);
+
+                _btnText = this.game.add.bitmapText(0, _nextPos-10, "commodore", element.option, 16);
+                _btnText.maxWidth = 290;
+
                 _btnText.anchor.set(.5, 1);
 
-                if(_obj.isItem){_btn.tint=0x333333;_btnText.tint=0xfefefe;}else{ _btn.tint=0x0d3700;_btnText.tint=0x00ff00;}
-                
-               
-               _btn.height=_btnText.height+20;
-               _nextPos= _nextPos - (_btnText.height+20) -20;
-               _totHeight = _totHeight + _btnText.height+40;
+                if (_obj.isItem) { _btn.tint = 0x333333; _btnText.tint = 0xfefefe; } else { _btn.tint = 0x0f6c0f; _btnText.tint = 0xffffff; }
+
+
+                _btn.height = _btnText.height + 30;
+                _nextPos = _nextPos - (_btnText.height + 25) - 20;
+                _totHeight = _totHeight + _btnText.height + 50;
                 this.forkBtns.add(_btn);
                 this.forkBtns.add(_btnText);
 
             });
 
-            if(_obj.text!=undefined && _obj.text!="") {
-                
-            this.baloonText.text = _obj.text;
-            this.baloonText.y=_nextPos+10;
-            _totHeight+=this.baloonText.height+15;
+            if (_obj.text != undefined && _obj.text != "") {
+
+                this.baloonText.text = _obj.text;
+                this.baloonText.y = _nextPos ;
+                _totHeight += this.baloonText.height + 15;
 
             }
 
 
-            this.baloonBg.height = _totHeight+15;
+            this.baloonBg.height = _totHeight + 15;
 
             this.game.add.tween(this).to({ y: this.y + 10, alpha: 1 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
 
@@ -260,13 +281,13 @@ module z89 {
         }
 
 
-        goToLabel(label:string):number{
+        goToLabel(label: string): number {
 
-    
-            let _index:number=0;
-            this.conversationObj.forEach((element:any,index:number) => {
-               
-                if(element.label!=undefined && element.label==label){ _index= index; }
+
+            let _index: number = 0;
+            this.conversationObj.forEach((element: any, index: number) => {
+
+                if (element.label != undefined && element.label == label) { _index = index; }
 
             });
 

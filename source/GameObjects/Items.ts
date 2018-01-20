@@ -4,7 +4,7 @@ module z89 {
 
         game: Phaser.Game;
 
-        private currentState: GameCity;
+        public currentState: GameCity;
         public itemObj: any;
         public id: number;
         public inventoryIndex: number;
@@ -15,15 +15,15 @@ module z89 {
             //console.log(itemObj)
             super(game, itemObj.x, itemObj.y, itemObj.sprite);
 
-
-
             if (itemObj.animations != undefined) {
+             
                 itemObj.animations.forEach(element => {
 
                     this.animations.add(element.name, element.frames, element.rate, element.loop);
-                    this.play(element.name);
-
+                  
                 });
+
+                this.play(itemObj.currentAnimation);
             }
 
 
@@ -44,8 +44,11 @@ module z89 {
 
             if(itemObj.turnLeft!=undefined) this.turnLeft();
 
+            if(this.interactive){
             this.events.onInputDown.add(() => {
 
+            
+                if(this.currentState.isInteractionDisabled()) return;
                 let _currentItem: Items = this.currentState.getCurrentItem();
 
                // if (this.currentState.playerActions.IsOpen() && _currentItem != undefined && _currentItem.id != this.id) this.currentState.playerActions.hide();
@@ -64,6 +67,7 @@ module z89 {
                 this.currentState.player.goTo(_playerDest, this.y, this);
 
             }, this);
+        }
 
             this.game.add.existing(this);
         }
@@ -92,6 +96,28 @@ module z89 {
            
             this.scale.x = 1;
 
+        }
+
+        updateItemObj(_key:string,_value:any):void{
+
+            this.itemObj[_key]=_value;
+            if(_key=="name") this.name=_value;
+            
+
+        }
+
+        playAnim(_anim:string):void{
+
+            this.itemObj.currentAnimation=_anim;
+            this.play(_anim);
+           
+            
+
+        }
+
+        start():void{
+
+            
         }
 
 
