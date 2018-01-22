@@ -88,7 +88,7 @@ module z89 {
                         street.fixedToCamera = true;
                         this.groupCity.add(street);
 
-                        let buildings:Array<any>=[{s:"bg-home",x:0,y:640-48},{s:"bg-devday",x:624,y:640-48}]
+                        let buildings:Array<any>=[{s:"bg-home",x:0,y:640-48},{s:"bg-devday",x:624,y:640-48},{s:"bg-skills",x:1114,y:640-48},{s:"bg-cake",x:1550,y:640-36},{s:"bg-arcade",x:1800,y:640-48},{s:"bg-aerosol",x:2400,y:640-48},{s:"bg-contact",x:3000,y:640-36}]
                         let building:Phaser.Image;
                         buildings.forEach(element => {
                                 
@@ -157,8 +157,8 @@ module z89 {
 
                         this.Terminal = new Terminal(this.game);
                         this.Terminal.fixedToCamera = true;
-                        this.Terminal.cameraOffset.x = (1024 - 640) / 2;
-                        this.Terminal.cameraOffset.y = (768 - 500) / 2;
+                        this.Terminal.cameraOffset.x =  0;//(1080 - 640) / 2;
+                        this.Terminal.cameraOffset.y = 0;//(720 - 500) / 2;
                         this.Terminal.inputEnableChildren = false;
                         this.Terminal.alpha = 0;
 
@@ -207,13 +207,13 @@ module z89 {
                         }
 
 
-                        let half: Phaser.Sprite = this.game.add.sprite(0, 0, "halftone");
+                     /*   let half: Phaser.Sprite = this.game.add.sprite(0, 0, "halftone");
                         half.fixedToCamera = true;
 
                         let half2: Phaser.Sprite = this.game.add.sprite(1080, 0, "halftone");
                         half2.fixedToCamera = true;
                         half2.scale.x = -1;
-
+*/
                         this.chapterTitle = this.game.add.bitmapText(512, 384, "commodore2", "", 48);
                         this.chapterTitle.fixedToCamera = true;
                         this.chapterTitle.anchor.set(.5);

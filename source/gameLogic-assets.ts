@@ -33,7 +33,7 @@
             { name: "bg-level0", path: "assets/images/game/bg-level0.png" },
             { name: "bg-level1", path: "assets/images/game/bg-level1.png" },
             { name: "bg-level2", path: "assets/images/game/bg-level2.png" },
-            { name: "bg-level3", path: "assets/images/game/bg-level3.png" },
+            //{ name: "bg-level3", path: "assets/images/game/bg-level3.png" },
             
             { name: "street-level1", path: "assets/images/game/street-level1.png" },
             { name: "street-level0", path: "assets/images/game/street-level0.png" },
@@ -64,12 +64,17 @@
             { name: "spinner", path: "assets/images/game/spinner.png" },
             { name: "scanlines", path: "assets/images/game/intro/scanlines.png" },
             { name: "halftone", path: "assets/images/game/halftone.png" },
+            
             { name: "terminalBg", path: "assets/images/game/terminal/terminal.png" },
+            { name: "terminalKeyboard", path: "assets/images/game/terminal/keyboard.png" },
 
             { name: "bg-home", path: "assets/images/game/buildings/home.png" },
             { name: "bg-devday", path: "assets/images/game/buildings/devday.png" },
             { name: "bg-skills", path: "assets/images/game/buildings/skills.png" },
             { name: "bg-cake", path: "assets/images/game/buildings/cake.png" },
+            { name: "bg-arcade", path: "assets/images/game/buildings/arcade.png" },
+            { name: "bg-aerosol", path: "assets/images/game/buildings/aerosol.png" },
+            { name: "bg-contact", path: "assets/images/game/buildings/contact.png" },
             
             
 

@@ -165,16 +165,29 @@ module z89 {
 			bmd.ctx.fill();
 			this.game.cache.addBitmapData('c64bg', bmd);
 
-			bmd = this.game.add.bitmapData(1024, 768);
-			bmd.ctx.fillStyle = "#6C5EB5"
+			
+			bmd = this.game.add.bitmapData(40, 40);
+			bmd.ctx.fillStyle = '#00ff00';
 			bmd.ctx.beginPath();
-			bmd.ctx.rect(0, 0, 1024, 768);
+			bmd.ctx.moveTo(40, 40);
+			bmd.ctx.arcTo(0, 40, 0, 0, 10);
+			bmd.ctx.arcTo(0, 0, 40, 0, 10);
+			bmd.ctx.arcTo(40, 0, 40, 40, 10);
+			bmd.ctx.arcTo(40, 40, 0, 40, 10);
 			bmd.ctx.fill();
-			this.game.cache.addBitmapData('c64Outbg', bmd);
+			this.game.cache.addBitmapData('key', bmd);
 
+
+			bmd = this.game.add.bitmapData(1080, 150);
+			bmd.ctx.fillStyle = "#00ff00"
+			bmd.ctx.beginPath();
+			bmd.ctx.rect(0, 0, 1080, 150);
+			bmd.ctx.fill();
+			this.game.cache.addBitmapData('keyboard', bmd);
+
+			
 			this.game.load.bitmapFont("commodore", "assets/fonts/64_0.png", "assets/fonts/64.xml");
 			this.game.load.bitmapFont("commodore2", "assets/fonts/64x32_0.png", "assets/fonts/64x32.xml");
-
 			this.game.load.spritesheet("cursor", "assets/images/game/terminal/cursor.png", 16,16,2);
 		}
 
@@ -190,7 +203,7 @@ module z89 {
 			this.c64Screen.y = -400;
 			this.c64Screen.alpha = 0;
 
-			//new c64Typewriter(this.game,this.letters,this.c64Screen);
+			new c64Typewriter(this.game,this.letters,this.c64Screen);
 
 			this.game.add.tween(this.c64Screen).to({ y: destY, alpha: 1 }, 1000, Phaser.Easing.Bounce.Out, true, 0, 0, false).onComplete.add(() => {});
 

@@ -111,13 +111,13 @@ module z89 {
 
             if (distanceX > distanceY) { distance = distanceX } else { distance = distanceY }
 
-            console.log("2",_x,_y)
+      
             this.playerTween = this.game.add.tween(this).to({ x: _x, y: _y + 1 }, 7.5 * distance, Phaser.Easing.Default, true, 0, 0, false);
 
             //moving player tween end
             this.playerTween.onComplete.add((_player: Player, _tween: Phaser.Tween, _intersect: boolean) => {
 
-                console.log("completed")
+            
                this.currentState.saveGameObj.updatePlayerPosition(_player.x,_player.y);
                 this.play("idle");
 
@@ -228,14 +228,14 @@ module z89 {
 
 
             this.direction= PlayerDirection.RIGHT;
-            this.y = 648;
+            this.y = 608;
             this.x = toX;
             this.width = 126;
             this.height = 126;
             this.alpha = 0;
 
             let beam: Phaser.Sprite = this.game.add.sprite(toX, 0, "beam");
-            beam.height = 660;
+            beam.height = 610;
             beam.anchor.set(.5, 0);
             beam.width = 150;
             beam.alpha = 0;
@@ -266,13 +266,11 @@ module z89 {
 
 
             let beam: Phaser.Sprite = this.game.add.sprite(this.x, 0, "beam");
-            beam.height = 660;
+            beam.height = this.y;
             beam.width = 100;
             beam.anchor.set(.5, 0);
             beam.alpha = 0;
             beam.animations.add("beam", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 15, true).play();
-
-
 
             let tweenBeam: Phaser.Tween = this.game.add.tween(beam).to({ alpha: .3, width: 150 }, 300, Phaser.Easing.Quadratic.InOut, true, 200, 0, false);
 

@@ -172,10 +172,10 @@ module z89 {
         private gameLoaded: string = "";
 
 
-        constructor(game: Phaser.Game, terminal: Terminal, group: Phaser.Group, tint?: number) {
+        constructor(game: Phaser.Game, terminal: Terminal, tint?: number) {
 
             this.game = game;
-            this.typeGroup = group;
+            this.typeGroup = this.game.add.group();
             this.terminal = terminal;
             if (tint != null) this.tint = tint;
 
@@ -191,11 +191,13 @@ module z89 {
             this.typeGroup.add(this.cursor);
 
             for (var i = 0; i < 25; i++) {
-                this.lettersObj.push(this.game.add.bitmapText(0, 16 * i, "commodore", "", 16, this.typeGroup));
+                this.lettersObj.push(this.game.add.bitmapText(0, (16 * i), "commodore", "", 16, this.typeGroup));
                 this.lettersObj[i].tint = this.tint;
             }
 
-
+            this.terminal.addChild(this.typeGroup);
+            this.typeGroup.x=218;
+            this.typeGroup.y=90;
 
         }
 
@@ -495,7 +497,7 @@ module z89 {
 
             this.terminal.currentState.shootFromHigh([17]);
                         this.terminal.hide();
-                        return;
+                        //return;
                         
             this.clearShell();
             this.clear();
@@ -755,7 +757,7 @@ module z89 {
         }
 
         destroy(): void {
-            //console.log("destroy")
+            //console.log("destroy writer")
             this.removeLines();
             this.cursor.destroy();
 

@@ -249,7 +249,7 @@ module z89 {
 
         startLoading() {
 
-            this.game = new Phaser.Game(this.width, this.height, Phaser.AUTO, "", null, true, true);
+            this.game = new Phaser.Game(this.width, this.height, Phaser.AUTO, "my-game", null, true, true);
             setGameName(this.game);
             this.game.state.add("Boot", Boot, false);
             this.game.state.add("Preloader", Preloader, false);
