@@ -19,10 +19,11 @@ module z89 {
 
             this.fixedToCamera = true;
             this.currentState = <GameCity>this.game.state.getCurrentState();
-            this.menuBg = this.game.add.sprite(512, 450, "menu-phone")
+            this.menuBg = this.game.add.sprite(540, 450, "menu-phone")
             this.menuBg.alpha = 1;
             this.menuBg.anchor.set(0.5);
             this.menuBg.height = 350;
+            this.menuBg.scale.set(.7)
             this.add(this.menuBg);
 
             this.menuBg.inputEnabled = true;
@@ -179,13 +180,14 @@ module z89 {
 
         newGame(): void {
             this.currentState.displayChapterTitle(0);
+
+            this.currentState.playerBaloon.showBaloon(getLabel(95));
             this.isOpenOnStart = false;
             this.hide();
-
         }
 
         noGame(): void {
-            console.log("nogame");
+            //console.log("nogame");
 
 
             gameData.chapters.forEach(element => {
@@ -240,8 +242,8 @@ module z89 {
             }, this);
 
 
-            this.game.add.tween(this.menuBg.scale).to({ y: 1.3, x: 1.3 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
-            this.game.add.tween(this.menuBg).to({ height: 1000 }, 600, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            this.game.add.tween(this.menuBg.scale).to({ y: 1, x: 1 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            this.game.add.tween(this.menuBg).to({ height: 774 }, 600, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
 
 
         }
@@ -255,7 +257,7 @@ module z89 {
 
             }, this);
 
-            this.game.add.tween(this.menuBg.scale).to({ y: 1, x: 1 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            this.game.add.tween(this.menuBg.scale).to({ y: .7, x: .7 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
             this.game.add.tween(this.menuBg).to({ height: 350 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
 
 

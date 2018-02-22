@@ -3,8 +3,6 @@ gameData.ingame.logic =
 
     {
 
-
-
         // examine terminal 
         EXAMINE_2: (cs: z89.GameCity) => {
 
@@ -16,7 +14,6 @@ gameData.ingame.logic =
                     cs.player.showBaloon(z89.getLabel(81));
 
                 }
-
             
         },
          // use terminal
@@ -65,6 +62,19 @@ gameData.ingame.logic =
                 item: null
             }
 
+            cs.conversationBaloon.setUpConversation(convObj);
+
+        },
+
+         //use jukoxeb
+         USE_11: (cs: z89.GameCity) => {
+
+            let convObj: any = {
+                key: "USE_jukebox",
+                action: null,
+                inventory: null,
+                item: null
+            }
 
             cs.conversationBaloon.setUpConversation(convObj);
 
@@ -93,20 +103,14 @@ gameData.ingame.logic =
                 }
 
             } else {
-                cs.player.showBaloon("Nothing to do with this!");
+                cs.player.showBaloon(z89.getLabel(93));
 
             }
-
 
         },
 
         //examine scotch tape
-        EXAMINE_24: (cs: z89.GameCity) => {
-
-            cs.player.showBaloon(z89.getLabel(58));
-
-
-        },
+        EXAMINE_24: (cs: z89.GameCity) => { cs.player.showBaloon(z89.getLabel(58)); },
 
         //examine energy box
         EXAMINE_23: (cs: z89.GameCity) => {
@@ -148,6 +152,19 @@ gameData.ingame.logic =
                 
                 cs.saveGameObj.updateItems();
 
+                gameData.chapters[cs.currentChapter].completed=true;
+
+                let convObj: any = {
+                    key: "CHAPTER_COMPLETED",
+                    action: null,
+                    inventory: null,
+                    item: null
+                }
+    
+                cs.conversationBaloon.setUpConversation(convObj);
+            
+                
+
             });
 
         },
@@ -160,6 +177,15 @@ gameData.ingame.logic =
 
             cs.conversationBaloon.setUpConversation({
                 key: "TALKTO_16",
+                action: null,
+                inventory: null,
+                item: cs.currentItem
+            });
+        },
+        TALKTO_27: (cs: z89.GameCity) => {
+
+            cs.conversationBaloon.setUpConversation({
+                key: "TALKTO_27",
                 action: null,
                 inventory: null,
                 item: cs.currentItem

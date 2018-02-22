@@ -151,6 +151,18 @@ module z89 {
 			bmd.ctx.fill();
 			this.game.cache.addBitmapData('roundedBtn', bmd);
 
+			bmd = this.game.add.bitmapData(180, 50);
+			bmd.ctx.fillStyle = '#00ff00';
+			bmd.ctx.beginPath();
+			bmd.ctx.moveTo(180, 50);
+			bmd.ctx.arcTo(0, 50, 0, 0, 10);
+			bmd.ctx.arcTo(0, 0, 50, 0, 10);
+			bmd.ctx.arcTo(180, 0, 180, 50, 10);
+			bmd.ctx.arcTo(180, 50, 0, 50, 10);
+			bmd.ctx.fill();
+			this.game.cache.addBitmapData('readmore', bmd);
+
+
 			bmd = this.game.add.bitmapData(400, 200);
 			bmd.ctx.fillStyle = '#ffffff';
 			bmd.ctx.beginPath();
@@ -220,6 +232,7 @@ module z89 {
 			this.game.scale.pageAlignVertically = true;
 			//this.game.canvas.style.cursor = 'url(http://triplanetary.github.io/cursor.png),auto';
 
+			/* comment this */
 			this.game.state.start("Preloader");
 
 

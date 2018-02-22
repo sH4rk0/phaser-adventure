@@ -22,6 +22,7 @@
             { name: "cable", path: "assets/images/game/items/cable.png", width: 30, height: 40, frames: 20 },
             { name: "cake", path: "assets/images/game/items/cake.png", width: 150, height: 177, frames: 9 },
             { name: "drink-machine", path: "assets/images/game/items/drink-machine.png",width: 80, height: 124, frames: 2  },
+            { name: "jukebox", path: "assets/images/game/items/jukebox.png",width: 68, height: 136, frames: 8  },
            
             
 
@@ -59,11 +60,14 @@
             { name: "invite", path: "assets/images/game/items/invite.png" },
             { name: "skills", path: "assets/images/game/items/skills.png" },
             { name: "newsbg", path: "assets/images/game/items/news-bg.png" },
+            { name: "woofer", path: "assets/images/game/items/woofer.png" },
+           
             { name: "triangleBtn", path: "assets/images/game/triangle-btn.png" },
             { name: "scotch", path: "assets/images/game/items/scotch.png" },
             { name: "spinner", path: "assets/images/game/spinner.png" },
             { name: "scanlines", path: "assets/images/game/intro/scanlines.png" },
             { name: "halftone", path: "assets/images/game/halftone.png" },
+            { name: "readmore", path: "assets/images/game/readmore.png" },
             
             { name: "terminalBg", path: "assets/images/game/terminal/terminal.png" },
             { name: "terminalKeyboard", path: "assets/images/game/terminal/keyboard.png" },
@@ -81,10 +85,10 @@
         ],
 
         sounds: [
-            /*
+            
                         { name: "intro", paths: ["assets/sounds/intro.ogg", "assets/sounds/intro.m4a"], volume: 1, loop: false },
                         
-            */
+            
         ],
 
         bitmapfont: [

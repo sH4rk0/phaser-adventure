@@ -18,7 +18,7 @@ module z89 {
             let _text: Phaser.BitmapText;
             let _bar: Phaser.Sprite;
 
-            let _y: Array<number> = [8-215, 123-215, 239-215, 355-215];
+            let _y: Array<number> = [140, 140-96, 140-96-96, 140-96-96-96];
 
             for (var i = 0; i < 4; i++) {
 

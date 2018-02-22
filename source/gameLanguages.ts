@@ -88,6 +88,18 @@ let languages={
         "DO YOU REALLY WANT TO RESTART?",//85
         "I want to thanks Richard Davey author of Phaser Framework, PAUL ROBERTSON and JASON TAMMEMAGI for their unaware art contribution to this experiment.",//86
         "Here some options!!",//87
+        "Jukebox",//88
+        "DEVDAY website",//89
+        "Info",//90
+        "I would like to listen...",//91
+        "Woofer",//92
+        "Nothing to do with this!",//93
+        "I have completed this chapter. Would you like to continue?",//94
+        "Tap me to access the menu.",//95
+        "The GOVERNOR",//96
+        "Hi!",//97
+        "I'm the GOVERNOR... and you are nothing!",//98
+        
     ]};
 
 let actions={

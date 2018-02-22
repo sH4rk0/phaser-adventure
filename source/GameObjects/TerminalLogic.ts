@@ -13,10 +13,13 @@ module z89 {
         t4,
         t3,
         t2,
-        t1
+        t1,
+        hit,
+        processing,
+        disconnecting
     }
     export enum shell {
-        joshua,
+        login,
         gtw,
         call
 
@@ -32,8 +35,8 @@ module z89 {
             'READY.                                  ', //3
             'LIST OF COMMANDS:                       ', //4
             '----------------------------------------', //5
-            'help, clear, quit, ver, credits,        ', //6
-            'dir, play "gamename"                    ', //7
+            'help, clear, quit, ver, credits, reset, ', //6
+            'dir, load "gamename", run               ', //7
             ' GREETINGS PROFESSOR FALKEN.            ', //8
             ' WELCOME TO,                            ', //9
             ' ###################################### ', //10
@@ -51,7 +54,7 @@ module z89 {
             'MUSIC:                                  ', //22
             'ADDITIONAL FX: FRANCESO RAIMONDO        ', //23
             '0 "GAME LIST                  " 32 2A   ', //24
-            '0    "BOOCCONCINI DEV"             PRG  ', //25
+            '0    "BOCCONCINI DEV"              PRG  ', //25
             '0    "XMAS2K16"                    PRG  ', //26
             '0    "THE WRONG DIRECTION"         PRG  ', //27
             '0    "FALKEN\'S MAZE"               PRG  ',//28
@@ -104,6 +107,9 @@ module z89 {
             'SEARCHING FOR ',                           //75
             'LOADING                                 ', //76
             'RUNNING A GAME FROM:                    ', //77
+            '              ##############            ', //78
+            '              # PROCESSING #            ', //79
+            'Disconnecting....                       ', //80
 
 
         ];
@@ -123,6 +129,8 @@ module z89 {
             [0, 60, 61, 62, 63, 64, 65, 66, 0], //t2 //11
             [0, 67, 68, 69, 70, 71, 72, 73, 0], //t1 //12
             [0, 10, 74, 10, 0, 3], //target hit //13
+            [0, 78, 79, 78, 0], //processing //14
+            [80], //disconnecting //15
 
         ];
 
@@ -170,6 +178,7 @@ module z89 {
         private isShellLogin: boolean = false;
         private login: string = "";
         private gameLoaded: string = "";
+        private inputIsDisabled = false;
 
 
         constructor(game: Phaser.Game, terminal: Terminal, tint?: number) {
@@ -196,8 +205,8 @@ module z89 {
             }
 
             this.terminal.addChild(this.typeGroup);
-            this.typeGroup.x=218;
-            this.typeGroup.y=90;
+            this.typeGroup.x = 218;
+            this.typeGroup.y = 90;
 
         }
 
@@ -207,6 +216,12 @@ module z89 {
             this.writeMultiple(this.returnStaticString(msgs.reset, 0));
 
         };
+
+
+        enableInput(): void { this.inputIsDisabled = false; this.showCursor(); }
+        disableInput(): void { this.inputIsDisabled = true; this.hideCursor(); }
+        hideCursor(): void { this.cursor.alpha = 0; }
+        showCursor(): void { this.cursor.alpha = 1; }
 
         returnStaticString(msg: msgs, delay: number): any {
 
@@ -236,7 +251,7 @@ module z89 {
         returnGames(): any { return this.returnStaticString(msgs.gameList, 0); }
         returnVersion(): any { return this.returnStaticString(msgs.version, 0); }
         returnCredits(): Array<any> { return this.returnStaticString(msgs.credits, 0); }
-
+        returnProcessing(): Array<any> { return this.returnStaticString(msgs.processing, 0); }
 
         returnError(error?: string): Array<any> {
 
@@ -256,7 +271,6 @@ module z89 {
         }
 
         returnLoading(game?: string): Array<any> {
-
 
             return [
 
@@ -287,7 +301,7 @@ module z89 {
 
 
         charUp(): void {
-            if (this.isShell) return;
+            if (this.isShell || this.inputIsDisabled) return;
             let col: number = this.cursor.x / 16;
             let row: number = this.cursor.y / 16;
 
@@ -295,7 +309,7 @@ module z89 {
 
         }
         charDown(): void {
-            if (this.isShell) return;
+            if (this.isShell || this.inputIsDisabled) return;
             let col: number = this.cursor.x / 16;
             let row: number = this.cursor.y / 16;
 
@@ -309,10 +323,8 @@ module z89 {
 
         }
 
-
-
         charLeft(): void {
-            if (this.isShell) return;
+            if (this.isShell || this.inputIsDisabled) return;
             let col: number = this.cursor.x / 16;
             let row: number = this.cursor.y / 16;
 
@@ -334,7 +346,7 @@ module z89 {
 
         }
         charRight(): void {
-            if (this.isShell) return;
+            if (this.isShell || this.inputIsDisabled) return;
             let col: number = this.cursor.x / 16;
             let row: number = this.cursor.y / 16;
 
@@ -363,7 +375,7 @@ module z89 {
         }
 
         removeChar(): void {
-
+            if (this.inputIsDisabled) return;
             let col: number = this.cursor.x / 16
             let row: number = this.cursor.y / 16;
 
@@ -397,6 +409,7 @@ module z89 {
 
         addChar(key: string): void {
 
+            if (this.inputIsDisabled) return;
 
             let col: number = this.cursor.x / 16;
             let row: number = this.cursor.y / 16;
@@ -424,6 +437,19 @@ module z89 {
 
         }
 
+        addChars(key: string): void {
+
+            for(let i=0; i<key.length; i++){
+
+                this.addChar(key.charAt(i));
+
+            }
+
+
+
+
+        }
+
         replaceAt(string, index, replace): string {
 
             return string.substring(0, index) + replace + string.substring(index + 1);
@@ -447,24 +473,24 @@ module z89 {
 
         }
 
-        returnJoshua(error: boolean = false): void {
-
-            this.logged = true;
-            this.login = "";
-            this.clear();
-            this.writeMultiple(this.returnStaticString(msgs.gtw, 0));
-            this.write(this.returnReady(">:"), false);
-            this.setCursor(0, this.returnStaticString(msgs.gtw, 0).length + 1);
-            if (error) this.writeMultiple(this.returnLoginError("INVALID COORDINATES"));
-            this.isShell = true;
-            this.shellStart = 2;
-            this.shellEnd = 7;
-            this.shellType = shell.gtw;
-            this.isShellLogin = false;
-            this.setCursor(2, 12);
-
-
-        }
+        /*  returnLogged(error: boolean = false): void {
+  
+              this.logged = true;
+              this.login = "";
+              this.clear();
+              this.writeMultiple(this.returnStaticString(msgs.gtw, 0));
+              this.write(this.returnReady(">:"), false);
+              this.setCursor(0, this.returnStaticString(msgs.gtw, 0).length + 1);
+              if (error) this.writeMultiple(this.returnLoginError("INVALID COORDINATES"));
+              this.isShell = true;
+              this.shellStart = 2;
+              this.shellEnd = 7;
+              this.shellType = shell.gtw;
+              this.isShellLogin = false;
+              this.setCursor(2, 12);
+  
+  
+          }*/
 
         checkCoordinates(coordinates: string): number {
 
@@ -495,25 +521,24 @@ module z89 {
 
         hitTarget(): void {
 
-            this.terminal.currentState.shootFromHigh([17]);
-                        this.terminal.hide();
-                        //return;
-                        
+            //this.terminal.currentState.shootFromHigh([17]);
+            //this.terminal.hide();
+            //return;
+
             this.clearShell();
             this.clear();
             this.writeMultiple(this.returnStaticString(msgs.targetAquired, 0));
 
             for (let i = 0; i < 6; i++) {
 
-                this.game.time.events.add(1000 * i + 1000, () => {
+                this.game.time.events.add(1000 * i, () => {
 
                     this.writeMultiple(this.returnStaticString(8 + i, 0));
-                    if (i == 5) this.game.time.events.add(1000 * i, () => {
-                        this.terminal.currentState.shootFromHigh([17]);
+                    if (i == 5) this.game.time.events.add(1000, () => {
                         this.terminal.hide();
-                    },this);
-
-
+                        this.terminal.currentState.shootFromHigh([27]);
+                        
+                    }, this);
 
                 }, this);
 
@@ -529,25 +554,19 @@ module z89 {
             row++;
             if (row > 24) { this.scrollDown(); this.cursor.y = (row * 16) - 16; }
 
-            console.log(command)
+            // console.log(command)
 
             if (this.isShell) {
 
-                console.log(this.login)
+                // console.log(this.login)
 
                 switch (this.shellType) {
 
 
-                    case 0: //joshua
+                    case 0: //login
 
                         switch (this.login) {
 
-                            case "joshua":
-
-                                this.logged = true;
-                                this.returnJoshua();
-
-                                break;
 
                             case "quit":
                                 this.clear();
@@ -558,8 +577,7 @@ module z89 {
 
                             default:
 
-                                this.returnShellError(">:", true);
-
+                                this.ajaxCall({ who: "login", login: this.login });
                                 break;
 
                         }
@@ -573,13 +591,13 @@ module z89 {
 
                             case -1:
 
-                                this.returnJoshua(true);
+                                this.returnLogged(this, true);
 
                                 break;
 
                             case 1:
 
-                                this.hitTarget();
+                                this.ajaxCall({ who: "coordinates", coordinates: this.login });
 
                                 break;
 
@@ -605,7 +623,7 @@ module z89 {
                 switch (command) {
 
                     case "hit":
-                    this.hitTarget();
+                        this.hitTarget();
                         break;
 
                     case "":
@@ -667,13 +685,14 @@ module z89 {
                         break;
 
                     case "load \"gtw\"":
+                    case "load":
 
                         if (!this.logged) {
-                            this.shellType = shell.joshua;
+                            this.shellType = shell.login;
                             this.returnShellError(">:");
 
                         } else {
-                            this.returnJoshua();
+                            this.returnLogged(this);
                         }
 
                         break;
@@ -708,6 +727,22 @@ module z89 {
 
                 }
             }
+        }
+
+
+        ajaxCall(data): void {
+
+            this.disableInput();
+            this.writeMultiple(this.returnProcessing());
+            let _this = this;
+            $.ajax({
+                url: "http://www.zero89.it/api/script/adventure/core.aspx",
+                dataType: "script",
+                type: "GET",
+                data: data
+
+            }).done(function (data) { _this.enableInput(); }).fail(function (xhr) { });
+
         }
 
 
@@ -769,6 +804,11 @@ module z89 {
 
             //this.cursor.y+=16;
 
+        }
+
+        public someLogic(): number {
+
+            return 66
         }
 
         write(obj: any, cursorNext: boolean = true): void {

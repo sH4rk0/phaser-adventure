@@ -39,6 +39,8 @@ module z89 {
                 public chapterTitle: Phaser.BitmapText;
                 public currentChapter: number;
 
+                private half: Phaser.TileSprite;
+
                 constructor() {
 
                         super();
@@ -51,7 +53,8 @@ module z89 {
                 }
 
                 create() {
-
+                        
+                        playSound(gameSound.intro);
                         document.getElementsByTagName("body")[0].className = "game";
 
                         this.game.cache.getBitmapFont("commodore").font.lineHeight = 18;
@@ -207,17 +210,22 @@ module z89 {
                         }
 
 
-                     /*   let half: Phaser.Sprite = this.game.add.sprite(0, 0, "halftone");
+                       let half: Phaser.TileSprite = this.game.add.tileSprite(0, 0,100,720, "halftone");
                         half.fixedToCamera = true;
 
-                        let half2: Phaser.Sprite = this.game.add.sprite(1080, 0, "halftone");
+                        let half2: Phaser.TileSprite = this.game.add.tileSprite(1080, 0,100,720, "halftone");
                         half2.fixedToCamera = true;
                         half2.scale.x = -1;
-*/
-                        this.chapterTitle = this.game.add.bitmapText(512, 384, "commodore2", "", 48);
+
+                        this.chapterTitle = this.game.add.bitmapText(512, 200, "commodore2", "", 48);
                         this.chapterTitle.fixedToCamera = true;
                         this.chapterTitle.anchor.set(.5);
                         this.chapterTitle.alpha = 0;
+
+
+
+                        let _woofer=this.gameItemsUtils.getItemById(12);
+                        _woofer.tween = this.game.add.tween(_woofer.scale).to( { x: .95, y: .975 }, 230, "Sine.easeInOut", true, 0, -1, true);
 
                         // this.chapterTitle.tint=0x00ff00;
 
@@ -307,7 +315,20 @@ module z89 {
 
                 }
 
-                restartGame() {
+                stopSound():void{
+
+                        stopSoundAll();
+
+                }
+
+                playSound(sound:gameSound):void{
+
+                        stopSoundAll();
+                        playSound(sound);
+
+                }
+
+                restartGame():void {
 
                         this.saveGameObj.destroy();
                         document.location.reload();
@@ -315,7 +336,7 @@ module z89 {
 
                 }
 
-                update() {
+                update():void {
 
 
                         //this.filters[0].randomize();
@@ -421,6 +442,9 @@ module z89 {
                         if (_actionObj.action != -1 && (_actionObj.inventory.length > 0 || _actionObj.item != null)) {
 
                                 if (this.executeActionLogic(_item)) {
+                                        this.playerBaloon.hideBaloon();
+                                        this.playerActions.hide();
+                                        this.playerMenu.hide();
                                         this.saveGame();
                                         this.resetActions();
                                         this.setActionObject(null);
@@ -811,16 +835,14 @@ module z89 {
                 displayChapterTitle(chapterIndex: number): void {
 
 
-                        this.currentChapter = chapterIndex;
-                        this.chapterTitle.text = gameData.chapters[chapterIndex].title
+                       if(chapterIndex!=undefined) this.currentChapter = chapterIndex;
+
+                        this.chapterTitle.text = gameData.chapters[this.currentChapter].title
                         this.game.add.tween(this.chapterTitle).to({ alpha: 1 }, 1000, Phaser.Easing.Quadratic.In, true, 500, 0, false).onComplete.add(() => {
 
                                 this.game.add.tween(this.chapterTitle).to({ alpha: 0 }, 1000, Phaser.Easing.Quadratic.In, true, 2000, 0, false);
 
                         }, this);
-
-
-
 
 
 
@@ -834,15 +856,15 @@ module z89 {
 
                 getContentsBycontexts(contexts: Array<string>): Array<any> {
 
+                        
                         let _arr: Array<any> = getZero89Data();
-
+                       // console.log(contexts,_arr)
                         if (_arr == undefined) return [{}];
                         let _con: Array<any>;
                         let _result: Array<any> = [];
                         let ele: boolean = false;
 
                         _arr.forEach(element => {
-
 
                                 _con = element.contexts;
 

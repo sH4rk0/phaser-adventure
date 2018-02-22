@@ -4,7 +4,7 @@
 /// <reference path="States/Preloader.ts"/>
 /// <reference path="States/Boot.ts"/>
 
-
+let _gamecity;
 module z89 {
 
     let _newGame: initGame;
@@ -100,6 +100,18 @@ module z89 {
 
     }
 
+    export function stopSoundAll(): void {
+
+        _gameSounds.forEach((sound)=>{
+            sound.stop();
+
+        })
+      
+
+    }
+
+
+
     export function pauseSound(_sound: gameSound): void {
 
         _gameSounds[_sound].stop();
@@ -113,35 +125,15 @@ module z89 {
     }
 
     export enum gameSound {
-        intro,
-        menu,
-        lightsaber,
-        tieShot,
-        ingame,
-        engine,
-        explosion,
-        bonus,
-        colliderSound,
-        yeahh,
-        gameover,
-        attacksequence,
-        stayfocused,
-        watchenemy,
-        theforce,
-        stayontarget,
-        tiefly,
-        usetheforce
+        intro
     }
 
     export function setUpGame(_game: Phaser.Game): void {
 
         if (!_gameSetup) {
 
-            //console.log("gameSetup");
             setGame(_game);
            
-          
-
             var _sound: Phaser.Sound;
             for (var i = 0; i < gameData.assets.sounds.length; i++) {
                 _sound = _game.add.audio(gameData.assets.sounds[i].name, gameData.assets.sounds[i].volume, gameData.assets.sounds[i].loop);
@@ -253,10 +245,10 @@ module z89 {
             setGameName(this.game);
             this.game.state.add("Boot", Boot, false);
             this.game.state.add("Preloader", Preloader, false);
-            this.game.state.add("GameCity", GameCity, false);
+         _gamecity = this.game.state.add("GameCity", GameCity, false);
             this.game.state.start("Boot");
 
-            setUpGame(this.game);
+            //setUpGame(this.game);
             
 
         }
@@ -268,7 +260,7 @@ module z89 {
                 dataType: "jsonp",
                 type: "GET",
                 data: {
-                    token: "047078118106073053084083117049077089110099113107120099081115118116110050110084081047084055082118122117081052079104113103107108052054043071051118068084098077105105071106104110050101084108106119071069078121085067085071073067085112119117049101108115051116120119061061",
+                    token: "084068108072071097080066109079102085089083089118076100077050122071104076099102057051109090043118048066075117067066050055055111084054050115051084072052113102048070110048110113121084114049112051",
                     format: "json"
                 },
             }).done(function (data) { setZero89Data(data.values.value); _newGame.startLoading(); })

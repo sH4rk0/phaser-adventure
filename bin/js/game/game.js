@@ -90,6 +90,8 @@ var z89;
             this.game.load.onLoadStart.add(function () { console.log("start asset load"); }, this);
             this.game.load.onFileComplete.add(this.fileComplete, this);
             this.game.load.onLoadComplete.add(function () {
+                z89.setUpGame(_this.game);
+                /* comment this */
                 z89.goState("GameCity", _this.game);
                 _this.body.className = "";
                 _this.screens[1] = new z89.c64Typewriter(_this.game, _this.letters2, _this.c64Screen);
@@ -258,6 +260,16 @@ var z89;
             bmd.ctx.arcTo(265, 50, 0, 50, 10);
             bmd.ctx.fill();
             this.game.cache.addBitmapData('roundedBtn', bmd);
+            bmd = this.game.add.bitmapData(180, 50);
+            bmd.ctx.fillStyle = '#00ff00';
+            bmd.ctx.beginPath();
+            bmd.ctx.moveTo(180, 50);
+            bmd.ctx.arcTo(0, 50, 0, 0, 10);
+            bmd.ctx.arcTo(0, 0, 50, 0, 10);
+            bmd.ctx.arcTo(180, 0, 180, 50, 10);
+            bmd.ctx.arcTo(180, 50, 0, 50, 10);
+            bmd.ctx.fill();
+            this.game.cache.addBitmapData('readmore', bmd);
             bmd = this.game.add.bitmapData(400, 200);
             bmd.ctx.fillStyle = '#ffffff';
             bmd.ctx.beginPath();
@@ -311,6 +323,7 @@ var z89;
             this.game.scale.pageAlignHorizontally = true;
             this.game.scale.pageAlignVertically = true;
             //this.game.canvas.style.cursor = 'url(http://triplanetary.github.io/cursor.png),auto';
+            /* comment this */
             this.game.state.start("Preloader");
         };
         return Boot;
@@ -322,6 +335,7 @@ var z89;
 /// <reference path="Lib/firebase.d.ts"/>
 /// <reference path="States/Preloader.ts"/>
 /// <reference path="States/Boot.ts"/>
+var _gamecity;
 var z89;
 (function (z89) {
     var _newGame;
@@ -402,6 +416,12 @@ var z89;
         _gameSounds[_sound].stop();
     }
     z89.stopSound = stopSound;
+    function stopSoundAll() {
+        _gameSounds.forEach(function (sound) {
+            sound.stop();
+        });
+    }
+    z89.stopSoundAll = stopSoundAll;
     function pauseSound(_sound) {
         _gameSounds[_sound].stop();
     }
@@ -413,27 +433,9 @@ var z89;
     var gameSound;
     (function (gameSound) {
         gameSound[gameSound["intro"] = 0] = "intro";
-        gameSound[gameSound["menu"] = 1] = "menu";
-        gameSound[gameSound["lightsaber"] = 2] = "lightsaber";
-        gameSound[gameSound["tieShot"] = 3] = "tieShot";
-        gameSound[gameSound["ingame"] = 4] = "ingame";
-        gameSound[gameSound["engine"] = 5] = "engine";
-        gameSound[gameSound["explosion"] = 6] = "explosion";
-        gameSound[gameSound["bonus"] = 7] = "bonus";
-        gameSound[gameSound["colliderSound"] = 8] = "colliderSound";
-        gameSound[gameSound["yeahh"] = 9] = "yeahh";
-        gameSound[gameSound["gameover"] = 10] = "gameover";
-        gameSound[gameSound["attacksequence"] = 11] = "attacksequence";
-        gameSound[gameSound["stayfocused"] = 12] = "stayfocused";
-        gameSound[gameSound["watchenemy"] = 13] = "watchenemy";
-        gameSound[gameSound["theforce"] = 14] = "theforce";
-        gameSound[gameSound["stayontarget"] = 15] = "stayontarget";
-        gameSound[gameSound["tiefly"] = 16] = "tiefly";
-        gameSound[gameSound["usetheforce"] = 17] = "usetheforce";
     })(gameSound = z89.gameSound || (z89.gameSound = {}));
     function setUpGame(_game) {
         if (!_gameSetup) {
-            //console.log("gameSetup");
             setGame(_game);
             var _sound;
             for (var i = 0; i < gameData.assets.sounds.length; i++) {
@@ -513,9 +515,9 @@ var z89;
             setGameName(this.game);
             this.game.state.add("Boot", z89.Boot, false);
             this.game.state.add("Preloader", z89.Preloader, false);
-            this.game.state.add("GameCity", z89.GameCity, false);
+            _gamecity = this.game.state.add("GameCity", z89.GameCity, false);
             this.game.state.start("Boot");
-            setUpGame(this.game);
+            //setUpGame(this.game);
         };
         initGame.prototype.getContents = function () {
             $.ajax({
@@ -523,7 +525,7 @@ var z89;
                 dataType: "jsonp",
                 type: "GET",
                 data: {
-                    token: "047078118106073053084083117049077089110099113107120099081115118116110050110084081047084055082118122117081052079104113103107108052054043071051118068084098077105105071106104110050101084108106119071069078121085067085071073067085112119117049101108115051116120119061061",
+                    token: "084068108072071097080066109079102085089083089118076100077050122071104076099102057051109090043118048066075117067066050055055111084054050115051084072052113102048070110048110113121084114049112051",
                     format: "json"
                 },
             }).done(function (data) { setZero89Data(data.values.value); _newGame.startLoading(); })
@@ -844,6 +846,17 @@ var languages = {
         "DO YOU REALLY WANT TO RESTART?",
         "I want to thanks Richard Davey author of Phaser Framework, PAUL ROBERTSON and JASON TAMMEMAGI for their unaware art contribution to this experiment.",
         "Here some options!!",
+        "Jukebox",
+        "DEVDAY website",
+        "Info",
+        "I would like to listen...",
+        "Woofer",
+        "Nothing to do with this!",
+        "I have completed this chapter. Would you like to continue?",
+        "Tap me to access the menu.",
+        "The GOVERNOR",
+        "Hi!",
+        "I'm the GOVERNOR... and you are nothing!",
     ]
 };
 var actions = {
@@ -876,6 +889,7 @@ gameData.assets = {
         { name: "cable", path: "assets/images/game/items/cable.png", width: 30, height: 40, frames: 20 },
         { name: "cake", path: "assets/images/game/items/cake.png", width: 150, height: 177, frames: 9 },
         { name: "drink-machine", path: "assets/images/game/items/drink-machine.png", width: 80, height: 124, frames: 2 },
+        { name: "jukebox", path: "assets/images/game/items/jukebox.png", width: 68, height: 136, frames: 8 },
     ],
     images: [
         { name: "bg-level0", path: "assets/images/game/bg-level0.png" },
@@ -902,11 +916,13 @@ gameData.assets = {
         { name: "invite", path: "assets/images/game/items/invite.png" },
         { name: "skills", path: "assets/images/game/items/skills.png" },
         { name: "newsbg", path: "assets/images/game/items/news-bg.png" },
+        { name: "woofer", path: "assets/images/game/items/woofer.png" },
         { name: "triangleBtn", path: "assets/images/game/triangle-btn.png" },
         { name: "scotch", path: "assets/images/game/items/scotch.png" },
         { name: "spinner", path: "assets/images/game/spinner.png" },
         { name: "scanlines", path: "assets/images/game/intro/scanlines.png" },
         { name: "halftone", path: "assets/images/game/halftone.png" },
+        { name: "readmore", path: "assets/images/game/readmore.png" },
         { name: "terminalBg", path: "assets/images/game/terminal/terminal.png" },
         { name: "terminalKeyboard", path: "assets/images/game/terminal/keyboard.png" },
         { name: "bg-home", path: "assets/images/game/buildings/home.png" },
@@ -917,12 +933,14 @@ gameData.assets = {
         { name: "bg-aerosol", path: "assets/images/game/buildings/aerosol.png" },
         { name: "bg-contact", path: "assets/images/game/buildings/contact.png" },
     ],
-    sounds: [],
+    sounds: [
+        { name: "intro", paths: ["assets/sounds/intro.ogg", "assets/sounds/intro.m4a"], volume: 1, loop: false },
+    ],
     bitmapfont: []
 };
 gameData.chapters = [
     {
-        title: "CHAPTER ONE:\nThe DEVDAY trouble",
+        title: "CHAPTER ONE:\nTHE DEVDAY TROUBLE!",
         completed: false,
         complete: function (cs) {
             cs.removeItem(24);
@@ -938,7 +956,7 @@ gameData.chapters = [
         }
     },
     {
-        title: "CHAPTER TWO:\nDiscover my Skills",
+        title: "CHAPTER TWO:\nBACK TO HOME!",
         completed: false,
         complete: function (cs) {
             cs.gameItemsUtils.getItemById(50).start();
@@ -955,6 +973,27 @@ gameData.ingame.conversation = {
             options: [
                 { option: "YES", action: function (cs, target) { cs.restartGame(); } },
                 { option: "NO", action: function (cs, target) { cs.conversationBaloon.hideBaloon(); } }
+            ]
+        }],
+    CHAPTER_COMPLETED: [{
+            text: z89.getLabel(94),
+            isItem: false,
+            fork: true,
+            options: [
+                { option: "LEAVE THE GAME", action: function (cs, target) {
+                        gameData.chapters.forEach(function (element) {
+                            if (!element.completed)
+                                element.complete(cs);
+                        });
+                    } },
+                { option: "YES", action: function (cs, target) {
+                        cs.currentChapter++;
+                        cs.displayChapterTitle(cs.currentChapter);
+                        cs.playerMenu.hide();
+                        cs.playerActions.hide();
+                        cs.playerBaloon.hideBaloon();
+                        cs.conversationBaloon.hideBaloon();
+                    } }
             ]
         }],
     INFO: [{
@@ -974,19 +1013,70 @@ gameData.ingame.conversation = {
             options: [
                 { option: "back", goto: "info" }
             ]
-        },
-    ],
+        }],
     OPTIONS: [{
             text: z89.getLabel(87),
             isItem: false
         }],
     TALKTO_devday: [
         {
-            text: "DEVDAY website",
+            text: z89.getLabel(89),
             isItem: false,
             fork: true,
             options: [{ option: "DEVDAY website", link: "http://www.devday.it" }, { option: "DEVDAY on youtube", link: "https://www.youtube.com/channel/UCUmykbn_rG5dExSncCgW9Nw" }, { option: "DEVDAY galaxy", link: "http://dd.zero89.it" }]
         }
+    ],
+    USE_jukebox: [
+        {
+            text: z89.getLabel(91),
+            isItem: false,
+            fork: true,
+            options: [
+                {
+                    option: "Nothing", action: function (cs, target) {
+                        cs.gameUtils.addDelay(500, function () {
+                            var _jukebox = cs.gameItemsUtils.getItemById(11);
+                            _jukebox.play("idle");
+                            cs.stopSound();
+                            var _woofer = cs.gameItemsUtils.getItemById(12);
+                            _woofer.tween.pause();
+                        });
+                        cs.conversationBaloon.hideBaloon();
+                        cs.player.play("use");
+                    }
+                },
+                {
+                    option: "Some 8bit Tune", action: function (cs, target) {
+                        cs.playSound(0);
+                        cs.gameUtils.addDelay(500, function () {
+                            var _jukebox = cs.gameItemsUtils.getItemById(11);
+                            _jukebox.play("play");
+                            var _woofer = cs.gameItemsUtils.getItemById(12);
+                            _woofer.tween.resume();
+                        });
+                        cs.conversationBaloon.hideBaloon();
+                        cs.player.play("use");
+                    }
+                }
+            ]
+        }
+    ],
+    TALKTO_27: [
+        {
+            text: z89.getLabel(97),
+            isItem: false,
+            next: true,
+        },
+        {
+            text: z89.getLabel(98),
+            isItem: true,
+            next: true,
+        },
+        {
+            text: z89.getLabel(67),
+            isItem: false,
+            end: true,
+        },
     ],
     TALKTO_16: [
         {
@@ -1093,7 +1183,7 @@ gameData.ingame.items = [
         offsetX: 0,
         fixedToCamera: false,
         isStarted: false,
-        contexts: ["gamedev", "phaser"],
+        contexts: ["devday"],
     },
     {
         id: 4,
@@ -1134,6 +1224,21 @@ gameData.ingame.items = [
         name: z89.getLabel(41),
         currentAnimation: "idle",
         x: 1040,
+        y: 650 - 48,
+        turnLeft: true,
+        interactive: true,
+        offsetX: 80,
+        fixedToCamera: false,
+        checkIntersect: false,
+    }, {
+        id: 27,
+        type: 1,
+        onStart: true,
+        sprite: "daniele",
+        animations: [{ name: "idle", frames: [1, 2, 3, 0], rate: 4.5, loop: true }],
+        name: z89.getLabel(96),
+        currentAnimation: "idle",
+        x: 1440,
         y: 650 - 48,
         turnLeft: true,
         interactive: true,
@@ -1245,6 +1350,36 @@ gameData.ingame.items = [
         offsetX: 70,
         fixedToCamera: true,
         checkIntersect: true
+    },
+    ,
+    {
+        id: 11,
+        type: 1,
+        sprite: "jukebox",
+        name: z89.getLabel(88),
+        x: 2450,
+        y: 650 - 48,
+        animations: [{ name: "idle", frames: [0], rate: 1, loop: false }, { name: "play", frames: [1, 2, 3, 4, 5, 6, 7, 2, 4, 6, 3, 1, 6, 3, 4, 6, 5, 7, 2, 5, 3, 4], rate: 14, loop: true }],
+        currentAnimation: "play",
+        onStart: true,
+        interactive: true,
+        offsetX: 70,
+        fixedToCamera: false,
+        checkIntersect: false
+    },
+    {
+        id: 12,
+        type: 1,
+        sprite: "woofer",
+        name: z89.getLabel(92),
+        x: 2450,
+        y: 650 - 48,
+        currentAnimation: "idle",
+        onStart: true,
+        interactive: false,
+        offsetX: 70,
+        fixedToCamera: false,
+        checkIntersect: false
     }
 ];
 gameData.ingame.logic =
@@ -1294,6 +1429,16 @@ gameData.ingame.logic =
             };
             cs.conversationBaloon.setUpConversation(convObj);
         },
+        //use jukoxeb
+        USE_11: function (cs) {
+            var convObj = {
+                key: "USE_jukebox",
+                action: null,
+                inventory: null,
+                item: null
+            };
+            cs.conversationBaloon.setUpConversation(convObj);
+        },
         //examine garbage 
         EXAMINE_4: function (cs) {
             cs.player.showBaloon(z89.getLabel(62));
@@ -1314,13 +1459,11 @@ gameData.ingame.logic =
                 }
             }
             else {
-                cs.player.showBaloon("Nothing to do with this!");
+                cs.player.showBaloon(z89.getLabel(93));
             }
         },
         //examine scotch tape
-        EXAMINE_24: function (cs) {
-            cs.player.showBaloon(z89.getLabel(58));
-        },
+        EXAMINE_24: function (cs) { cs.player.showBaloon(z89.getLabel(58)); },
         //examine energy box
         EXAMINE_23: function (cs) {
             if (cs.gameItemsUtils.getItemById(23).itemObj.fixed) {
@@ -1348,6 +1491,14 @@ gameData.ingame.logic =
                 cs.updateItemObject(2, "working", true);
                 cs.gameItemsUtils.getItemById(2).playAnim("working");
                 cs.saveGameObj.updateItems();
+                gameData.chapters[cs.currentChapter].completed = true;
+                var convObj = {
+                    key: "CHAPTER_COMPLETED",
+                    action: null,
+                    inventory: null,
+                    item: null
+                };
+                cs.conversationBaloon.setUpConversation(convObj);
             });
         },
         //examine gerardo
@@ -1357,6 +1508,14 @@ gameData.ingame.logic =
         TALKTO_16: function (cs) {
             cs.conversationBaloon.setUpConversation({
                 key: "TALKTO_16",
+                action: null,
+                inventory: null,
+                item: cs.currentItem
+            });
+        },
+        TALKTO_27: function (cs) {
+            cs.conversationBaloon.setUpConversation({
+                key: "TALKTO_27",
                 action: null,
                 inventory: null,
                 item: cs.currentItem
@@ -2053,14 +2212,14 @@ var z89;
                 _this.scale.set(itemObj.scale);
             _this.id = itemObj.id;
             _this.itemObj = itemObj;
-            _this.inputEnabled = true;
             _this.name = itemObj.name;
-            _this.input.priorityID = 1;
             _this.interactive = itemObj.interactive;
             _this.fixedToCamera = itemObj.fixedToCamera;
             if (itemObj.turnLeft != undefined)
                 _this.turnLeft();
             if (_this.interactive) {
+                _this.inputEnabled = true;
+                _this.input.priorityID = 1;
                 _this.events.onInputDown.add(function () {
                     if (_this.currentState.isInteractionDisabled())
                         return;
@@ -2132,6 +2291,7 @@ var z89;
             _this.contexts = itemObj.contexts;
             _this.fixedToCamera = itemObj.fixedToCamera;
             _this.contents = _this.currentState.getContentsBycontexts(_this.contexts);
+            console.log(_this.contents);
             _this.events.onInputDown.add(function () {
                 //let _currentItem: Items = this.currentState.getCurrentItem();
                 //console.log("item down")
@@ -2151,8 +2311,8 @@ var z89;
              this.contentImage.mask = mask;
              */
             _this.addChild(_this.contentImage);
-            var _style = { font: 'normal 20px', fill: '#ffffff', stroke: '#000000', strokeThickness: 5 };
-            _this.contentText = _this.game.add.text(-180, -70, "", _style);
+            var _style = { font: 'normal 18px', fill: '#ffffff', stroke: '#000000', strokeThickness: 5 };
+            _this.contentText = _this.game.add.text(-180, -85, "", _style);
             _this.contentText.font = 'Press Start 2P';
             _this.contentText.anchor.set(0);
             _this.contentText.wordWrap = true;
@@ -2176,6 +2336,16 @@ var z89;
             _this.arrowRight.angle = 90;
             _this.arrowRight.tint = 0x222222;
             _this.addChild(_this.arrowRight);
+            _this.btnGo = _this.game.add.sprite(0, 133, ("readmore"));
+            _this.btnGo.anchor.set(.5);
+            _this.btnGo.inputEnabled = false;
+            _this.btnGo.alpha = 0;
+            _style = { font: 'normal 16px', fill: '#ffffff', stroke: '#000000', strokeThickness: 0 };
+            var _readMore = _this.game.add.text(0, 5, "READ MORE", _style);
+            _readMore.anchor.set(.5);
+            _readMore.font = 'Press Start 2P';
+            _this.btnGo.addChild(_readMore);
+            _this.addChild(_this.btnGo);
             _this.contentImage.tint = 0x555555;
             _this.game.add.existing(_this);
             var cropRect = new Phaser.Rectangle(0, 0, 400, 200);
@@ -2193,6 +2363,11 @@ var z89;
             var _this = this;
             this.itemObj.isStarted = true;
             this.game.add.tween(this.arrowRight).to({ x: 210 }, 1000, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            this.game.add.tween(this.btnGo).to({ alpha: 1 }, 1000, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(function () {
+                _this.btnGo.inputEnabled = true;
+                _this.btnGo.input.priorityID = 3;
+                _this.btnGo.events.onInputDown.add(function () { _this.goDetail(); }, _this);
+            });
             this.game.add.tween(this.arrowLeft).to({ x: -210 }, 1000, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(function () {
                 _this.isStarted = true;
                 _this.game.add.tween(_this.arrowRight).to({ x: _this.arrowRight.x + 10 }, 1000, Phaser.Easing.Quadratic.InOut, true, 0, -1, true);
@@ -2244,11 +2419,17 @@ var z89;
             // this.hideContent();
             this.loadImage();
         };
+        ItemsContent.prototype.goDetail = function () {
+            //console.log("detail", this.contents[this.currentIndex]);
+            window.open(this.contents[this.currentIndex].url, "_blank");
+        };
         ItemsContent.prototype.isInteractive = function () {
             return this.interactive;
         };
         ItemsContent.prototype.loadImage = function () {
             var _content = this.contents[this.currentIndex];
+            if (_content == undefined)
+                return;
             if (_content.loaded != undefined && _content.loaded == true) {
                 this.hideContent(true);
             }
@@ -2282,7 +2463,7 @@ var z89;
             var _this = this;
             this.isAnimating = true;
             this.game.add.tween(this.spinner).to({ alpha: 1 }, 300, Phaser.Easing.Quadratic.In, true, 0, 0, false);
-            this.game.add.tween(this.contentText).to({ alpha: 0, y: this.contentText.y + 10 }, 300, Phaser.Easing.Quadratic.In, true, 0, 0, false);
+            this.game.add.tween(this.contentText).to({ alpha: 0, y: this.contentText.y }, 300, Phaser.Easing.Quadratic.In, true, 0, 0, false);
             this.game.add.tween(this.contentImage).to({ alpha: 0 }, 300, Phaser.Easing.Quadratic.In, true, 0, 0, false).onComplete.add(function () {
                 if (preloaded) {
                     _this.contentImage.loadTexture("zeroImg" + _this.contents[_this.currentIndex].key);
@@ -2294,7 +2475,25 @@ var z89;
             var _this = this;
             this.game.add.tween(this.spinner).to({ alpha: 0 }, 300, Phaser.Easing.Quadratic.In, true, 0, 0, false);
             this.contentText.text = this.contents[this.currentIndex].t;
-            this.game.add.tween(this.contentText).to({ alpha: 1, y: this.contentText.y - 10 }, 500, Phaser.Easing.Quadratic.In, true, 100, 0, false).onComplete.add(function () {
+            var colors = [];
+            colors.push(this.contents[this.currentIndex].t.length);
+            console.log(colors);
+            if (this.contents[this.currentIndex].a != undefined) {
+                var _json = JSON.parse(this.contents[this.currentIndex].a);
+                if (_json.link != undefined) {
+                    this.contents[this.currentIndex].url = _json.link;
+                }
+                if (_json.dd != undefined) {
+                    this.contentText.text = "DEVDAY " + _json.dd + "\n" + this.contentText.text;
+                    colors.push(_json.dd.length + 7);
+                }
+                if (_json.date != undefined)
+                    this.contentText.text += "\n\n" + _json.date;
+            }
+            this.contentText.addColor('#00ff00', 0);
+            this.contentText.addColor('#ffffff', colors[1]);
+            //this.contentText.addColor('#aaaaaa', colors[0]);
+            this.game.add.tween(this.contentText).to({ alpha: 1, y: this.contentText.y }, 500, Phaser.Easing.Quadratic.In, true, 100, 0, false).onComplete.add(function () {
                 _this.isAnimating = false;
             }, this);
             this.game.add.tween(this.contentImage).to({ alpha: .8 }, 300, Phaser.Easing.Quadratic.In, true, 0, 0, false);
@@ -2316,7 +2515,7 @@ var z89;
             _this.skills = gameData.skills;
             var _text;
             var _bar;
-            var _y = [8 - 215, 123 - 215, 239 - 215, 355 - 215];
+            var _y = [140, 140 - 96, 140 - 96 - 96, 140 - 96 - 96 - 96];
             for (var i = 0; i < 4; i++) {
                 _this.skillsObj.push(_this.game.add.sprite(16 - 174, _y[i], ""));
                 _bar = _this.game.add.sprite(0, 0, _this.game.cache.getBitmapData("skill"));
@@ -3072,10 +3271,11 @@ var z89;
             _this.isOpenOnStart = false;
             _this.fixedToCamera = true;
             _this.currentState = _this.game.state.getCurrentState();
-            _this.menuBg = _this.game.add.sprite(512, 450, "menu-phone");
+            _this.menuBg = _this.game.add.sprite(540, 450, "menu-phone");
             _this.menuBg.alpha = 1;
             _this.menuBg.anchor.set(0.5);
             _this.menuBg.height = 350;
+            _this.menuBg.scale.set(.7);
             _this.add(_this.menuBg);
             _this.menuBg.inputEnabled = true;
             _this.menuBg.input.priorityID = 2;
@@ -3209,12 +3409,13 @@ var z89;
         PlayerMenu.prototype.update = function () { };
         PlayerMenu.prototype.newGame = function () {
             this.currentState.displayChapterTitle(0);
+            this.currentState.playerBaloon.showBaloon(z89.getLabel(95));
             this.isOpenOnStart = false;
             this.hide();
         };
         PlayerMenu.prototype.noGame = function () {
+            //console.log("nogame");
             var _this = this;
-            console.log("nogame");
             gameData.chapters.forEach(function (element) {
                 element.complete(_this.currentState);
             });
@@ -3255,8 +3456,8 @@ var z89;
             this.game.add.tween(this.cameraOffset).to({ y: 100 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false).onComplete.add(function () {
                 _this.isOpen = true;
             }, this);
-            this.game.add.tween(this.menuBg.scale).to({ y: 1.3, x: 1.3 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
-            this.game.add.tween(this.menuBg).to({ height: 1000 }, 600, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            this.game.add.tween(this.menuBg.scale).to({ y: 1, x: 1 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            this.game.add.tween(this.menuBg).to({ height: 774 }, 600, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
         };
         PlayerMenu.prototype.hide = function () {
             var _this = this;
@@ -3264,7 +3465,7 @@ var z89;
                 _this.isOpen = false;
                 _this.currentState.enableInteraction();
             }, this);
-            this.game.add.tween(this.menuBg.scale).to({ y: 1, x: 1 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
+            this.game.add.tween(this.menuBg.scale).to({ y: .7, x: .7 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
             this.game.add.tween(this.menuBg).to({ height: 350 }, 500, Phaser.Easing.Quadratic.InOut, true, 0, 0, false);
         };
         return PlayerMenu;
@@ -3318,25 +3519,25 @@ var z89;
             //console.log(key);
             //console.log(key.keyCode,key.event.key);
             if (key.keyCode == 13) {
-                this.TerminalWriter.submitCommand();
+                this.TerminalLogic.submitCommand();
             }
             else if (key.keyCode == 8) {
-                this.TerminalWriter.removeChar();
+                this.TerminalLogic.removeChar();
             }
             else if (key.keyCode == 38) {
-                this.TerminalWriter.charUp();
+                this.TerminalLogic.charUp();
             }
             else if (key.keyCode == 40) {
-                this.TerminalWriter.charDown();
+                this.TerminalLogic.charDown();
             }
             else if (key.keyCode == 37) {
-                this.TerminalWriter.charLeft();
+                this.TerminalLogic.charLeft();
             }
             else if (key.keyCode == 39) {
-                this.TerminalWriter.charRight();
+                this.TerminalLogic.charRight();
             }
             else {
-                this.TerminalWriter.addChar(key.event.key);
+                this.TerminalLogic.addChar(key.event.key);
             }
         };
         Terminal.prototype.clear = function () { };
@@ -3344,22 +3545,23 @@ var z89;
             this.game.add.tween(this).to({ alpha: 1 }, 400, Phaser.Easing.Quadratic.In, true, 0, 0, false);
             this.inputEnableChildren = true;
             this.currentState.disableInteraction();
-            this.TerminalWriter = new z89.TerminalLogic(this.game, this, 0x00ff00);
+            this.TerminalLogic = new z89.TerminalLogic(this.game, this, 0x00ff00);
             if (z89.isMobile()) {
                 this.TerminalKeyboard = new z89.TerminalKeyboard(this.game, this);
             }
-            this.TerminalWriter.reset();
+            this.TerminalLogic.reset();
         };
         Terminal.prototype.hide = function () {
             var _this = this;
+            this.TerminalLogic.writeMultiple(this.TerminalLogic.returnStaticString(z89.msgs.disconnecting, 0));
             this.game.add.tween(this).to({ alpha: 0 }, 400, Phaser.Easing.Quadratic.In, true, 0, 0, false).onComplete.add(function () {
                 _this.destroy();
             }, this);
         };
         Terminal.prototype.destroy = function () {
             this.inputEnableChildren = false;
-            if (this.TerminalWriter != undefined)
-                this.TerminalWriter.destroy();
+            if (this.TerminalLogic != undefined)
+                this.TerminalLogic.destroy();
             if (this.TerminalKeyboard != undefined)
                 this.TerminalKeyboard.destroy();
             this.currentState.enableInteraction();
@@ -3420,14 +3622,18 @@ var z89;
                 { v: 'left', x: 192 + (40 * 15) + (6 * 15), y: 49 + 51 + 50 + 50, w: 40, h: 40 },
                 { v: 'down', x: 192 + (40 * 16) + (6 * 16), y: 49 + 51 + 50 + 50, w: 40, h: 40 },
                 { v: 'right', x: 192 + (40 * 17) + (6 * 17), y: 49 + 51 + 50 + 50, w: 40, h: 40 },
+                { v: 'help', x: 10 + 40 + 6, y: 49, w: 80, h: 40 },
+                { v: 'clear', x: 10 + 40 + 6, y: 49 + 51, w: 80, h: 40 },
+                { v: 'dir', x: 10 + 40 + 6, y: 49 + 51 + 50, w: 80, h: 40 },
+                { v: 'exit', x: 10 + 40 + 6, y: 49 + 51 + 50 + 50, w: 80, h: 40 },
             ];
             this.game = game;
             this.terminal = terminal;
             this.keyGroup = this.game.add.group();
             this.keyGroup.x = 0;
             this.keyGroup.y = 510;
-            var keyboard = this.game.add.sprite(0, 0, "terminalKeyboard", 0, this.keyGroup);
-            keyboard.anchor.set(0);
+            this.keyboard = this.game.add.sprite(0, 0, "terminalKeyboard", 0, this.keyGroup);
+            this.keyboard.anchor.set(0);
             var sprite;
             this.keys.forEach(function (e) {
                 sprite = _this.game.add.sprite(e.x, e.y, _this.game.cache.getBitmapData('key'), 0, _this.keyGroup);
@@ -3438,6 +3644,7 @@ var z89;
                 sprite.inputEnabled = true;
                 sprite.input.priorityID = 3;
                 sprite.alpha = .2;
+                sprite.tint = 0xff0000;
                 sprite.events.onInputDown.add(function (sprite) {
                     _this.pressKey(sprite.name);
                     sprite.alpha = .5;
@@ -3449,25 +3656,41 @@ var z89;
             this.terminal.addChild(this.keyGroup);
         }
         TerminalKeyboard.prototype.pressKey = function (_key) {
-            console.log(_key);
+            console.log("press");
             switch (_key) {
                 case "enter":
-                    this.terminal.TerminalWriter.submitCommand();
+                    this.terminal.TerminalLogic.submitCommand();
                     break;
                 case "backspace":
-                    this.terminal.TerminalWriter.removeChar();
+                    this.terminal.TerminalLogic.removeChar();
                     break;
                 case "up":
-                    this.terminal.TerminalWriter.charUp();
+                    this.terminal.TerminalLogic.charUp();
                     break;
                 case "down":
-                    this.terminal.TerminalWriter.charDown();
+                    this.terminal.TerminalLogic.charDown();
                     break;
                 case "left":
-                    this.terminal.TerminalWriter.charLeft();
+                    this.terminal.TerminalLogic.charLeft();
                     break;
                 case "right":
-                    this.terminal.TerminalWriter.charRight();
+                    this.terminal.TerminalLogic.charRight();
+                    break;
+                case "help":
+                    this.terminal.TerminalLogic.addChars("help");
+                    this.terminal.TerminalLogic.submitCommand();
+                    break;
+                case "clear":
+                    this.terminal.TerminalLogic.addChars("clear");
+                    this.terminal.TerminalLogic.submitCommand();
+                    break;
+                case "exit":
+                    this.terminal.TerminalLogic.addChars("exit");
+                    this.terminal.TerminalLogic.submitCommand();
+                    break;
+                case "dir":
+                    this.terminal.TerminalLogic.addChars("dir");
+                    this.terminal.TerminalLogic.submitCommand();
                     break;
                 default:
                     var char = "";
@@ -3488,11 +3711,14 @@ var z89;
                             char = _key;
                             break;
                     }
-                    this.terminal.TerminalWriter.addChar(char);
+                    this.terminal.TerminalLogic.addChar(char);
                     break;
             }
         };
         TerminalKeyboard.prototype.destroy = function () {
+            this.keyboard.kill();
+            this.keyboard.destroy();
+            this.keyGroup.destroy();
             console.log("destroy keyboard");
         };
         return TerminalKeyboard;
@@ -3516,10 +3742,13 @@ var z89;
         msgs[msgs["t3"] = 10] = "t3";
         msgs[msgs["t2"] = 11] = "t2";
         msgs[msgs["t1"] = 12] = "t1";
+        msgs[msgs["hit"] = 13] = "hit";
+        msgs[msgs["processing"] = 14] = "processing";
+        msgs[msgs["disconnecting"] = 15] = "disconnecting";
     })(msgs = z89.msgs || (z89.msgs = {}));
     var shell;
     (function (shell) {
-        shell[shell["joshua"] = 0] = "joshua";
+        shell[shell["login"] = 0] = "login";
         shell[shell["gtw"] = 1] = "gtw";
         shell[shell["call"] = 2] = "call";
     })(shell = z89.shell || (z89.shell = {}));
@@ -3532,8 +3761,8 @@ var z89;
                 'READY.                                  ',
                 'LIST OF COMMANDS:                       ',
                 '----------------------------------------',
-                'help, clear, quit, ver, credits,        ',
-                'dir, play "gamename"                    ',
+                'help, clear, quit, ver, credits, reset, ',
+                'dir, load "gamename", run               ',
                 ' GREETINGS PROFESSOR FALKEN.            ',
                 ' WELCOME TO,                            ',
                 ' ###################################### ',
@@ -3551,7 +3780,7 @@ var z89;
                 'MUSIC:                                  ',
                 'ADDITIONAL FX: FRANCESO RAIMONDO        ',
                 '0 "GAME LIST                  " 32 2A   ',
-                '0    "BOOCCONCINI DEV"             PRG  ',
+                '0    "BOCCONCINI DEV"              PRG  ',
                 '0    "XMAS2K16"                    PRG  ',
                 '0    "THE WRONG DIRECTION"         PRG  ',
                 '0    "FALKEN\'S MAZE"               PRG  ',
@@ -3604,6 +3833,9 @@ var z89;
                 'SEARCHING FOR ',
                 'LOADING                                 ',
                 'RUNNING A GAME FROM:                    ',
+                '              ##############            ',
+                '              # PROCESSING #            ',
+                'Disconnecting....                       ',
             ];
             this.msgs = [
                 [0, 1, 0, 2, 0, 3],
@@ -3620,6 +3852,8 @@ var z89;
                 [0, 60, 61, 62, 63, 64, 65, 66, 0],
                 [0, 67, 68, 69, 70, 71, 72, 73, 0],
                 [0, 10, 74, 10, 0, 3],
+                [0, 78, 79, 78, 0],
+                [80],
             ];
             this.emptyString = this.rows[0];
             this.readyString = this.rows[3];
@@ -3655,6 +3889,7 @@ var z89;
             this.isShellLogin = false;
             this.login = "";
             this.gameLoaded = "";
+            this.inputIsDisabled = false;
             this.game = game;
             this.typeGroup = this.game.add.group();
             this.terminal = terminal;
@@ -3682,6 +3917,10 @@ var z89;
             this.writeMultiple(this.returnStaticString(msgs.reset, 0));
         };
         ;
+        TerminalLogic.prototype.enableInput = function () { this.inputIsDisabled = false; this.showCursor(); };
+        TerminalLogic.prototype.disableInput = function () { this.inputIsDisabled = true; this.hideCursor(); };
+        TerminalLogic.prototype.hideCursor = function () { this.cursor.alpha = 0; };
+        TerminalLogic.prototype.showCursor = function () { this.cursor.alpha = 1; };
         TerminalLogic.prototype.returnStaticString = function (msg, delay) {
             var _this = this;
             var _obj = [];
@@ -3708,6 +3947,7 @@ var z89;
         TerminalLogic.prototype.returnGames = function () { return this.returnStaticString(msgs.gameList, 0); };
         TerminalLogic.prototype.returnVersion = function () { return this.returnStaticString(msgs.version, 0); };
         TerminalLogic.prototype.returnCredits = function () { return this.returnStaticString(msgs.credits, 0); };
+        TerminalLogic.prototype.returnProcessing = function () { return this.returnStaticString(msgs.processing, 0); };
         TerminalLogic.prototype.returnError = function (error) {
             var _error = this.errors[this.game.rnd.integerInRange(0, this.errors.length - 1)];
             if (error != undefined)
@@ -3742,7 +3982,7 @@ var z89;
             ];
         };
         TerminalLogic.prototype.charUp = function () {
-            if (this.isShell)
+            if (this.isShell || this.inputIsDisabled)
                 return;
             var col = this.cursor.x / 16;
             var row = this.cursor.y / 16;
@@ -3751,7 +3991,7 @@ var z89;
             }
         };
         TerminalLogic.prototype.charDown = function () {
-            if (this.isShell)
+            if (this.isShell || this.inputIsDisabled)
                 return;
             var col = this.cursor.x / 16;
             var row = this.cursor.y / 16;
@@ -3763,7 +4003,7 @@ var z89;
             }
         };
         TerminalLogic.prototype.charLeft = function () {
-            if (this.isShell)
+            if (this.isShell || this.inputIsDisabled)
                 return;
             var col = this.cursor.x / 16;
             var row = this.cursor.y / 16;
@@ -3778,7 +4018,7 @@ var z89;
             }
         };
         TerminalLogic.prototype.charRight = function () {
-            if (this.isShell)
+            if (this.isShell || this.inputIsDisabled)
                 return;
             var col = this.cursor.x / 16;
             var row = this.cursor.y / 16;
@@ -3801,6 +4041,8 @@ var z89;
             }
         };
         TerminalLogic.prototype.removeChar = function () {
+            if (this.inputIsDisabled)
+                return;
             var col = this.cursor.x / 16;
             var row = this.cursor.y / 16;
             if (this.isShell && (this.shellStart < col)) {
@@ -3822,6 +4064,8 @@ var z89;
             }
         };
         TerminalLogic.prototype.addChar = function (key) {
+            if (this.inputIsDisabled)
+                return;
             var col = this.cursor.x / 16;
             var row = this.cursor.y / 16;
             if (this.isShell) {
@@ -3844,6 +4088,11 @@ var z89;
                 }
             }
         };
+        TerminalLogic.prototype.addChars = function (key) {
+            for (var i = 0; i < key.length; i++) {
+                this.addChar(key.charAt(i));
+            }
+        };
         TerminalLogic.prototype.replaceAt = function (string, index, replace) {
             return string.substring(0, index) + replace + string.substring(index + 1);
         };
@@ -3862,23 +4111,24 @@ var z89;
             this.isShellLogin = true;
             this.setCursor(shellString.length, this.returnLogin().length);
         };
-        TerminalLogic.prototype.returnJoshua = function (error) {
-            if (error === void 0) { error = false; }
-            this.logged = true;
-            this.login = "";
-            this.clear();
-            this.writeMultiple(this.returnStaticString(msgs.gtw, 0));
-            this.write(this.returnReady(">:"), false);
-            this.setCursor(0, this.returnStaticString(msgs.gtw, 0).length + 1);
-            if (error)
-                this.writeMultiple(this.returnLoginError("INVALID COORDINATES"));
-            this.isShell = true;
-            this.shellStart = 2;
-            this.shellEnd = 7;
-            this.shellType = shell.gtw;
-            this.isShellLogin = false;
-            this.setCursor(2, 12);
-        };
+        /*  returnLogged(error: boolean = false): void {
+  
+              this.logged = true;
+              this.login = "";
+              this.clear();
+              this.writeMultiple(this.returnStaticString(msgs.gtw, 0));
+              this.write(this.returnReady(">:"), false);
+              this.setCursor(0, this.returnStaticString(msgs.gtw, 0).length + 1);
+              if (error) this.writeMultiple(this.returnLoginError("INVALID COORDINATES"));
+              this.isShell = true;
+              this.shellStart = 2;
+              this.shellEnd = 7;
+              this.shellType = shell.gtw;
+              this.isShellLogin = false;
+              this.setCursor(2, 12);
+  
+  
+          }*/
         TerminalLogic.prototype.checkCoordinates = function (coordinates) {
             if (coordinates == "quit")
                 return 0;
@@ -3903,20 +4153,20 @@ var z89;
             this.write(this.returnReady());
         };
         TerminalLogic.prototype.hitTarget = function () {
-            var _this = this;
-            this.terminal.currentState.shootFromHigh([17]);
-            this.terminal.hide();
+            //this.terminal.currentState.shootFromHigh([17]);
+            //this.terminal.hide();
             //return;
+            var _this = this;
             this.clearShell();
             this.clear();
             this.writeMultiple(this.returnStaticString(msgs.targetAquired, 0));
             var _loop_2 = function (i) {
-                this_2.game.time.events.add(1000 * i + 1000, function () {
+                this_2.game.time.events.add(1000 * i, function () {
                     _this.writeMultiple(_this.returnStaticString(8 + i, 0));
                     if (i == 5)
-                        _this.game.time.events.add(1000 * i, function () {
-                            _this.terminal.currentState.shootFromHigh([17]);
+                        _this.game.time.events.add(1000, function () {
                             _this.terminal.hide();
+                            _this.terminal.currentState.shootFromHigh([27]);
                         }, _this);
                 }, this_2);
             };
@@ -3934,33 +4184,29 @@ var z89;
                 this.scrollDown();
                 this.cursor.y = (row * 16) - 16;
             }
-            console.log(command);
+            // console.log(command)
             if (this.isShell) {
-                console.log(this.login);
+                // console.log(this.login)
                 switch (this.shellType) {
                     case 0:
                         switch (this.login) {
-                            case "joshua":
-                                this.logged = true;
-                                this.returnJoshua();
-                                break;
                             case "quit":
                                 this.clear();
                                 this.write(this.returnReady());
                                 this.clearShell();
                                 break;
                             default:
-                                this.returnShellError(">:", true);
+                                this.ajaxCall({ who: "login", login: this.login });
                                 break;
                         }
                         break;
                     case 1:
                         switch (this.checkCoordinates(this.login)) {
                             case -1:
-                                this.returnJoshua(true);
+                                this.returnLogged(this, true);
                                 break;
                             case 1:
-                                this.hitTarget();
+                                this.ajaxCall({ who: "coordinates", coordinates: this.login });
                                 break;
                             case 0:
                                 this.clear();
@@ -4022,12 +4268,13 @@ var z89;
                         this.gameLoaded = "the wrong direction";
                         break;
                     case "load \"gtw\"":
+                    case "load":
                         if (!this.logged) {
-                            this.shellType = shell.joshua;
+                            this.shellType = shell.login;
                             this.returnShellError(">:");
                         }
                         else {
-                            this.returnJoshua();
+                            this.returnLogged(this);
                         }
                         break;
                     case "dir":
@@ -4054,6 +4301,17 @@ var z89;
                         break;
                 }
             }
+        };
+        TerminalLogic.prototype.ajaxCall = function (data) {
+            this.disableInput();
+            this.writeMultiple(this.returnProcessing());
+            var _this = this;
+            $.ajax({
+                url: "http://www.zero89.it/api/script/adventure/core.aspx",
+                dataType: "script",
+                type: "GET",
+                data: data
+            }).done(function (data) { _this.enableInput(); }).fail(function (xhr) { });
         };
         TerminalLogic.prototype.clearShell = function () {
             this.isShell = false;
@@ -4097,6 +4355,9 @@ var z89;
             var _this = this;
             letters.forEach(function (element) { _this.write(element); });
             //this.cursor.y+=16;
+        };
+        TerminalLogic.prototype.someLogic = function () {
+            return 66;
         };
         TerminalLogic.prototype.write = function (obj, cursorNext) {
             if (cursorNext === void 0) { cursorNext = true; }
@@ -4308,6 +4569,7 @@ var z89;
         };
         GameCity.prototype.create = function () {
             var _this = this;
+            z89.playSound(z89.gameSound.intro);
             document.getElementsByTagName("body")[0].className = "game";
             this.game.cache.getBitmapFont("commodore").font.lineHeight = 18;
             this.game.cache.getBitmapFont("commodore2").font.lineHeight = 36;
@@ -4421,17 +4683,17 @@ var z89;
                 this.saveGameObj.updateItems();
                 this.playerMenu.openOnStart();
             }
-            /*   let half: Phaser.Sprite = this.game.add.sprite(0, 0, "halftone");
-               half.fixedToCamera = true;
-
-               let half2: Phaser.Sprite = this.game.add.sprite(1080, 0, "halftone");
-               half2.fixedToCamera = true;
-               half2.scale.x = -1;
-*/
-            this.chapterTitle = this.game.add.bitmapText(512, 384, "commodore2", "", 48);
+            var half = this.game.add.tileSprite(0, 0, 100, 720, "halftone");
+            half.fixedToCamera = true;
+            var half2 = this.game.add.tileSprite(1080, 0, 100, 720, "halftone");
+            half2.fixedToCamera = true;
+            half2.scale.x = -1;
+            this.chapterTitle = this.game.add.bitmapText(512, 200, "commodore2", "", 48);
             this.chapterTitle.fixedToCamera = true;
             this.chapterTitle.anchor.set(.5);
             this.chapterTitle.alpha = 0;
+            var _woofer = this.gameItemsUtils.getItemById(12);
+            _woofer.tween = this.game.add.tween(_woofer.scale).to({ x: .95, y: .975 }, 230, "Sine.easeInOut", true, 0, -1, true);
             // this.chapterTitle.tint=0x00ff00;
             /*  let convObj: any = {
                      key: "TALKTO_devday",
@@ -4501,6 +4763,13 @@ var z89;
                */
             // this.game.add.sprite(100,100,this.game.cache.getBitmapData("roundedBtn"))
         };
+        GameCity.prototype.stopSound = function () {
+            z89.stopSoundAll();
+        };
+        GameCity.prototype.playSound = function (sound) {
+            z89.stopSoundAll();
+            z89.playSound(sound);
+        };
         GameCity.prototype.restartGame = function () {
             this.saveGameObj.destroy();
             document.location.reload();
@@ -4563,6 +4832,9 @@ var z89;
             var _actionObj = this.getActionObject();
             if (_actionObj.action != -1 && (_actionObj.inventory.length > 0 || _actionObj.item != null)) {
                 if (this.executeActionLogic(_item)) {
+                    this.playerBaloon.hideBaloon();
+                    this.playerActions.hide();
+                    this.playerMenu.hide();
                     this.saveGame();
                     this.resetActions();
                     this.setActionObject(null);
@@ -4850,8 +5122,9 @@ var z89;
         };
         GameCity.prototype.displayChapterTitle = function (chapterIndex) {
             var _this = this;
-            this.currentChapter = chapterIndex;
-            this.chapterTitle.text = gameData.chapters[chapterIndex].title;
+            if (chapterIndex != undefined)
+                this.currentChapter = chapterIndex;
+            this.chapterTitle.text = gameData.chapters[this.currentChapter].title;
             this.game.add.tween(this.chapterTitle).to({ alpha: 1 }, 1000, Phaser.Easing.Quadratic.In, true, 500, 0, false).onComplete.add(function () {
                 _this.game.add.tween(_this.chapterTitle).to({ alpha: 0 }, 1000, Phaser.Easing.Quadratic.In, true, 2000, 0, false);
             }, this);
@@ -4861,6 +5134,7 @@ var z89;
         };
         GameCity.prototype.getContentsBycontexts = function (contexts) {
             var _arr = z89.getZero89Data();
+            // console.log(contexts,_arr)
             if (_arr == undefined)
                 return [{}];
             var _con;

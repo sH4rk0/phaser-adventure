@@ -19,7 +19,7 @@ module z89 {
 
         private terminalGroup: Phaser.Group;
         public currentState: GameCity;
-        public TerminalWriter: TerminalLogic;
+        public TerminalLogic: TerminalLogic;
         private TerminalKeyboard: TerminalKeyboard;
 
         constructor(game: Phaser.Game) {
@@ -80,26 +80,26 @@ module z89 {
             //console.log(key.keyCode,key.event.key);
 
             if (key.keyCode == 13) {
-                this.TerminalWriter.submitCommand();
+                this.TerminalLogic.submitCommand();
 
             } else if (key.keyCode == 8) {
-                this.TerminalWriter.removeChar();
+                this.TerminalLogic.removeChar();
 
             } else if (key.keyCode == 38) {//up
-                this.TerminalWriter.charUp();
+                this.TerminalLogic.charUp();
 
             } else if (key.keyCode == 40) {//down
-                this.TerminalWriter.charDown();
+                this.TerminalLogic.charDown();
 
             } else if (key.keyCode == 37) {//left
-                this.TerminalWriter.charLeft();
+                this.TerminalLogic.charLeft();
 
             } else if (key.keyCode == 39) {//right
-                this.TerminalWriter.charRight();
+                this.TerminalLogic.charRight();
             }
 
             else {
-                this.TerminalWriter.addChar(key.event.key);
+                this.TerminalLogic.addChar(key.event.key);
             }
 
 
@@ -114,16 +114,18 @@ module z89 {
             this.game.add.tween(this).to({ alpha: 1 }, 400, Phaser.Easing.Quadratic.In, true, 0, 0, false);
             this.inputEnableChildren = true;
             this.currentState.disableInteraction();
-            this.TerminalWriter = new TerminalLogic(this.game, this, 0x00ff00);
+            this.TerminalLogic = new TerminalLogic(this.game, this, 0x00ff00);
             if(isMobile()){
 
                 this.TerminalKeyboard = new TerminalKeyboard(this.game,this,);
 
             }
-            this.TerminalWriter.reset();
+            this.TerminalLogic.reset();
         }
 
         hide(): void {
+
+            this.TerminalLogic.writeMultiple(this.TerminalLogic.returnStaticString(msgs.disconnecting, 0))
             this.game.add.tween(this).to({ alpha: 0 }, 400, Phaser.Easing.Quadratic.In, true, 0, 0, false).onComplete.add(() => {
 
                 this.destroy();
@@ -133,7 +135,7 @@ module z89 {
 
         destroy(): void {
             this.inputEnableChildren = false;
-                if (this.TerminalWriter != undefined) this.TerminalWriter.destroy();
+                if (this.TerminalLogic != undefined) this.TerminalLogic.destroy();
                 if (this.TerminalKeyboard != undefined) this.TerminalKeyboard.destroy();
                 this.currentState.enableInteraction();
             }

@@ -1,6 +1,6 @@
 gameData.chapters=[
     {
-        title:"CHAPTER ONE:\nThe DEVDAY trouble",
+        title:"CHAPTER ONE:\nTHE DEVDAY TROUBLE!",
         completed:false,
         complete: (cs: z89.GameCity) => {
            
@@ -18,7 +18,7 @@ gameData.chapters=[
                         }
     },
     {
-        title:"CHAPTER TWO:\nDiscover my Skills",
+        title:"CHAPTER TWO:\nBACK TO HOME!",
         completed:false,
         complete: (cs: z89.GameCity) => {
            

@@ -8,6 +8,7 @@ module z89 {
         public itemObj: any;
         public id: number;
         public inventoryIndex: number;
+        public tween: Phaser.Tween;
 
 
         constructor(game: Phaser.Game, itemObj: any) {
@@ -35,16 +36,16 @@ module z89 {
             
             this.id = itemObj.id;
             this.itemObj = itemObj;
-            this.inputEnabled = true;
+           
             this.name = itemObj.name;
-            this.input.priorityID = 1;
             this.interactive = itemObj.interactive;
-
             this.fixedToCamera = itemObj.fixedToCamera;
 
             if(itemObj.turnLeft!=undefined) this.turnLeft();
 
             if(this.interactive){
+                this.inputEnabled = true;
+                this.input.priorityID = 1;
             this.events.onInputDown.add(() => {
 
             

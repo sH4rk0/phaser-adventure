@@ -121,6 +121,9 @@ module z89 {
 
 			this.game.load.onLoadComplete.add(() => {
 				
+				setUpGame(this.game);
+				
+				/* comment this */
 				goState("GameCity", this.game);
 				this.body.className="";
 				this.screens[1]=new c64Typewriter(this.game, this.letters2, this.c64Screen);

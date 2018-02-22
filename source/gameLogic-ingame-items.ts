@@ -47,7 +47,7 @@
             offsetX: 0,
             fixedToCamera: false,
             isStarted:false,
-            contexts: ["gamedev", "phaser"],
+            contexts: ["devday"],
             //working:false
 
         },
@@ -97,6 +97,22 @@
             name: z89.getLabel(41),
             currentAnimation:"idle",
             x: 1040,
+            y: 650-48,
+            turnLeft: true,
+            interactive: true,
+            offsetX: 80,
+            fixedToCamera: false,
+            checkIntersect: false,
+            
+        },{
+            id: 27,
+            type: 1,
+            onStart: true,
+            sprite: "daniele",
+            animations: [{ name: "idle", frames: [1, 2, 3, 0], rate: 4.5, loop: true }],
+            name: z89.getLabel(96),
+            currentAnimation:"idle",
+            x: 1440,
             y: 650-48,
             turnLeft: true,
             interactive: true,
@@ -223,7 +239,42 @@
             checkIntersect: true
 
 
-        }
+        },
+
+       ,
+        {
+            id: 11,
+            type: 1,
+            sprite: "jukebox",
+            name: z89.getLabel(88),
+            x: 2450,
+            y: 650-48,
+            animations: [{ name: "idle", frames: [0], rate: 1, loop: false },{ name: "play", frames: [1,2,3,4,5,6,7,2,4,6,3,1,6,3,4,6,5,7,2,5,3,4], rate: 14, loop: true }],
+            currentAnimation:"play",
+            onStart: true,
+            interactive: true,
+            offsetX: 70,
+            fixedToCamera: false,
+            checkIntersect: false
+
+
+        },
+        {
+         id: 12,
+         type: 1,
+         sprite: "woofer",
+         name: z89.getLabel(92),
+         x: 2450,
+         y: 650-48,
+         currentAnimation:"idle",
+         onStart: true,
+         interactive: false,
+         offsetX: 70,
+         fixedToCamera: false,
+         checkIntersect: false
+ 
+ 
+     }
 
 
 
